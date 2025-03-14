@@ -1,4 +1,4 @@
-# Binarystar_os
+# Qiusuo_os
 #### ——————操作系统真象还原 - 代码复现
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
