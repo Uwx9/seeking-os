@@ -2,6 +2,7 @@
 #include "stdint.h"
 #include "global.h"
 #include "io.h"
+#include "print.h"
 
 #define PIC_M_CTRL 0x20     // 主片的控制端口是0x20
 #define PIC_M_DATA 0x21     // 主片的数据端口是0x21
@@ -9,6 +10,9 @@
 #define PIC_S_DATA 0xa1     // 从片的数据端口是0xa1
 
 #define IDT_DESC_CNT 0x21   //当前总的支持的中断数
+
+#define EFLAGS_IF 0x00000200
+#define GET_EFLAGS(EFLAGS_VAR) asm volatile ("pushfl; popl %0" : "=g"(EFLAGS_VAR))
 
 struct gate_desc {
     uint16_t func_offset_low_word;
@@ -66,14 +70,14 @@ static void make_idt_desc(struct gate_desc* p_gdesc, uint8_t attr, intr_handler 
 	p_gdesc->func_offset_high_word = ((uint32_t)function & 0xffff0000) >> 16;
 }
 
-/*初始化中断描述符表*/
-static void idt_desc_init(void)
+/* 初始化中断描述符表*/
+static void idt_desc_init()
 {
 	int i;
 	for(i = 0; i < IDT_DESC_CNT; i++) {
 		make_idt_desc(&idt[i], IDT_DESC_ATTR_DPL0, intr_entry_table[i]);
 	} 
-	put_str("	idt_desc_init done\n");
+	put_str("idt_desc_init done\n");
 }
 
 /* 通用的中断处理函数，一般用在异常出现时的处理 */
@@ -123,13 +127,56 @@ static void exception_init(void)
 	intr_name[19] = "#XF SIMD Floating-Point Exception";	//SIMD浮点异常
 }
 
-/*完成有关中断的所有初始化工作*/
+/* 开中断并返回开中断前的状态*/
+enum intr_status intr_enable()
+{
+	enum intr_status old_status;
+	if (intr_get_status() == INTR_ON) {
+		old_status = INTR_ON;
+		return old_status;
+	} else {
+		old_status = INTR_OFF;
+		asm volatile ("sti");					//开中断，sti指令将IF位置1
+		return old_status;
+	}
+}
+
+/* 关中断并返回关中断前的状态*/
+enum intr_status intr_disable()
+{
+	enum intr_status old_status;
+	if (intr_get_status() == INTR_OFF) {
+		old_status = INTR_OFF;
+		return old_status;
+	} else {
+		old_status = INTR_ON;
+		asm volatile ("cli" : : : "memory");	//关中断，cli指令将IF位置0 
+		return old_status;
+	}
+}
+
+/* 得到当前中断状态*/
+enum intr_status intr_get_status()
+{
+	uint32_t eflags = 0;
+	GET_EFLAGS(eflags);
+	return (EFLAGS_IF & eflags) ? INTR_ON : INTR_OFF;
+}
+
+/* 设置中断状态*/
+enum intr_status intr_set_status(enum intr_status status)
+{
+	return (status & INTR_ON) ? intr_enable() : intr_disable();
+}
+
+/* 完成有关中断的所有初始化工作*/
 void idt_init()
 {
 	put_str("idt_init start\n");
 	idt_desc_init();	// 初始化中断描述符表
 	exception_init();	// 异常名初始化并注册通常的中断处理函数
 	pic_init();			// 初始化8259A 
+
 
 	/* 
 	加载idt 
@@ -139,7 +186,7 @@ void idt_init()
 	*/
 	uint64_t idt_operand = ((sizeof(idt) - 1) | ((uint64_t)(uint32_t)idt << 16));
 
-	/*ATT风格这里%0就是内存地址寻址，而不是立即数或idt_operand的值*/
+	/* ATT风格这里%0就是内存地址寻址，而不是立即数或idt_operand的值*/
 	asm volatile ("lidt %0" : : "m"(idt_operand));
 	put_str("idt_init done\n");
 }

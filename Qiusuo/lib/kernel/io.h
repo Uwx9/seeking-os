@@ -8,8 +8,8 @@
     QImode 
     "Quarter-Integer"模式，表示一个一字节的整数 
 *****************************************************/ 
-#ifndef _LIB_IO_H
-#define _LIB_IO_H
+#ifndef __LIB_KERNEL_IO_H
+#define __LIB_KERNEL_IO_H
 #include "stdint.h"
 
 /*--------- 向端口port写入一个字节 ----------*/
