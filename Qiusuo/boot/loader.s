@@ -59,9 +59,9 @@ loader_start:
 .find_max_mem_area:
 	mov eax,[ebx]		;base_add_low		
 	add eax,[ebx+8] 	;lenth_low
-	cmp edx,eax
 	add ebx,20
-	jge .next_ards
+	cmp edx,eax
+	jge .next_ards	
 	mov edx,eax
 
 .next_ards:
