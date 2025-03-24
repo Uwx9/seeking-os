@@ -2,6 +2,13 @@
 #define __KERNEL_GLOBAL_H
 #include "stdint.h"
 
+typedef enum {
+    false,
+    true
+}bool;
+
+#define NULL (void*)0
+
 #define RPL0 0
 #define RPL1 1
 #define RPL2 2

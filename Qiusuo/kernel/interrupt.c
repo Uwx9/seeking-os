@@ -71,7 +71,7 @@ static void make_idt_desc(struct gate_desc* p_gdesc, uint8_t attr, intr_handler 
 }
 
 /* 初始化中断描述符表*/
-static void idt_desc_init()
+static void idt_desc_init(void)
 {
 	int i;
 	for(i = 0; i < IDT_DESC_CNT; i++) {
