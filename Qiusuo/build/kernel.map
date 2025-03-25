@@ -2,30 +2,30 @@
 分配公共符号
 公共符号            大小              文件
 
-kernel_vaddr_pool   0xc               build/memory.o
-user_pool           0x10              build/memory.o
-intr_name           0x84              build/interrupt.o
-idt_table           0x84              build/interrupt.o
-kernel_pool         0x10              build/memory.o
+kernel_vaddr_pool   0xc               Qiusuo/build/memory.o
+user_pool           0x10              Qiusuo/build/memory.o
+intr_name           0x84              Qiusuo/build/interrupt.o
+idt_table           0x84              Qiusuo/build/interrupt.o
+kernel_pool         0x10              Qiusuo/build/memory.o
 
 舍弃的输入节
 
  .note.GNU-stack
-                0x0000000000000000        0x0 build/main.o
+                0x0000000000000000        0x0 Qiusuo/build/main.o
  .note.GNU-stack
-                0x0000000000000000        0x0 build/init.o
+                0x0000000000000000        0x0 Qiusuo/build/init.o
  .note.GNU-stack
-                0x0000000000000000        0x0 build/interrupt.o
+                0x0000000000000000        0x0 Qiusuo/build/interrupt.o
  .note.GNU-stack
-                0x0000000000000000        0x0 build/timer.o
+                0x0000000000000000        0x0 Qiusuo/build/timer.o
  .note.GNU-stack
-                0x0000000000000000        0x0 build/debug.o
+                0x0000000000000000        0x0 Qiusuo/build/debug.o
  .note.GNU-stack
-                0x0000000000000000        0x0 build/string.o
+                0x0000000000000000        0x0 Qiusuo/build/string.o
  .note.GNU-stack
-                0x0000000000000000        0x0 build/bitmap.o
+                0x0000000000000000        0x0 Qiusuo/build/bitmap.o
  .note.GNU-stack
-                0x0000000000000000        0x0 build/memory.o
+                0x0000000000000000        0x0 Qiusuo/build/memory.o
 
 内存配置
 
@@ -35,16 +35,16 @@ kernel_pool         0x10              build/memory.o
 链结器命令稿和内存映射
 
 段 .text 的地址设置为 0xc0001500
-LOAD build/main.o
-LOAD build/init.o
-LOAD build/interrupt.o
-LOAD build/timer.o
-LOAD build/kernel.o
-LOAD build/print.o
-LOAD build/debug.o
-LOAD build/string.o
-LOAD build/bitmap.o
-LOAD build/memory.o
+LOAD Qiusuo/build/main.o
+LOAD Qiusuo/build/init.o
+LOAD Qiusuo/build/interrupt.o
+LOAD Qiusuo/build/timer.o
+LOAD Qiusuo/build/kernel.o
+LOAD Qiusuo/build/print.o
+LOAD Qiusuo/build/debug.o
+LOAD Qiusuo/build/string.o
+LOAD Qiusuo/build/bitmap.o
+LOAD Qiusuo/build/memory.o
                 [!provide]                        PROVIDE (__executable_start = SEGMENT_START ("text-segment", 0x8048000))
                 0x00000000080480d4                . = (SEGMENT_START ("text-segment", 0x8048000) + SIZEOF_HEADERS)
 
@@ -78,7 +78,7 @@ LOAD build/memory.o
 .rel.dyn        0x00000000080480d4        0x0
  *(.rel.init)
  *(.rel.text .rel.text.* .rel.gnu.linkonce.t.*)
- .rel.text      0x00000000080480d4        0x0 build/main.o
+ .rel.text      0x00000000080480d4        0x0 Qiusuo/build/main.o
  *(.rel.fini)
  *(.rel.rodata .rel.rodata.* .rel.gnu.linkonce.r.*)
  *(.rel.data.rel.ro .rel.data.rel.ro.* .rel.gnu.linkonce.d.rel.ro.*)
@@ -88,7 +88,7 @@ LOAD build/memory.o
  *(.rel.ctors)
  *(.rel.dtors)
  *(.rel.got)
- .rel.got       0x00000000080480d4        0x0 build/main.o
+ .rel.got       0x00000000080480d4        0x0 Qiusuo/build/main.o
  *(.rel.bss .rel.bss.* .rel.gnu.linkonce.b.*)
  *(.rel.ifunc)
 
@@ -96,7 +96,7 @@ LOAD build/memory.o
  *(.rel.plt)
                 [!provide]                        PROVIDE (__rel_iplt_start = .)
  *(.rel.iplt)
- .rel.iplt      0x00000000080480d4        0x0 build/main.o
+ .rel.iplt      0x00000000080480d4        0x0 Qiusuo/build/main.o
                 [!provide]                        PROVIDE (__rel_iplt_end = .)
                 0x0000000008049000                . = ALIGN (CONSTANT (MAXPAGESIZE))
 
@@ -106,7 +106,7 @@ LOAD build/memory.o
 .plt            0x0000000008049000        0x0
  *(.plt)
  *(.iplt)
- .iplt          0x0000000008049000        0x0 build/main.o
+ .iplt          0x0000000008049000        0x0 Qiusuo/build/main.o
 
 .plt.got
  *(.plt.got)
@@ -121,29 +121,29 @@ LOAD build/memory.o
  *(.text.hot .text.hot.*)
  *(SORT_BY_NAME(.text.sorted.*))
  *(.text .stub .text.* .gnu.linkonce.t.*)
- .text          0x00000000c0001500       0x50 build/main.o
+ .text          0x00000000c0001500       0x50 Qiusuo/build/main.o
                 0x00000000c0001500                main
- .text          0x00000000c0001550       0x23 build/init.o
+ .text          0x00000000c0001550       0x23 Qiusuo/build/init.o
                 0x00000000c0001550                init_all
- .text          0x00000000c0001573      0x3b7 build/interrupt.o
+ .text          0x00000000c0001573      0x3b7 Qiusuo/build/interrupt.o
                 0x00000000c0001835                intr_enable
                 0x00000000c000185e                intr_disable
                 0x00000000c0001886                intr_get_status
                 0x00000000c00018aa                intr_set_status
                 0x00000000c00018c8                idt_init
- .text          0x00000000c000192a       0xfb build/timer.o
+ .text          0x00000000c000192a       0xfb Qiusuo/build/timer.o
                 0x00000000c00019d9                timer_init
  *fill*         0x00000000c0001a25        0xb 
- .text          0x00000000c0001a30      0x39d build/kernel.o
+ .text          0x00000000c0001a30      0x39d Qiusuo/build/kernel.o
                 0x00000000c0001a30                intr_exit
  *fill*         0x00000000c0001dcd        0x3 
- .text          0x00000000c0001dd0      0x14e build/print.o
+ .text          0x00000000c0001dd0      0x14e Qiusuo/build/print.o
                 0x00000000c0001dd0                put_str
                 0x00000000c0001dee                put_char
                 0x00000000c0001ebb                put_int
- .text          0x00000000c0001f1e       0xa5 build/debug.o
+ .text          0x00000000c0001f1e       0xa5 Qiusuo/build/debug.o
                 0x00000000c0001f1e                panic_spin
- .text          0x00000000c0001fc3      0x445 build/string.o
+ .text          0x00000000c0001fc3      0x445 Qiusuo/build/string.o
                 0x00000000c0001fc3                memset
                 0x00000000c000201f                memcpy
                 0x00000000c000208b                memcmp
@@ -154,12 +154,12 @@ LOAD build/memory.o
                 0x00000000c00022bb                strrchr
                 0x00000000c0002324                strcat
                 0x00000000c000239b                strchrs
- .text          0x00000000c0002408      0x296 build/bitmap.o
+ .text          0x00000000c0002408      0x296 Qiusuo/build/bitmap.o
                 0x00000000c0002408                bitmap_init
                 0x00000000c000242f                bitmap_scan_test
                 0x00000000c000246f                bitmap_scan
                 0x00000000c00025e3                bitmap_set
- .text          0x00000000c000269e      0x56f build/memory.o
+ .text          0x00000000c000269e      0x56f Qiusuo/build/memory.o
                 0x00000000c0002907                malloc_page
                 0x00000000c00029d1                get_kernel_pages
                 0x00000000c0002bc1                mem_init
@@ -173,18 +173,17 @@ LOAD build/memory.o
                 0x00000000c0003000                . = ALIGN (CONSTANT (MAXPAGESIZE))
                 0x00000000c0003000                . = SEGMENT_START ("rodata-segment", (ALIGN (CONSTANT (MAXPAGESIZE)) + (. & (CONSTANT (MAXPAGESIZE) - 0x1))))
 
-.rodata         0x00000000c0003000      0x568
+.rodata         0x00000000c0003000      0x578
  *(.rodata .rodata.* .gnu.linkonce.r.*)
- .rodata        0x00000000c0003000       0x30 build/main.o
- .rodata        0x00000000c0003030        0xa build/init.o
+ .rodata        0x00000000c0003000       0x30 Qiusuo/build/main.o
+ .rodata        0x00000000c0003030        0xa Qiusuo/build/init.o
  *fill*         0x00000000c000303a        0x2 
- .rodata        0x00000000c000303c      0x25d build/interrupt.o
- .rodata        0x00000000c0003299       0x21 build/timer.o
- .rodata        0x00000000c00032ba       0x3c build/debug.o
- .rodata        0x00000000c00032f6       0xbb build/string.o
- *fill*         0x00000000c00033b1        0x3 
- .rodata        0x00000000c00033b4       0x70 build/bitmap.o
- .rodata        0x00000000c0003424      0x144 build/memory.o
+ .rodata        0x00000000c000303c      0x25d Qiusuo/build/interrupt.o
+ .rodata        0x00000000c0003299       0x21 Qiusuo/build/timer.o
+ .rodata        0x00000000c00032ba       0x3c Qiusuo/build/debug.o
+ .rodata        0x00000000c00032f6       0xc2 Qiusuo/build/string.o
+ .rodata        0x00000000c00033b8       0x74 Qiusuo/build/bitmap.o
+ .rodata        0x00000000c000342c      0x14c Qiusuo/build/memory.o
 
 .rodata1
  *(.rodata1)
@@ -193,22 +192,22 @@ LOAD build/memory.o
  *(.eh_frame_hdr)
  *(.eh_frame_entry .eh_frame_entry.*)
 
-.eh_frame       0x00000000c0003568      0x538
+.eh_frame       0x00000000c0003578      0x538
  *(.eh_frame)
- .eh_frame      0x00000000c0003568       0x34 build/main.o
- .eh_frame      0x00000000c000359c       0x20 build/init.o
+ .eh_frame      0x00000000c0003578       0x34 Qiusuo/build/main.o
+ .eh_frame      0x00000000c00035ac       0x20 Qiusuo/build/init.o
                                          0x38 (松开之前的大小)
- .eh_frame      0x00000000c00035bc      0x168 build/interrupt.o
+ .eh_frame      0x00000000c00035cc      0x168 Qiusuo/build/interrupt.o
                                         0x180 (松开之前的大小)
- .eh_frame      0x00000000c0003724       0x6c build/timer.o
+ .eh_frame      0x00000000c0003734       0x6c Qiusuo/build/timer.o
                                          0x84 (松开之前的大小)
- .eh_frame      0x00000000c0003790       0x1c build/debug.o
+ .eh_frame      0x00000000c00037a0       0x1c Qiusuo/build/debug.o
                                          0x34 (松开之前的大小)
- .eh_frame      0x00000000c00037ac      0x140 build/string.o
+ .eh_frame      0x00000000c00037bc      0x140 Qiusuo/build/string.o
                                         0x158 (松开之前的大小)
- .eh_frame      0x00000000c00038ec       0x94 build/bitmap.o
+ .eh_frame      0x00000000c00038fc       0x94 Qiusuo/build/bitmap.o
                                          0xac (松开之前的大小)
- .eh_frame      0x00000000c0003980      0x120 build/memory.o
+ .eh_frame      0x00000000c0003990      0x120 Qiusuo/build/memory.o
                                         0x138 (松开之前的大小)
  *(.eh_frame.*)
 
@@ -286,29 +285,29 @@ LOAD build/memory.o
 
 .got            0x00000000c0005000        0x0
  *(.got)
- .got           0x00000000c0005000        0x0 build/main.o
+ .got           0x00000000c0005000        0x0 Qiusuo/build/main.o
  *(.igot)
                 0x00000000c0005000                . = DATA_SEGMENT_RELRO_END (., (SIZEOF (.got.plt) >= 0xc)?0xc:0x0)
 
 .got.plt        0x00000000c0005000        0x0
  *(.got.plt)
- .got.plt       0x00000000c0005000        0x0 build/main.o
+ .got.plt       0x00000000c0005000        0x0 Qiusuo/build/main.o
  *(.igot.plt)
- .igot.plt      0x00000000c0005000        0x0 build/main.o
+ .igot.plt      0x00000000c0005000        0x0 Qiusuo/build/main.o
 
 .data           0x00000000c0005000       0x8c
  *(.data .data.* .gnu.linkonce.d.*)
- .data          0x00000000c0005000        0x0 build/main.o
- .data          0x00000000c0005000        0x0 build/init.o
- .data          0x00000000c0005000        0x0 build/interrupt.o
- .data          0x00000000c0005000        0x0 build/timer.o
- .data          0x00000000c0005000       0x84 build/kernel.o
+ .data          0x00000000c0005000        0x0 Qiusuo/build/main.o
+ .data          0x00000000c0005000        0x0 Qiusuo/build/init.o
+ .data          0x00000000c0005000        0x0 Qiusuo/build/interrupt.o
+ .data          0x00000000c0005000        0x0 Qiusuo/build/timer.o
+ .data          0x00000000c0005000       0x84 Qiusuo/build/kernel.o
                 0x00000000c0005000                intr_entry_table
- .data          0x00000000c0005084        0x8 build/print.o
- .data          0x00000000c000508c        0x0 build/debug.o
- .data          0x00000000c000508c        0x0 build/string.o
- .data          0x00000000c000508c        0x0 build/bitmap.o
- .data          0x00000000c000508c        0x0 build/memory.o
+ .data          0x00000000c0005084        0x8 Qiusuo/build/print.o
+ .data          0x00000000c000508c        0x0 Qiusuo/build/debug.o
+ .data          0x00000000c000508c        0x0 Qiusuo/build/string.o
+ .data          0x00000000c000508c        0x0 Qiusuo/build/bitmap.o
+ .data          0x00000000c000508c        0x0 Qiusuo/build/memory.o
 
 .data1
  *(.data1)
@@ -320,20 +319,20 @@ LOAD build/memory.o
 .bss            0x00000000c00050a0      0x270
  *(.dynbss)
  *(.bss .bss.* .gnu.linkonce.b.*)
- .bss           0x00000000c00050a0        0x0 build/main.o
- .bss           0x00000000c00050a0        0x0 build/init.o
- .bss           0x00000000c00050a0      0x108 build/interrupt.o
- .bss           0x00000000c00051a8        0x0 build/timer.o
- .bss           0x00000000c00051a8        0x0 build/debug.o
- .bss           0x00000000c00051a8        0x0 build/string.o
- .bss           0x00000000c00051a8        0x0 build/bitmap.o
- .bss           0x00000000c00051a8        0x0 build/memory.o
+ .bss           0x00000000c00050a0        0x0 Qiusuo/build/main.o
+ .bss           0x00000000c00050a0        0x0 Qiusuo/build/init.o
+ .bss           0x00000000c00050a0      0x108 Qiusuo/build/interrupt.o
+ .bss           0x00000000c00051a8        0x0 Qiusuo/build/timer.o
+ .bss           0x00000000c00051a8        0x0 Qiusuo/build/debug.o
+ .bss           0x00000000c00051a8        0x0 Qiusuo/build/string.o
+ .bss           0x00000000c00051a8        0x0 Qiusuo/build/bitmap.o
+ .bss           0x00000000c00051a8        0x0 Qiusuo/build/memory.o
  *(COMMON)
  *fill*         0x00000000c00051a8       0x18 
- COMMON         0x00000000c00051c0      0x124 build/interrupt.o
+ COMMON         0x00000000c00051c0      0x124 Qiusuo/build/interrupt.o
                 0x00000000c00051c0                intr_name
                 0x00000000c0005260                idt_table
- COMMON         0x00000000c00052e4       0x2c build/memory.o
+ COMMON         0x00000000c00052e4       0x2c Qiusuo/build/memory.o
                 0x00000000c00052e4                kernel_vaddr_pool
                 0x00000000c00052f0                user_pool
                 0x00000000c0005300                kernel_pool
@@ -365,15 +364,15 @@ LOAD build/memory.o
 
 .comment        0x0000000000000000       0x23
  *(.comment)
- .comment       0x0000000000000000       0x23 build/main.o
+ .comment       0x0000000000000000       0x23 Qiusuo/build/main.o
                                          0x24 (松开之前的大小)
- .comment       0x0000000000000023       0x24 build/init.o
- .comment       0x0000000000000023       0x24 build/interrupt.o
- .comment       0x0000000000000023       0x24 build/timer.o
- .comment       0x0000000000000023       0x24 build/debug.o
- .comment       0x0000000000000023       0x24 build/string.o
- .comment       0x0000000000000023       0x24 build/bitmap.o
- .comment       0x0000000000000023       0x24 build/memory.o
+ .comment       0x0000000000000023       0x24 Qiusuo/build/init.o
+ .comment       0x0000000000000023       0x24 Qiusuo/build/interrupt.o
+ .comment       0x0000000000000023       0x24 Qiusuo/build/timer.o
+ .comment       0x0000000000000023       0x24 Qiusuo/build/debug.o
+ .comment       0x0000000000000023       0x24 Qiusuo/build/string.o
+ .comment       0x0000000000000023       0x24 Qiusuo/build/bitmap.o
+ .comment       0x0000000000000023       0x24 Qiusuo/build/memory.o
 
 .gnu.build.attributes
  *(.gnu.build.attributes .gnu.build.attributes.*)
@@ -448,4 +447,4 @@ LOAD build/memory.o
  *(.note.GNU-stack)
  *(.gnu_debuglink)
  *(.gnu.lto_*)
-OUTPUT(build/kernel.bin elf32-i386)
+OUTPUT(Qiusuo/build/kernel.bin elf32-i386)
