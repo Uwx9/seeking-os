@@ -11,7 +11,7 @@
 ## 安装指南
 
 ### 前置条件
-
+  项目文件夹得放在桌面才ok，我还不会用configure，请见谅。
 - 安装Bochs虚拟机（Windows/Linux/macOS）。
 - 安装GCC编译器（Linux推荐使用`sudo apt-get install build-essential`安装）。
 - 安装Make工具（Linux推荐使用`sudo apt-get install make`安装）。
