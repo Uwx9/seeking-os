@@ -105,7 +105,7 @@ static void page_table_add(void* _vaddr, void* _page_phyaddr)
         }
     } else {    // 页目录项不存在，所以要先创建页目录再创建页表项
         /* 页表中用到的页框一律从内核空间分配 */
-        uint32_t pt_phyaddr = palloc(&kernel_pool);
+        uint32_t pt_phyaddr = (uint32_t)palloc(&kernel_pool);
         *pde = pt_phyaddr | PG_US_U | PG_RW_W | PG_P_1;
 
         /* 把刚申请的的页表清空 */
@@ -131,7 +131,7 @@ void* malloc_page(enum pool_flags pf, uint32_t pg_cnt)
     if (vaddr_start == NULL) {
         return NULL;
     }
-    uint32_t vaddr = vaddr_start, cnt = pg_cnt;
+    uint32_t vaddr = (uint32_t)vaddr_start, cnt = pg_cnt;
     struct pool* mem_pool = pf & PF_KERNEL ? &kernel_pool : &user_pool;
 
     /* 因为虚拟地址是连续的，但物理地址可以是不连续的，所以逐个做映射*/

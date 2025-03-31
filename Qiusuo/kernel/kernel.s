@@ -11,7 +11,7 @@ intr_entry_table:		    ;中断入口地址数组,不仅作为入口会跳转到�
 
 %macro VECTOR 2
 section .text
-intr%1entry:               ;每个中断处理程序都要压入中断向量号,所以一个中断类型一个中断处理程序
+intr%1entry:                ;每个中断处理程序都要压入中断向量号,所以一个中断类型一个中断处理程序
     %2					    ;ZERO宏是push 0，中断若有错误码会压在eip后面
 
     ;以下是保存上下文(c调用汇编)，无特权级变化时eflags，cs，eip，error_code自动压栈
@@ -32,7 +32,7 @@ intr%1entry:               ;每个中断处理程序都要压入中断向量号,
     jmp intr_exit
 
 section .data
-    dd intr%1entry
+    dd intr%1entry			;定义一个32位数据，存储intr%1entry的值，是该标号的地址
 
 %endmacro
 

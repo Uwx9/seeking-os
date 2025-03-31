@@ -3,6 +3,7 @@
 #include "interrupt.h"
 #include "../device/timer.h"
 #include "memory.h"
+#include "thread.h"
 
 /* 初始化所有模块 */
 void init_all()
@@ -11,4 +12,5 @@ void init_all()
     idt_init();
     timer_init();
     mem_init();
+	thread_init();	
 }
