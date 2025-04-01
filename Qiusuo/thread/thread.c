@@ -112,6 +112,15 @@ static void make_main_thread(void)
 	list_append(&thread_all_list, &main_thread->all_list_tag);
 }
 
+void show_schedule_message(struct task* cur, struct task* next)
+{
+	put_str("Scheduling from ");
+	put_str(cur->name);
+	put_str(" to ");
+	put_str(next->name);
+	put_str("\n");	
+}
+
 /* 实现任务调度 */
 void schedule()
 {
@@ -134,15 +143,39 @@ void schedule()
 /* 拿到新的PCB的地址 */
 	struct task* next = elem2entry(struct task, general_tag, thread_tag);
 	next->status = TASK_RUNNING;
-	put_str("Scheduling from ");
-	put_str(cur->name);
-	put_str(" to ");
-	put_str(next->name);
-	put_str("\n");
 
 	switch_to(cur, next);
 
 }
+
+/* 当前线程将自己阻塞，标志其状态为stat. */ 
+void thread_block(enum task_status statu)
+{
+	ASSERT(statu == TASK_BLOCKED || statu == TASK_HANGING || statu == TASK_WAITING);
+	enum intr_status old_status = intr_disable();
+	struct task* cur_thread = running_thread();
+	cur_thread->status = statu;
+	schedule();
+/* 待当前线程被解除阻塞后才继续运行下面的intr_set_status */
+	intr_set_status(old_status);
+}
+
+/* 将线程pthread解除阻塞 */
+void thread_unblock(struct task* pthread)
+{
+	enum intr_status old_status = intr_disable();
+	ASSERT(pthread->status == TASK_BLOCKED || pthread->status == TASK_HANGING || pthread->status == TASK_WAITING);
+	if (pthread->status != TASK_READY) {
+		ASSERT(!elem_find(&thread_ready_list, &pthread->general_tag));
+		if (elem_find(&thread_ready_list, &pthread->general_tag)) {
+			PANIC("thread unblock, blocked_thread in ready_list\n");
+		}
+		list_push(&thread_ready_list, &pthread->general_tag);
+		pthread->status = TASK_READY;
+	}
+	intr_set_status(old_status);
+}
+
 
 /* 初始化线程环境 */
 void thread_init(void)

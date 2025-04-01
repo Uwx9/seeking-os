@@ -35,7 +35,6 @@ static void frequency_set(uint8_t counter_port,
 /* 时钟的中断处理函数 */
 static void intr_timer_handler(void)
 {
-	put_str("\ntime interrupt occur \n");
 	struct task* cur_thread = running_thread();
 	ASSERT(cur_thread->stack_magic == 0x20050608);
 	cur_thread->elapsed_ticks++;		//记录此线程占用的cpu时间

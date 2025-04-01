@@ -16,15 +16,15 @@ OBJS = $(BUILD_DIR)/main.o 		$(BUILD_DIR)/init.o 	$(BUILD_DIR)/interrupt.o	\
 	   $(BUILD_DIR)/timer.o		$(BUILD_DIR)/kernel.o	$(BUILD_DIR)/print.o 	 	\
 	   $(BUILD_DIR)/debug.o		$(BUILD_DIR)/string.o 	$(BUILD_DIR)/bitmap.o 		\
 	   $(BUILD_DIR)/memory.o 	$(BUILD_DIR)/list.o		$(BUILD_DIR)/thread.o 		\
-	   $(BUILD_DIR)/switch.o
+	   $(BUILD_DIR)/switch.o	$(BUILD_DIR)/console.o 	$(BUILD_DIR)/sync.o 
 	   
 ########################         C代码编译        ########################
 $(BUILD_DIR)/main.o: Qiusuo/kernel/main.c Qiusuo/kernel/debug.h Qiusuo/kernel/init.h	Qiusuo/thread/thread.h	\
-	Qiusuo/lib/stdint.h  Qiusuo/lib/kernel/print.h Qiusuo/lib/kernel/list.h
+	Qiusuo/lib/stdint.h  Qiusuo/lib/kernel/print.h Qiusuo/lib/kernel/list.h Qiusuo/device/console.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
 $(BUILD_DIR)/init.o: Qiusuo/kernel/init.c Qiusuo/kernel/init.h Qiusuo/kernel/interrupt.h  Qiusuo/device/timer.h		\
-	Qiusuo/lib/stdint.h
+	Qiusuo/lib/stdint.h Qiusuo/device/console.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
 $(BUILD_DIR)/interrupt.o: Qiusuo/kernel/interrupt.c Qiusuo/kernel/interrupt.h Qiusuo/kernel/global.h		\
@@ -57,6 +57,13 @@ $(BUILD_DIR)/list.o: Qiusuo/lib/kernel/list.c Qiusuo/lib/kernel/list.h Qiusuo/ke
 	
 $(BUILD_DIR)/thread.o: Qiusuo/thread/thread.c Qiusuo/thread/thread.h Qiusuo/lib/string.h Qiusuo/kernel/global.h 	\
 	Qiusuo/lib/stdint.h Qiusuo/kernel/memory.h Qiusuo/kernel/interrupt.h Qiusuo/lib/kernel/print.h Qiusuo/kernel/debug.h	
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(BUILD_DIR)/console.o: Qiusuo/device/console.c Qiusuo/device/console.h Qiusuo/lib/kernel/print.h Qiusuo/thread/thread.h Qiusuo/lib/stdint.h	\
+	Qiusuo/thread/sync.h 
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(BUILD_DIR)/sync.o: Qiusuo/thread/sync.c Qiusuo/thread/sync.h Qiusuo/kernel/interrupt.h Qiusuo/kernel/debug.h Qiusuo/thread/thread.h  
 	$(CC) $(CFLAGS) -o $@ $<
 
 ########################         汇编代码编译        ########################

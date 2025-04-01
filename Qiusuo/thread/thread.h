@@ -91,11 +91,14 @@ struct task {
 
 	uint32_t stack_magic;
 };
-
-void thread_create(struct task* pthread, thread_func* function, void* func_arg);
 struct task* running_thread(void);
-void thread_init(void);
-void schedule(void);
+void thread_create(struct task* pthread, thread_func* function, void* func_arg);
 void init_task(struct task* pthread, char* name, int prio);
 struct task* thread_start(char* name, int prio, thread_func function, void* func_arg);
+void show_schedule_message(struct task* cur, struct task* next);
+void schedule(void);
+void thread_block(enum task_status statu);
+void thread_unblock(struct task* pthread);
+void thread_init(void);
+
 #endif

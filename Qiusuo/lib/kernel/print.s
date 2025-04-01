@@ -100,7 +100,7 @@ put_char:
     jmp .set_cursor_asm
 	
 .put_other:
-	shl bx,1
+	shl bx,1					;光标的位置*2得到字符位置
 	mov byte [gs:bx],cl			;写入字符asc码
 	inc bx
 	mov byte [gs:bx],0x7

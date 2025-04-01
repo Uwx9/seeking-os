@@ -4,8 +4,8 @@
 #include "interrupt.h"
 #include "memory.h"
 #include "list.h"
+#include "console.h"
 
-extern struct list thread_ready_list;
 void k_thread_a(void*);
 void k_thread_b(void*);
 
@@ -19,7 +19,7 @@ int main(void)
 	intr_enable();
 	
 	while (1) {
-		put_str("main ");
+		console_put_str("main ");
 	}
 	return 0;
 }
@@ -28,7 +28,7 @@ void k_thread_a(void* arg)
 {
 	char* parg = arg;
 	while (1) {
-		put_str(parg);
+		console_put_str(parg);
 	}
 }
 
@@ -36,6 +36,6 @@ void k_thread_b(void* arg)
 {
 	char* parg = arg;
 	while (1) {
-		put_str(parg);
+		console_put_str(parg);
 	}
 }
