@@ -22,6 +22,6 @@ void lock_init(struct lock* plock);
 void sema_down(struct semaphore* psem);
 void sema_up(struct semaphore* psem);
 void lock_acquire(struct lock* plock);
-void lock_realse(struct lock* plock);
+void lock_release(struct lock* plock);
 
 #endif

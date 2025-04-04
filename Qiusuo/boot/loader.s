@@ -149,7 +149,7 @@ p_mode_start:
 ; -------------------------   加载 kernel  ---------------------- 
 	mov eax, KERNEL_START_SECTOR  		;kernel.bin 所在的扇区号 
     mov ebx, KERNEL_BIN_BASE_ADDR 		;从磁盘读出后，写入到 ebx 指定的地址 
-    mov ecx, 200                   		;读入的扇区数
+    mov ecx, 300                   		;读入的扇区数
 	call rd_disk_m_32
 
 ;---------------------- 启动分页 ---------------------
@@ -195,7 +195,7 @@ kernel_init:
 	mov cx,[KERNEL_BIN_BASE_ADDR + 44]
 
 .each_segment:
-	cmp dword [ebx],0				;比较程序头表p_type,0表示忽略
+	cmp dword [ebx], PT_NULL		;比较程序头表p_type,0表示忽略
 	je .PTNULL
 
 ;为函数memcpy压入参数，参数是从右往左依然压入,函数原型类似于 memcpy（dst，src，size）

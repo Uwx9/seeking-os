@@ -9,7 +9,7 @@
 #define PIC_S_CTRL 0xa0     // 从片的控制端口是0xa0
 #define PIC_S_DATA 0xa1     // 从片的数据端口是0xa1
 
-#define IDT_DESC_CNT 0x21   //当前总的支持的中断数
+#define IDT_DESC_CNT 0x30   //当前总的支持的中断数
 
 #define EFLAGS_IF 0x00000200
 #define GET_EFLAGS(EFLAGS_VAR) asm volatile ("pushfl; popl %0" : "=g"(EFLAGS_VAR))
@@ -27,12 +27,12 @@ static struct gate_desc idt[IDT_DESC_CNT];				//中断门描述符数组
 char* intr_name[IDT_DESC_CNT];							//用于保存异常的名字
 
 /* 定义中断处理程序数组，在kernel.S中定义的intrXXentry
- * 只是中断处理程序的入口(做了一些准备工作)，然后call idt_table中的元素
- * 最终调用的是idt_table中的处理程序(地址)，
+ * 只是中断处理程序的入口(做了一些准备工作)，然后call idt_func_table中的元素
+ * 最终调用的是idt_func_table中的处理程序(地址)，
  * 中断来了后先在idt[]中断描述符表中找到对应中断
  * 然后跳转中断处理函数intrXXentry(处理器会自动压栈一些寄存器和error_code)
- * 此为入口，进入后调用的是idt_table中的处理程序*/
-intr_handler idt_table[IDT_DESC_CNT];					
+ * 此为入口，进入后调用的是idt_func_table中的处理程序*/
+intr_handler idt_func_table[IDT_DESC_CNT];					
 extern intr_handler intr_entry_table[IDT_DESC_CNT];	//声明引用定义在kernel.s,中断处理函数入口数组
 
 /* 初始化可编程中断控制器8259A
@@ -54,7 +54,7 @@ static void pic_init(void)
 	outb(PIC_S_DATA, 0x01);		// ICW4: 8086模式, 正常EOI
 
 	/*打开主片上IR0,也就是目前只接受时钟产生的中断*/
-	outb(PIC_M_DATA, 0xfe);
+	outb(PIC_M_DATA, 0xfc);
 	outb(PIC_S_DATA, 0xff);	
 
 	put_str("	pic_init done\n");
@@ -122,11 +122,11 @@ static void exception_init(void)
 {
 	int i;
 	for (i = 0; i < IDT_DESC_CNT; i++) {
-/* idt_table 数组中的函数是在进入中断后根据中断向量号调用的
- * 见kernel/kernel.s的call [idt_table + %1*4]
+/* idt_func_table 数组中的函数是在进入中断后根据中断向量号调用的
+ * 见kernel/kernel.s的call [idt_func_table + %1*4]
  * 默认为general_intr_handler以后会由
  * register_handler来注册具体处理函数*/
-		idt_table[i] = general_intr_handler;
+		idt_func_table[i] = general_intr_handler;
 		intr_name[i] = "unknown";		//先统一赋值为unknown,保证intr_name[20～32]不指空
 	}
 	intr_name[0] = "#DE Divide Error";						//除法错误
@@ -154,8 +154,8 @@ static void exception_init(void)
 /* 在中断处理程序数组第vector_no个元素中注册安装中断处理程序function */
 void register_handler(uint8_t vector_no, intr_handler function)
 {
-	/* idt_table 数组中的函数是在进入中断后根据中断向量号调用的的call [idt_table + %1*4] */
-	idt_table[vector_no] = function;
+	/* idt_func_table 数组中的函数是在进入中断后根据中断向量号调用的的call [idt_func_table + %1*4] */
+	idt_func_table[vector_no] = function;
 }
 
 /* 开中断并返回开中断前的状态*/

@@ -2,14 +2,15 @@
 分配公共符号
 公共符号            大小              文件
 
+idt_func_table      0xc0              build_gdb/interrupt.o
+kbd_buf             0x6c              build_gdb/keyboard.o
 thread_ready_list   0x10              build_gdb/thread.o
 kernel_vaddr_pool   0xc               build_gdb/memory.o
 thread_all_list     0x10              build_gdb/thread.o
 user_pool           0x10              build_gdb/memory.o
-intr_name           0x84              build_gdb/interrupt.o
+intr_name           0xc0              build_gdb/interrupt.o
 main_thread         0x4               build_gdb/thread.o
 ticks               0x4               build_gdb/timer.o
-idt_table           0x84              build_gdb/interrupt.o
 kernel_pool         0x10              build_gdb/memory.o
 
 舍弃的输入节
@@ -38,6 +39,10 @@ kernel_pool         0x10              build_gdb/memory.o
                 0x0000000000000000        0x0 build_gdb/console.o
  .note.GNU-stack
                 0x0000000000000000        0x0 build_gdb/sync.o
+ .note.GNU-stack
+                0x0000000000000000        0x0 build_gdb/keyboard.o
+ .note.GNU-stack
+                0x0000000000000000        0x0 build_gdb/ioqueue.o
 
 内存配置
 
@@ -62,6 +67,8 @@ LOAD build_gdb/thread.o
 LOAD build_gdb/switch.o
 LOAD build_gdb/console.o
 LOAD build_gdb/sync.o
+LOAD build_gdb/keyboard.o
+LOAD build_gdb/ioqueue.o
                 [!provide]                        PROVIDE (__executable_start = SEGMENT_START ("text-segment", 0x8048000))
                 0x00000000080480d4                . = (SEGMENT_START ("text-segment", 0x8048000) + SIZEOF_HEADERS)
 
@@ -131,98 +138,106 @@ LOAD build_gdb/sync.o
 .plt.sec
  *(.plt.sec)
 
-.text           0x00000000c0001500     0x24d6
+.text           0x00000000c0001500     0x2bd8
  *(.text.unlikely .text.*_unlikely .text.unlikely.*)
  *(.text.exit .text.exit.*)
  *(.text.startup .text.startup.*)
  *(.text.hot .text.hot.*)
  *(SORT_BY_NAME(.text.sorted.*))
  *(.text .stub .text.* .gnu.linkonce.t.*)
- .text          0x00000000c0001500       0xa7 build_gdb/main.o
+ .text          0x00000000c0001500       0x53 build_gdb/main.o
                 0x00000000c0001500                main
-                0x00000000c0001575                k_thread_a
-                0x00000000c000158e                k_thread_b
- .text          0x00000000c00015a7       0x2d build_gdb/init.o
-                0x00000000c00015a7                init_all
- .text          0x00000000c00015d4      0x44f build_gdb/interrupt.o
-                0x00000000c0001912                register_handler
-                0x00000000c000192e                intr_enable
-                0x00000000c0001957                intr_disable
-                0x00000000c000197f                intr_get_status
-                0x00000000c00019a3                intr_set_status
-                0x00000000c00019c1                idt_init
- .text          0x00000000c0001a23      0x18e build_gdb/timer.o
-                0x00000000c0001b51                timer_init
- *fill*         0x00000000c0001bb1        0xf 
- .text          0x00000000c0001bc0      0x39d build_gdb/kernel.o
-                0x00000000c0001bc0                intr_exit
- *fill*         0x00000000c0001f5d        0x3 
- .text          0x00000000c0001f60      0x172 build_gdb/print.o
-                0x00000000c0001f60                set_cursor
-                0x00000000c0001f84                put_str
-                0x00000000c0001fa2                put_char
-                0x00000000c000206f                put_int
- .text          0x00000000c00020d2       0xa5 build_gdb/debug.o
-                0x00000000c00020d2                panic_spin
- .text          0x00000000c0002177      0x445 build_gdb/string.o
-                0x00000000c0002177                memset
-                0x00000000c00021d3                memcpy
-                0x00000000c000223f                memcmp
-                0x00000000c00022cf                strcpy
-                0x00000000c0002331                strlen
-                0x00000000c0002387                strcmp
-                0x00000000c000240a                strchr
-                0x00000000c000246f                strrchr
-                0x00000000c00024d8                strcat
-                0x00000000c000254f                strchrs
- .text          0x00000000c00025bc      0x296 build_gdb/bitmap.o
-                0x00000000c00025bc                bitmap_init
-                0x00000000c00025e3                bitmap_scan_test
-                0x00000000c0002623                bitmap_scan
-                0x00000000c0002797                bitmap_set
- .text          0x00000000c0002852      0x56f build_gdb/memory.o
-                0x00000000c0002abb                malloc_page
-                0x00000000c0002b85                get_kernel_pages
-                0x00000000c0002d75                mem_init
- .text          0x00000000c0002dc1      0x242 build_gdb/list.o
-                0x00000000c0002dc1                list_init
-                0x00000000c0002dee                list_insert_before
-                0x00000000c0002e2f                list_push
-                0x00000000c0002e4c                list_append
-                0x00000000c0002e69                list_remove
-                0x00000000c0002e9f                ready_tasks_num
-                0x00000000c0002ee8                list_pop
-                0x00000000c0002f1d                elem_find
-                0x00000000c0002f58                list_traversal
-                0x00000000c0002fb5                list_len
-                0x00000000c0002fea                list_empty
- .text          0x00000000c0003003      0x5d8 build_gdb/thread.o
-                0x00000000c0003003                running_thread
-                0x00000000c0003030                thread_create
-                0x00000000c00030a6                init_task
-                0x00000000c0003141                thread_start
-                0x00000000c00032bc                show_schedule_message
-                0x00000000c0003304                schedule
-                0x00000000c000342c                thread_block
-                0x00000000c0003493                thread_unblock
-                0x00000000c000359e                thread_init
- *fill*         0x00000000c00035db        0x5 
- .text          0x00000000c00035e0       0x15 build_gdb/switch.o
-                0x00000000c00035e0                switch_to
- .text          0x00000000c00035f5       0x9a build_gdb/console.o
-                0x00000000c00035f5                console_init
-                0x00000000c0003609                console_acquire
-                0x00000000c000361d                console_realse
-                0x00000000c0003631                console_put_str
-                0x00000000c000364e                console_put_char
-                0x00000000c0003672                console_put_int
- .text          0x00000000c000368f      0x347 build_gdb/sync.o
-                0x00000000c000368f                sema_init
-                0x00000000c00036b4                lock_init
-                0x00000000c00036e5                sema_down
-                0x00000000c00037f9                sema_up
-                0x00000000c00038af                lock_acquire
-                0x00000000c000392b                lock_realse
+                0x00000000c0001521                k_thread_a
+                0x00000000c000153a                k_thread_b
+ .text          0x00000000c0001553       0x32 build_gdb/init.o
+                0x00000000c0001553                init_all
+ .text          0x00000000c0001585      0x44f build_gdb/interrupt.o
+                0x00000000c00018c3                register_handler
+                0x00000000c00018df                intr_enable
+                0x00000000c0001908                intr_disable
+                0x00000000c0001930                intr_get_status
+                0x00000000c0001954                intr_set_status
+                0x00000000c0001972                idt_init
+ .text          0x00000000c00019d4      0x18e build_gdb/timer.o
+                0x00000000c0001b02                timer_init
+ *fill*         0x00000000c0001b62        0xe 
+ .text          0x00000000c0001b70      0x541 build_gdb/kernel.o
+                0x00000000c0001b70                intr_exit
+ *fill*         0x00000000c00020b1        0xf 
+ .text          0x00000000c00020c0      0x172 build_gdb/print.o
+                0x00000000c00020c0                set_cursor
+                0x00000000c00020e4                put_str
+                0x00000000c0002102                put_char
+                0x00000000c00021cf                put_int
+ .text          0x00000000c0002232       0xa5 build_gdb/debug.o
+                0x00000000c0002232                panic_spin
+ .text          0x00000000c00022d7      0x445 build_gdb/string.o
+                0x00000000c00022d7                memset
+                0x00000000c0002333                memcpy
+                0x00000000c000239f                memcmp
+                0x00000000c000242f                strcpy
+                0x00000000c0002491                strlen
+                0x00000000c00024e7                strcmp
+                0x00000000c000256a                strchr
+                0x00000000c00025cf                strrchr
+                0x00000000c0002638                strcat
+                0x00000000c00026af                strchrs
+ .text          0x00000000c000271c      0x296 build_gdb/bitmap.o
+                0x00000000c000271c                bitmap_init
+                0x00000000c0002743                bitmap_scan_test
+                0x00000000c0002783                bitmap_scan
+                0x00000000c00028f7                bitmap_set
+ .text          0x00000000c00029b2      0x56f build_gdb/memory.o
+                0x00000000c0002c1b                malloc_page
+                0x00000000c0002ce5                get_kernel_pages
+                0x00000000c0002ed5                mem_init
+ .text          0x00000000c0002f21      0x242 build_gdb/list.o
+                0x00000000c0002f21                list_init
+                0x00000000c0002f4e                list_insert_before
+                0x00000000c0002f8f                list_push
+                0x00000000c0002fac                list_append
+                0x00000000c0002fc9                list_remove
+                0x00000000c0002fff                ready_tasks_num
+                0x00000000c0003048                list_pop
+                0x00000000c000307d                elem_find
+                0x00000000c00030b8                list_traversal
+                0x00000000c0003115                list_len
+                0x00000000c000314a                list_empty
+ .text          0x00000000c0003163      0x5d8 build_gdb/thread.o
+                0x00000000c0003163                running_thread
+                0x00000000c0003190                thread_create
+                0x00000000c0003206                init_task
+                0x00000000c00032a1                thread_start
+                0x00000000c000341c                show_schedule_message
+                0x00000000c0003464                schedule
+                0x00000000c000358c                thread_block
+                0x00000000c00035f3                thread_unblock
+                0x00000000c00036fe                thread_init
+ *fill*         0x00000000c000373b        0x5 
+ .text          0x00000000c0003740       0x15 build_gdb/switch.o
+                0x00000000c0003740                switch_to
+ .text          0x00000000c0003755       0x9a build_gdb/console.o
+                0x00000000c0003755                console_init
+                0x00000000c0003769                console_acquire
+                0x00000000c000377d                console_realse
+                0x00000000c0003791                console_put_str
+                0x00000000c00037ae                console_put_char
+                0x00000000c00037d2                console_put_int
+ .text          0x00000000c00037ef      0x347 build_gdb/sync.o
+                0x00000000c00037ef                sema_init
+                0x00000000c0003814                lock_init
+                0x00000000c0003845                sema_down
+                0x00000000c0003959                sema_up
+                0x00000000c0003a0f                lock_acquire
+                0x00000000c0003a8b                lock_release
+ .text          0x00000000c0003b36      0x2c1 build_gdb/keyboard.o
+                0x00000000c0003db7                keyboard_init
+ .text          0x00000000c0003df7      0x2e1 build_gdb/ioqueue.o
+                0x00000000c0003df7                ioqueue_init
+                0x00000000c0003e44                ioq_full
+                0x00000000c0003e95                ioq_empty
+                0x00000000c0003f7c                ioq_getchar
+                0x00000000c0004029                ioq_putchar
  *(.gnu.warning)
 
 .fini
@@ -230,26 +245,29 @@ LOAD build_gdb/sync.o
                 [!provide]                        PROVIDE (__etext = .)
                 [!provide]                        PROVIDE (_etext = .)
                 [!provide]                        PROVIDE (etext = .)
-                0x00000000c0004000                . = ALIGN (CONSTANT (MAXPAGESIZE))
-                0x00000000c0004000                . = SEGMENT_START ("rodata-segment", (ALIGN (CONSTANT (MAXPAGESIZE)) + (. & (CONSTANT (MAXPAGESIZE) - 0x1))))
+                0x00000000c0005000                . = ALIGN (CONSTANT (MAXPAGESIZE))
+                0x00000000c0005000                . = SEGMENT_START ("rodata-segment", (ALIGN (CONSTANT (MAXPAGESIZE)) + (. & (CONSTANT (MAXPAGESIZE) - 0x1))))
 
-.rodata         0x00000000c0004000      0xa26
+.rodata         0x00000000c0005000      0xad1
  *(.rodata .rodata.* .gnu.linkonce.r.*)
- .rodata        0x00000000c0004000       0x37 build_gdb/main.o
- .rodata        0x00000000c0004037        0xa build_gdb/init.o
- *fill*         0x00000000c0004041        0x3 
- .rodata        0x00000000c0004044      0x2c9 build_gdb/interrupt.o
- *fill*         0x00000000c000430d        0x3 
- .rodata        0x00000000c0004310       0x69 build_gdb/timer.o
- .rodata        0x00000000c0004379       0x3c build_gdb/debug.o
- .rodata        0x00000000c00043b5       0xbb build_gdb/string.o
- .rodata        0x00000000c0004470       0x70 build_gdb/bitmap.o
- .rodata        0x00000000c00044e0      0x144 build_gdb/memory.o
- .rodata        0x00000000c0004624        0xd build_gdb/list.o
- *fill*         0x00000000c0004631        0x3 
- .rodata        0x00000000c0004634      0x2c5 build_gdb/thread.o
- *fill*         0x00000000c00048f9        0x3 
- .rodata        0x00000000c00048fc      0x12a build_gdb/sync.o
+ .rodata        0x00000000c0005000        0xd build_gdb/main.o
+ .rodata        0x00000000c000500d        0xa build_gdb/init.o
+ *fill*         0x00000000c0005017        0x1 
+ .rodata        0x00000000c0005018      0x2c9 build_gdb/interrupt.o
+ *fill*         0x00000000c00052e1        0x3 
+ .rodata        0x00000000c00052e4       0x69 build_gdb/timer.o
+ .rodata        0x00000000c000534d       0x3c build_gdb/debug.o
+ .rodata        0x00000000c0005389       0xbb build_gdb/string.o
+ .rodata        0x00000000c0005444       0x70 build_gdb/bitmap.o
+ .rodata        0x00000000c00054b4      0x144 build_gdb/memory.o
+ .rodata        0x00000000c00055f8        0xd build_gdb/list.o
+ *fill*         0x00000000c0005605        0x3 
+ .rodata        0x00000000c0005608      0x2c6 build_gdb/thread.o
+ *fill*         0x00000000c00058ce        0x2 
+ .rodata        0x00000000c00058d0      0x12b build_gdb/sync.o
+ .rodata        0x00000000c00059fb       0x36 build_gdb/keyboard.o
+ *fill*         0x00000000c0005a31        0x3 
+ .rodata        0x00000000c0005a34       0x9d build_gdb/ioqueue.o
 
 .rodata1
  *(.rodata1)
@@ -258,31 +276,35 @@ LOAD build_gdb/sync.o
  *(.eh_frame_hdr)
  *(.eh_frame_entry .eh_frame_entry.*)
 
-.eh_frame       0x00000000c0004a28      0x9f8
+.eh_frame       0x00000000c0005ad4      0xb58
  *(.eh_frame)
- .eh_frame      0x00000000c0004a28       0x6c build_gdb/main.o
- .eh_frame      0x00000000c0004a94       0x20 build_gdb/init.o
+ .eh_frame      0x00000000c0005ad4       0x6c build_gdb/main.o
+ .eh_frame      0x00000000c0005b40       0x20 build_gdb/init.o
                                          0x38 (松开之前的大小)
- .eh_frame      0x00000000c0004ab4      0x188 build_gdb/interrupt.o
+ .eh_frame      0x00000000c0005b60      0x188 build_gdb/interrupt.o
                                         0x1a0 (松开之前的大小)
- .eh_frame      0x00000000c0004c3c       0x8c build_gdb/timer.o
+ .eh_frame      0x00000000c0005ce8       0x8c build_gdb/timer.o
                                          0xa4 (松开之前的大小)
- .eh_frame      0x00000000c0004cc8       0x1c build_gdb/debug.o
+ .eh_frame      0x00000000c0005d74       0x1c build_gdb/debug.o
                                          0x34 (松开之前的大小)
- .eh_frame      0x00000000c0004ce4      0x140 build_gdb/string.o
+ .eh_frame      0x00000000c0005d90      0x140 build_gdb/string.o
                                         0x158 (松开之前的大小)
- .eh_frame      0x00000000c0004e24       0x94 build_gdb/bitmap.o
+ .eh_frame      0x00000000c0005ed0       0x94 build_gdb/bitmap.o
                                          0xac (松开之前的大小)
- .eh_frame      0x00000000c0004eb8      0x120 build_gdb/memory.o
+ .eh_frame      0x00000000c0005f64      0x120 build_gdb/memory.o
                                         0x138 (松开之前的大小)
- .eh_frame      0x00000000c0004fd8      0x160 build_gdb/list.o
+ .eh_frame      0x00000000c0006084      0x160 build_gdb/list.o
                                         0x178 (松开之前的大小)
- .eh_frame      0x00000000c0005138      0x160 build_gdb/thread.o
+ .eh_frame      0x00000000c00061e4      0x160 build_gdb/thread.o
                                         0x178 (松开之前的大小)
- .eh_frame      0x00000000c0005298       0xc0 build_gdb/console.o
+ .eh_frame      0x00000000c0006344       0xc0 build_gdb/console.o
                                          0xd8 (松开之前的大小)
- .eh_frame      0x00000000c0005358       0xc8 build_gdb/sync.o
+ .eh_frame      0x00000000c0006404       0xc8 build_gdb/sync.o
                                          0xe0 (松开之前的大小)
+ .eh_frame      0x00000000c00064cc       0x60 build_gdb/keyboard.o
+                                         0x78 (松开之前的大小)
+ .eh_frame      0x00000000c000652c      0x100 build_gdb/ioqueue.o
+                                        0x118 (松开之前的大小)
  *(.eh_frame.*)
 
 .gcc_except_table
@@ -293,7 +315,7 @@ LOAD build_gdb/sync.o
 
 .exception_ranges
  *(.exception_ranges*)
-                0x00000000c0007000                . = DATA_SEGMENT_ALIGN (CONSTANT (MAXPAGESIZE), CONSTANT (COMMONPAGESIZE))
+                0x00000000c0008000                . = DATA_SEGMENT_ALIGN (CONSTANT (MAXPAGESIZE), CONSTANT (COMMONPAGESIZE))
 
 .eh_frame
  *(.eh_frame)
@@ -308,7 +330,7 @@ LOAD build_gdb/sync.o
 .exception_ranges
  *(.exception_ranges*)
 
-.tdata          0x00000000c0007000        0x0
+.tdata          0x00000000c0008000        0x0
                 [!provide]                        PROVIDE (__tdata_start = .)
  *(.tdata .tdata.* .gnu.linkonce.td.*)
 
@@ -316,18 +338,18 @@ LOAD build_gdb/sync.o
  *(.tbss .tbss.* .gnu.linkonce.tb.*)
  *(.tcommon)
 
-.preinit_array  0x00000000c0007000        0x0
+.preinit_array  0x00000000c0008000        0x0
                 [!provide]                        PROVIDE (__preinit_array_start = .)
  *(.preinit_array)
                 [!provide]                        PROVIDE (__preinit_array_end = .)
 
-.init_array     0x00000000c0007000        0x0
+.init_array     0x00000000c0008000        0x0
                 [!provide]                        PROVIDE (__init_array_start = .)
  *(SORT_BY_INIT_PRIORITY(.init_array.*) SORT_BY_INIT_PRIORITY(.ctors.*))
  *(.init_array EXCLUDE_FILE(*crtend?.o *crtend.o *crtbegin?.o *crtbegin.o) .ctors)
                 [!provide]                        PROVIDE (__init_array_end = .)
 
-.fini_array     0x00000000c0007000        0x0
+.fini_array     0x00000000c0008000        0x0
                 [!provide]                        PROVIDE (__fini_array_start = .)
  *(SORT_BY_INIT_PRIORITY(.fini_array.*) SORT_BY_INIT_PRIORITY(.dtors.*))
  *(.fini_array EXCLUDE_FILE(*crtend?.o *crtend.o *crtbegin?.o *crtbegin.o) .dtors)
@@ -357,87 +379,95 @@ LOAD build_gdb/sync.o
 .dynamic
  *(.dynamic)
 
-.got            0x00000000c0007000        0x0
+.got            0x00000000c0008000        0x0
  *(.got)
- .got           0x00000000c0007000        0x0 build_gdb/main.o
+ .got           0x00000000c0008000        0x0 build_gdb/main.o
  *(.igot)
-                0x00000000c0007000                . = DATA_SEGMENT_RELRO_END (., (SIZEOF (.got.plt) >= 0xc)?0xc:0x0)
+                0x00000000c0008000                . = DATA_SEGMENT_RELRO_END (., (SIZEOF (.got.plt) >= 0xc)?0xc:0x0)
 
-.got.plt        0x00000000c0007000        0x0
+.got.plt        0x00000000c0008000        0x0
  *(.got.plt)
- .got.plt       0x00000000c0007000        0x0 build_gdb/main.o
+ .got.plt       0x00000000c0008000        0x0 build_gdb/main.o
  *(.igot.plt)
- .igot.plt      0x00000000c0007000        0x0 build_gdb/main.o
+ .igot.plt      0x00000000c0008000        0x0 build_gdb/main.o
 
-.data           0x00000000c0007000       0x8c
+.data           0x00000000c0008000      0x156
  *(.data .data.* .gnu.linkonce.d.*)
- .data          0x00000000c0007000        0x0 build_gdb/main.o
- .data          0x00000000c0007000        0x0 build_gdb/init.o
- .data          0x00000000c0007000        0x0 build_gdb/interrupt.o
- .data          0x00000000c0007000        0x0 build_gdb/timer.o
- .data          0x00000000c0007000       0x84 build_gdb/kernel.o
-                0x00000000c0007000                intr_entry_table
- .data          0x00000000c0007084        0x8 build_gdb/print.o
- .data          0x00000000c000708c        0x0 build_gdb/debug.o
- .data          0x00000000c000708c        0x0 build_gdb/string.o
- .data          0x00000000c000708c        0x0 build_gdb/bitmap.o
- .data          0x00000000c000708c        0x0 build_gdb/memory.o
- .data          0x00000000c000708c        0x0 build_gdb/list.o
- .data          0x00000000c000708c        0x0 build_gdb/thread.o
- .data          0x00000000c000708c        0x0 build_gdb/console.o
- .data          0x00000000c000708c        0x0 build_gdb/sync.o
+ .data          0x00000000c0008000        0x0 build_gdb/main.o
+ .data          0x00000000c0008000        0x0 build_gdb/init.o
+ .data          0x00000000c0008000        0x0 build_gdb/interrupt.o
+ .data          0x00000000c0008000        0x0 build_gdb/timer.o
+ .data          0x00000000c0008000       0xc0 build_gdb/kernel.o
+                0x00000000c0008000                intr_entry_table
+ .data          0x00000000c00080c0        0x8 build_gdb/print.o
+ .data          0x00000000c00080c8        0x0 build_gdb/debug.o
+ .data          0x00000000c00080c8        0x0 build_gdb/string.o
+ .data          0x00000000c00080c8        0x0 build_gdb/bitmap.o
+ .data          0x00000000c00080c8        0x0 build_gdb/memory.o
+ .data          0x00000000c00080c8        0x0 build_gdb/list.o
+ .data          0x00000000c00080c8        0x0 build_gdb/thread.o
+ .data          0x00000000c00080c8        0x0 build_gdb/console.o
+ .data          0x00000000c00080c8        0x0 build_gdb/sync.o
+ *fill*         0x00000000c00080c8       0x18 
+ .data          0x00000000c00080e0       0x76 build_gdb/keyboard.o
+ .data          0x00000000c0008156        0x0 build_gdb/ioqueue.o
 
 .data1
  *(.data1)
-                0x00000000c000708c                _edata = .
+                0x00000000c0008156                _edata = .
                 [!provide]                        PROVIDE (edata = .)
-                0x00000000c000708c                . = .
-                0x00000000c000708c                __bss_start = .
+                0x00000000c0008156                . = .
+                0x00000000c0008156                __bss_start = .
 
-.bss            0x00000000c00070a0      0x2b8
+.bss            0x00000000c0008160      0x40c
  *(.dynbss)
  *(.bss .bss.* .gnu.linkonce.b.*)
- .bss           0x00000000c00070a0        0x0 build_gdb/main.o
- .bss           0x00000000c00070a0        0x0 build_gdb/init.o
- .bss           0x00000000c00070a0      0x108 build_gdb/interrupt.o
- .bss           0x00000000c00071a8        0x0 build_gdb/timer.o
- .bss           0x00000000c00071a8        0x0 build_gdb/debug.o
- .bss           0x00000000c00071a8        0x0 build_gdb/string.o
- .bss           0x00000000c00071a8        0x0 build_gdb/bitmap.o
- .bss           0x00000000c00071a8        0x0 build_gdb/memory.o
- .bss           0x00000000c00071a8        0x0 build_gdb/list.o
- .bss           0x00000000c00071a8        0x4 build_gdb/thread.o
- .bss           0x00000000c00071ac       0x1c build_gdb/console.o
- .bss           0x00000000c00071c8        0x0 build_gdb/sync.o
+ .bss           0x00000000c0008160        0x0 build_gdb/main.o
+ .bss           0x00000000c0008160        0x0 build_gdb/init.o
+ .bss           0x00000000c0008160      0x180 build_gdb/interrupt.o
+ .bss           0x00000000c00082e0        0x0 build_gdb/timer.o
+ .bss           0x00000000c00082e0        0x0 build_gdb/debug.o
+ .bss           0x00000000c00082e0        0x0 build_gdb/string.o
+ .bss           0x00000000c00082e0        0x0 build_gdb/bitmap.o
+ .bss           0x00000000c00082e0        0x0 build_gdb/memory.o
+ .bss           0x00000000c00082e0        0x0 build_gdb/list.o
+ .bss           0x00000000c00082e0        0x4 build_gdb/thread.o
+ .bss           0x00000000c00082e4       0x1c build_gdb/console.o
+ .bss           0x00000000c0008300        0x0 build_gdb/sync.o
+ .bss           0x00000000c0008300       0x14 build_gdb/keyboard.o
+ .bss           0x00000000c0008314        0x0 build_gdb/ioqueue.o
  *(COMMON)
- *fill*         0x00000000c00071c8       0x18 
- COMMON         0x00000000c00071e0      0x124 build_gdb/interrupt.o
-                0x00000000c00071e0                intr_name
-                0x00000000c0007280                idt_table
- COMMON         0x00000000c0007304        0x4 build_gdb/timer.o
-                0x00000000c0007304                ticks
- COMMON         0x00000000c0007308       0x2c build_gdb/memory.o
-                0x00000000c0007308                kernel_vaddr_pool
-                0x00000000c0007314                user_pool
-                0x00000000c0007324                kernel_pool
- COMMON         0x00000000c0007334       0x24 build_gdb/thread.o
-                0x00000000c0007334                thread_ready_list
-                0x00000000c0007344                thread_all_list
-                0x00000000c0007354                main_thread
-                0x00000000c0007358                . = ALIGN ((. != 0x0)?0x4:0x1)
-                0x00000000c0007358                . = ALIGN (0x4)
-                0x00000000c0007358                . = SEGMENT_START ("ldata-segment", .)
-                0x00000000c0007358                . = ALIGN (0x4)
-                0x00000000c0007358                _end = .
+ *fill*         0x00000000c0008314        0xc 
+ COMMON         0x00000000c0008320      0x180 build_gdb/interrupt.o
+                0x00000000c0008320                idt_func_table
+                0x00000000c00083e0                intr_name
+ COMMON         0x00000000c00084a0        0x4 build_gdb/timer.o
+                0x00000000c00084a0                ticks
+ COMMON         0x00000000c00084a4       0x2c build_gdb/memory.o
+                0x00000000c00084a4                kernel_vaddr_pool
+                0x00000000c00084b0                user_pool
+                0x00000000c00084c0                kernel_pool
+ COMMON         0x00000000c00084d0       0x24 build_gdb/thread.o
+                0x00000000c00084d0                thread_ready_list
+                0x00000000c00084e0                thread_all_list
+                0x00000000c00084f0                main_thread
+ *fill*         0x00000000c00084f4        0xc 
+ COMMON         0x00000000c0008500       0x6c build_gdb/keyboard.o
+                0x00000000c0008500                kbd_buf
+                0x00000000c000856c                . = ALIGN ((. != 0x0)?0x4:0x1)
+                0x00000000c000856c                . = ALIGN (0x4)
+                0x00000000c000856c                . = SEGMENT_START ("ldata-segment", .)
+                0x00000000c000856c                . = ALIGN (0x4)
+                0x00000000c000856c                _end = .
                 [!provide]                        PROVIDE (end = .)
-                0x00000000c0007358                . = DATA_SEGMENT_END (.)
+                0x00000000c000856c                . = DATA_SEGMENT_END (.)
 
-.stab           0x0000000000000000      0x96c
+.stab           0x0000000000000000      0xa20
  *(.stab)
- .stab          0x0000000000000000      0x210 build_gdb/kernel.o
- .stab          0x0000000000000210      0x6a8 build_gdb/print.o
+ .stab          0x0000000000000000      0x2c4 build_gdb/kernel.o
+ .stab          0x00000000000002c4      0x6a8 build_gdb/print.o
                                         0x6b4 (松开之前的大小)
- .stab          0x00000000000008b8       0xb4 build_gdb/switch.o
+ .stab          0x000000000000096c       0xb4 build_gdb/switch.o
                                          0xc0 (松开之前的大小)
 
 .stabstr        0x0000000000000000       0x34
@@ -471,6 +501,8 @@ LOAD build_gdb/sync.o
  .comment       0x0000000000000023       0x24 build_gdb/thread.o
  .comment       0x0000000000000023       0x24 build_gdb/console.o
  .comment       0x0000000000000023       0x24 build_gdb/sync.o
+ .comment       0x0000000000000023       0x24 build_gdb/keyboard.o
+ .comment       0x0000000000000023       0x24 build_gdb/ioqueue.o
 
 .gnu.build.attributes
  *(.gnu.build.attributes .gnu.build.attributes.*)
@@ -487,7 +519,7 @@ LOAD build_gdb/sync.o
 .debug_sfnames
  *(.debug_sfnames)
 
-.debug_aranges  0x0000000000000000      0x180
+.debug_aranges  0x0000000000000000      0x1c0
  *(.debug_aranges)
  .debug_aranges
                 0x0000000000000000       0x20 build_gdb/main.o
@@ -513,11 +545,15 @@ LOAD build_gdb/sync.o
                 0x0000000000000140       0x20 build_gdb/console.o
  .debug_aranges
                 0x0000000000000160       0x20 build_gdb/sync.o
+ .debug_aranges
+                0x0000000000000180       0x20 build_gdb/keyboard.o
+ .debug_aranges
+                0x00000000000001a0       0x20 build_gdb/ioqueue.o
 
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x0000000000000000     0x236f
+.debug_info     0x0000000000000000     0x2c11
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x0000000000000000       0xe9 build_gdb/main.o
  .debug_info    0x00000000000000e9       0x7d build_gdb/init.o
@@ -530,9 +566,11 @@ LOAD build_gdb/sync.o
  .debug_info    0x00000000000013d4      0x38b build_gdb/list.o
  .debug_info    0x000000000000175f      0x597 build_gdb/thread.o
  .debug_info    0x0000000000001cf6      0x2b0 build_gdb/console.o
- .debug_info    0x0000000000001fa6      0x3c9 build_gdb/sync.o
+ .debug_info    0x0000000000001fa6      0x3b9 build_gdb/sync.o
+ .debug_info    0x000000000000235f      0x40a build_gdb/keyboard.o
+ .debug_info    0x0000000000002769      0x4a8 build_gdb/ioqueue.o
 
-.debug_abbrev   0x0000000000000000      0xc51
+.debug_abbrev   0x0000000000000000      0xecf
  *(.debug_abbrev)
  .debug_abbrev  0x0000000000000000       0xa4 build_gdb/main.o
  .debug_abbrev  0x00000000000000a4       0x42 build_gdb/init.o
@@ -546,51 +584,59 @@ LOAD build_gdb/sync.o
  .debug_abbrev  0x00000000000008d3      0x1ab build_gdb/thread.o
  .debug_abbrev  0x0000000000000a7e       0xe7 build_gdb/console.o
  .debug_abbrev  0x0000000000000b65       0xec build_gdb/sync.o
+ .debug_abbrev  0x0000000000000c51      0x131 build_gdb/keyboard.o
+ .debug_abbrev  0x0000000000000d82      0x14d build_gdb/ioqueue.o
 
-.debug_line     0x0000000000000000      0xa4e
+.debug_line     0x0000000000000000      0xcd7
  *(.debug_line .debug_line.* .debug_line_end)
- .debug_line    0x0000000000000000       0x68 build_gdb/main.o
- .debug_line    0x0000000000000068       0x44 build_gdb/init.o
- .debug_line    0x00000000000000ac      0x13b build_gdb/interrupt.o
- .debug_line    0x00000000000001e7       0xa9 build_gdb/timer.o
- .debug_line    0x0000000000000290       0x4f build_gdb/debug.o
- .debug_line    0x00000000000002df      0x184 build_gdb/string.o
- .debug_line    0x0000000000000463       0xdc build_gdb/bitmap.o
- .debug_line    0x000000000000053f      0x137 build_gdb/memory.o
- .debug_line    0x0000000000000676       0xd9 build_gdb/list.o
- .debug_line    0x000000000000074f      0x156 build_gdb/thread.o
- .debug_line    0x00000000000008a5       0x99 build_gdb/console.o
- .debug_line    0x000000000000093e      0x110 build_gdb/sync.o
+ .debug_line    0x0000000000000000       0x5d build_gdb/main.o
+ .debug_line    0x000000000000005d       0x45 build_gdb/init.o
+ .debug_line    0x00000000000000a2      0x13b build_gdb/interrupt.o
+ .debug_line    0x00000000000001dd       0xa9 build_gdb/timer.o
+ .debug_line    0x0000000000000286       0x4f build_gdb/debug.o
+ .debug_line    0x00000000000002d5      0x184 build_gdb/string.o
+ .debug_line    0x0000000000000459       0xdc build_gdb/bitmap.o
+ .debug_line    0x0000000000000535      0x137 build_gdb/memory.o
+ .debug_line    0x000000000000066c       0xd9 build_gdb/list.o
+ .debug_line    0x0000000000000745      0x156 build_gdb/thread.o
+ .debug_line    0x000000000000089b       0x99 build_gdb/console.o
+ .debug_line    0x0000000000000934      0x110 build_gdb/sync.o
+ .debug_line    0x0000000000000a44      0x159 build_gdb/keyboard.o
+ .debug_line    0x0000000000000b9d      0x13a build_gdb/ioqueue.o
 
 .debug_frame
  *(.debug_frame)
 
-.debug_str      0x0000000000000000      0xa31
+.debug_str      0x0000000000000000      0xb99
  *(.debug_str)
  .debug_str     0x0000000000000000       0xfa build_gdb/main.o
                                         0x118 (松开之前的大小)
  .debug_str     0x00000000000000fa       0x17 build_gdb/init.o
                                         0x101 (松开之前的大小)
- .debug_str     0x0000000000000111      0x1ce build_gdb/interrupt.o
-                                        0x2d1 (松开之前的大小)
- .debug_str     0x00000000000002df      0x139 build_gdb/timer.o
+ .debug_str     0x0000000000000111      0x1d3 build_gdb/interrupt.o
+                                        0x2d6 (松开之前的大小)
+ .debug_str     0x00000000000002e4      0x139 build_gdb/timer.o
                                         0x263 (松开之前的大小)
- .debug_str     0x0000000000000418       0x32 build_gdb/debug.o
+ .debug_str     0x000000000000041d       0x32 build_gdb/debug.o
                                         0x118 (松开之前的大小)
- .debug_str     0x000000000000044a       0x79 build_gdb/string.o
+ .debug_str     0x000000000000044f       0x79 build_gdb/string.o
                                         0x18f (松开之前的大小)
- .debug_str     0x00000000000004c3       0xbb build_gdb/bitmap.o
+ .debug_str     0x00000000000004c8       0xbb build_gdb/bitmap.o
                                         0x1d2 (松开之前的大小)
- .debug_str     0x000000000000057e      0x1c3 build_gdb/memory.o
+ .debug_str     0x0000000000000583      0x1c3 build_gdb/memory.o
                                         0x327 (松开之前的大小)
- .debug_str     0x0000000000000741       0xb8 build_gdb/list.o
+ .debug_str     0x0000000000000746       0xb8 build_gdb/list.o
                                         0x20d (松开之前的大小)
- .debug_str     0x00000000000007f9      0x11c build_gdb/thread.o
+ .debug_str     0x00000000000007fe      0x11c build_gdb/thread.o
                                         0x359 (松开之前的大小)
- .debug_str     0x0000000000000915       0xaf build_gdb/console.o
+ .debug_str     0x000000000000091a       0xaf build_gdb/console.o
                                         0x292 (松开之前的大小)
- .debug_str     0x00000000000009c4       0x6d build_gdb/sync.o
-                                        0x2ab (松开之前的大小)
+ .debug_str     0x00000000000009c9       0x6e build_gdb/sync.o
+                                        0x2ac (松开之前的大小)
+ .debug_str     0x0000000000000a37       0xf9 build_gdb/keyboard.o
+                                        0x332 (松开之前的大小)
+ .debug_str     0x0000000000000b30       0x69 build_gdb/ioqueue.o
+                                        0x2cb (松开之前的大小)
 
 .debug_loc
  *(.debug_loc)

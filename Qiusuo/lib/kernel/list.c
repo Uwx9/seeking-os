@@ -45,17 +45,6 @@ void list_remove(struct list_elem* pelem)
 	intr_set_status(old_status);
 }
 
-void ready_tasks_num(struct list* plist)
-{
-	int cnt = 0; 
-	struct list_elem* elem = plist->head.next;
-	while (elem != &plist->tail) {
-		cnt++;
-		elem = elem->next;
-	}
-	put_str("task num is:");put_int(cnt);
-}
-
 /* 将链表第一个元素弹出并返回，类似栈的pop操作 */
 struct list_elem* list_pop(struct list* plist)
 {

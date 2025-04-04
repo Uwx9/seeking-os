@@ -21,7 +21,7 @@ void console_acquire()
 /* 释放终端 */ 
 void console_realse()
 {
-	lock_realse(&console_lock);
+	lock_release(&console_lock);
 }
 
 /* 终端中输出字符串 */

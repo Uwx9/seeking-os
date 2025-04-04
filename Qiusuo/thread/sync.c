@@ -71,7 +71,7 @@ void lock_acquire(struct lock* plock)
 }
 
 /* 释放锁plock */
-void lock_realse(struct lock* plock)
+void lock_release(struct lock* plock)
 {
 	ASSERT(plock->holder == running_thread());
 	if (plock->holder_repeat_nr > 1) {

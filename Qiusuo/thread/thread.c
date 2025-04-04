@@ -185,5 +185,5 @@ void thread_init(void)
 	list_init(&thread_all_list);
 /* 将当前main函数创建为线程 */
 	make_main_thread();
-	put_str("thread_init done");
+	put_str("thread_init done\n");
 }
