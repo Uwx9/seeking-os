@@ -149,7 +149,7 @@ p_mode_start:
 ; -------------------------   加载 kernel  ---------------------- 
 	mov eax, KERNEL_START_SECTOR  		;kernel.bin 所在的扇区号 
     mov ebx, KERNEL_BIN_BASE_ADDR 		;从磁盘读出后，写入到 ebx 指定的地址 
-    mov ecx, 300                   		;读入的扇区数
+    mov ecx, 233                   		;读入的扇区数
 	call rd_disk_m_32
 
 ;---------------------- 启动分页 ---------------------

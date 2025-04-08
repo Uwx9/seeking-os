@@ -1,5 +1,5 @@
 BUILD_DIR = ./Qiusuo/build
-ENTRY_POINT = 0xc0001100
+ENTRY_POINT = 0xc0001300
 HD60M_PATH = /home/yu/Desktop/bochs/hd60M.img
 
 CC = gcc
@@ -110,7 +110,7 @@ build: mk_dir $(BUILD_DIR)/kernel.bin
 hd:
 	dd if=$(BUILD_DIR)/mbr.bin of=$(HD60M_PATH) bs=512 count=1 conv=notrunc 
 	dd if=$(BUILD_DIR)/loader.bin of=$(HD60M_PATH) bs=512 count=4 seek=2 conv=notrunc
-	dd if=$(BUILD_DIR)/kernel.bin of=$(HD60M_PATH) bs=512 count=300 seek=9 conv=notrunc
+	dd if=$(BUILD_DIR)/kernel.bin of=$(HD60M_PATH) bs=512 count=233 seek=9 conv=notrunc
 
 clean:
 	cd $(BUILD_DIR) && rm -f ./*
