@@ -90,3 +90,4 @@ void ioq_putchar(struct ioqueue* ioq, char byte)
 }
 
 
+uint32_t magicc = 0x20050608;

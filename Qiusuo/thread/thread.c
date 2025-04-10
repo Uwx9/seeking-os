@@ -6,6 +6,7 @@
 #include "interrupt.h"
 #include "print.h"
 #include "debug.h"
+#include "process.h"
 
 #define PG_SIZE 4096
 
@@ -144,6 +145,8 @@ void schedule()
 	struct task* next = elem2entry(struct task, general_tag, thread_tag);
 	next->status = TASK_RUNNING;
 
+	/* 激活线程或进程的页表，更新tss中的esp0为进程的特权级0的栈 */
+	process_activate(next);
 	switch_to(cur, next);
 
 }
