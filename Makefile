@@ -18,16 +18,17 @@ OBJS = $(BUILD_DIR)/main.o 		$(BUILD_DIR)/init.o 	$(BUILD_DIR)/interrupt.o	\
 	   $(BUILD_DIR)/memory.o 	$(BUILD_DIR)/list.o		$(BUILD_DIR)/thread.o 		\
 	   $(BUILD_DIR)/switch.o	$(BUILD_DIR)/console.o 	$(BUILD_DIR)/sync.o 		\
 	   $(BUILD_DIR)/keyboard.o	$(BUILD_DIR)/ioqueue.o 	$(BUILD_DIR)/tss.o 			\
-	   $(BUILD_DIR)/process.o
+	   $(BUILD_DIR)/process.o	$(BUILD_DIR)/syscall.o	$(BUILD_DIR)/syscall-init.o \
+	   $(BUILD_DIR)/stdio.o
 	   
 ########################         C代码编译        ########################
 $(BUILD_DIR)/main.o: Qiusuo/kernel/main.c Qiusuo/kernel/debug.h Qiusuo/kernel/init.h	Qiusuo/thread/thread.h	\
 	Qiusuo/lib/stdint.h  Qiusuo/lib/kernel/print.h Qiusuo/lib/kernel/list.h Qiusuo/device/console.h Qiusuo/device/keyboard.h 	\
-	Qiusuo/device/ioqueue.h Qiusuo/userprog/userprog.h 
+	Qiusuo/device/ioqueue.h Qiusuo/userprog/userprog.h Qiusuo/lib/stdio.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
 $(BUILD_DIR)/init.o: Qiusuo/kernel/init.c Qiusuo/kernel/init.h Qiusuo/kernel/interrupt.h  Qiusuo/device/timer.h		\
-	Qiusuo/lib/stdint.h Qiusuo/device/console.h Qiusuo/device/keyboard.h Qiusuo/userprog/tss.h
+	Qiusuo/lib/stdint.h Qiusuo/device/console.h Qiusuo/device/keyboard.h Qiusuo/userprog/tss.h Qiusuo/kernel/init.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
 $(BUILD_DIR)/interrupt.o: Qiusuo/kernel/interrupt.c Qiusuo/kernel/interrupt.h Qiusuo/kernel/global.h		\
@@ -51,7 +52,8 @@ $(BUILD_DIR)/bitmap.o:  Qiusuo/lib/kernel/bitmap.c  Qiusuo/lib/kernel/bitmap.h  
 	$(CC) $(CFLAGS) -o $@ $<
 
 $(BUILD_DIR)/memory.o: Qiusuo/kernel/memory.c Qiusuo/kernel/memory.h Qiusuo/kernel/debug.h Qiusuo/kernel/global.h	\
-	Qiusuo/lib/stdint.h  Qiusuo/lib/kernel/print.h  Qiusuo/lib/kernel/bitmap.h  Qiusuo/lib/string.h Qiusuo/thread/sync.h 
+	Qiusuo/lib/stdint.h  Qiusuo/lib/kernel/print.h  Qiusuo/lib/kernel/bitmap.h  Qiusuo/lib/string.h Qiusuo/thread/sync.h 	\
+	Qiusuo/lib/kernel/list.h Qiusuo/kernel/interrupt.h Qiusuo/kernel/debug.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
 $(BUILD_DIR)/list.o: Qiusuo/lib/kernel/list.c Qiusuo/lib/kernel/list.h Qiusuo/kernel/interrupt.h Qiusuo/kernel/debug.h	\
@@ -59,7 +61,8 @@ $(BUILD_DIR)/list.o: Qiusuo/lib/kernel/list.c Qiusuo/lib/kernel/list.h Qiusuo/ke
 	$(CC) $(CFLAGS) -o $@ $<
 	
 $(BUILD_DIR)/thread.o: Qiusuo/thread/thread.c Qiusuo/thread/thread.h Qiusuo/lib/string.h Qiusuo/kernel/global.h 	\
-	Qiusuo/lib/stdint.h Qiusuo/kernel/memory.h Qiusuo/kernel/interrupt.h Qiusuo/lib/kernel/print.h Qiusuo/kernel/debug.h	
+	Qiusuo/lib/stdint.h Qiusuo/kernel/memory.h Qiusuo/kernel/interrupt.h Qiusuo/lib/kernel/print.h Qiusuo/kernel/debug.h	\
+	Qiusuo/thread/sync.h 	
 	$(CC) $(CFLAGS) -o $@ $<
 
 $(BUILD_DIR)/console.o: Qiusuo/device/console.c Qiusuo/device/console.h Qiusuo/lib/kernel/print.h Qiusuo/thread/thread.h Qiusuo/lib/stdint.h	\
@@ -83,7 +86,18 @@ $(BUILD_DIR)/tss.o: Qiusuo/userprog/tss.c Qiusuo/userprog/tss.h Qiusuo/lib/kerne
 
 $(BUILD_DIR)/process.o: Qiusuo/userprog/process.c Qiusuo/userprog/process.h Qiusuo/userprog/userprog.h Qiusuo/thread/thread.h 	\
 	Qiusuo/lib/stdint.h Qiusuo/kernel/global.h Qiusuo/kernel/debug.h Qiusuo/userprog/tss.h Qiusuo/kernel/interrupt.h 		\
-	Qiusuo/lib/kernel/print.h Qiusuo/lib/kernel/list.h Qiusuo/lib/string.h 
+	Qiusuo/lib/kernel/print.h Qiusuo/lib/kernel/list.h Qiusuo/lib/string.h Qiusuo/kernel/memory.h 
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(BUILD_DIR)/syscall.o: Qiusuo/lib/usr/syscall.c Qiusuo/lib/usr/syscall.h Qiusuo/lib/usr/syscall-init.h Qiusuo/lib/stdint.h 
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(BUILD_DIR)/syscall-init.o: Qiusuo/lib/usr/syscall-init.c Qiusuo/lib/usr/syscall-init.h Qiusuo/lib/stdint.h Qiusuo/lib/kernel/print.h	\
+	Qiusuo/thread/thread.h Qiusuo/lib/usr/syscall.h Qiusuo/device/console.h Qiusuo/lib/string.h 
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(BUILD_DIR)/stdio.o: Qiusuo/lib/stdio.c Qiusuo/lib/stdio.h Qiusuo/lib/stdint.h Qiusuo/lib/string.h Qiusuo/kernel/global.h		\
+	Qiusuo/lib/usr/syscall.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
 ########################         汇编代码编译        ########################

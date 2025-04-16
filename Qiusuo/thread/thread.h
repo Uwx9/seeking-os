@@ -10,6 +10,7 @@
  * 这里是给返回void,参数为void*的函数类型起别名为thrad_func
  */
 typedef void thread_func(void*);
+typedef int16_t pid_t;
 
 /* 进程或线程的状态 */
 enum task_status {
@@ -80,6 +81,7 @@ struct thread_stack {			//放到内存中时,应该是从上往下为低地址�
 /* 进程或线程的pcb，程序控制块 */
 struct task {
 	uint32_t* self_kstack;		//各内核线程都用自己的内核栈 
+	pid_t pid;
 	enum task_status status;
 	uint8_t priority;
 	char name[16];
@@ -92,7 +94,8 @@ struct task {
 
 	uint32_t* pgdir;				// 进程自己页表的虚拟地址 
 	struct virtual_addr_pool userprog_vaddr;		// 用户进程的虚拟地址 
-
+	struct mem_block_desc u_block_descs[DESC_CNT];	// 用户进程的内存块描述符
+	
 	uint32_t stack_magic;
 };
 

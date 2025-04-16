@@ -99,4 +99,32 @@ VECTOR 0x2d, ZERO 		;fpu 浮点单元异常
 VECTOR 0x2e, ZERO 		;硬盘
 VECTOR 0x2f, ZERO 		;保留
 
+;;;;;;;;;;;;;;;;   0x80 号中断   ;;;;;;;;;;;;;;;; 
+[bits 32]
+extern syscall_table
+
+section .text
+global syscall_handler
+syscall_handler:
+; 保存上下文
+	push 0			; 与其他中断格式统一
+	push ds
+	push es 
+	push fs 
+	push gs 
+	pushad 
+	push 0x80		; 与其他中断格式统一
+
+; 为子功能传递参数
+	push edx 
+	push ecx 
+	push ebx 
+
+; 调用子功能
+	call [syscall_table + eax * 4]
+	add esp, 12		;丢掉三个参数，准备退出中断
+
+; 返回值放到栈中的eax,然后退出中断
+	mov [esp + 8 * 4], eax
+	jmp intr_exit 
 

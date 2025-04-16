@@ -2,16 +2,19 @@
 分配公共符号
 公共符号            大小              文件
 
-idt_func_table      0xc0              Qiusuo/build/interrupt.o
+idt_func_table      0x204             Qiusuo/build/interrupt.o
 kbd_buf             0x6c              Qiusuo/build/keyboard.o
 thread_ready_list   0x10              Qiusuo/build/thread.o
 kernel_vaddr_pool   0xc               Qiusuo/build/memory.o
 thread_all_list     0x10              Qiusuo/build/thread.o
 user_pool           0x2c              Qiusuo/build/memory.o
-intr_name           0xc0              Qiusuo/build/interrupt.o
+k_block_descs       0xa8              Qiusuo/build/memory.o
+intr_name           0x204             Qiusuo/build/interrupt.o
 main_thread         0x4               Qiusuo/build/thread.o
 ticks               0x4               Qiusuo/build/timer.o
+syscall_table       0x80              Qiusuo/build/syscall-init.o
 kernel_pool         0x2c              Qiusuo/build/memory.o
+pid_lock            0x1c              Qiusuo/build/thread.o
 
 舍弃的输入节
 
@@ -47,6 +50,12 @@ kernel_pool         0x2c              Qiusuo/build/memory.o
                 0x0000000000000000        0x0 Qiusuo/build/tss.o
  .note.GNU-stack
                 0x0000000000000000        0x0 Qiusuo/build/process.o
+ .note.GNU-stack
+                0x0000000000000000        0x0 Qiusuo/build/syscall.o
+ .note.GNU-stack
+                0x0000000000000000        0x0 Qiusuo/build/syscall-init.o
+ .note.GNU-stack
+                0x0000000000000000        0x0 Qiusuo/build/stdio.o
 
 内存配置
 
@@ -75,6 +84,9 @@ LOAD Qiusuo/build/keyboard.o
 LOAD Qiusuo/build/ioqueue.o
 LOAD Qiusuo/build/tss.o
 LOAD Qiusuo/build/process.o
+LOAD Qiusuo/build/syscall.o
+LOAD Qiusuo/build/syscall-init.o
+LOAD Qiusuo/build/stdio.o
                 [!provide]                        PROVIDE (__executable_start = SEGMENT_START ("text-segment", 0x8048000))
                 0x00000000080480d4                . = (SEGMENT_START ("text-segment", 0x8048000) + SIZEOF_HEADERS)
 
@@ -144,122 +156,138 @@ LOAD Qiusuo/build/process.o
 .plt.sec
  *(.plt.sec)
 
-.text           0x00000000c0001300     0x34d4
+.text           0x00000000c0001300     0x4349
  *(.text.unlikely .text.*_unlikely .text.unlikely.*)
  *(.text.exit .text.exit.*)
  *(.text.startup .text.startup.*)
  *(.text.hot .text.hot.*)
  *(SORT_BY_NAME(.text.sorted.*))
  *(.text .stub .text.* .gnu.linkonce.t.*)
- .text          0x00000000c0001300      0x1cf Qiusuo/build/main.o
+ .text          0x00000000c0001300      0x321 Qiusuo/build/main.o
                 0x00000000c0001300                main
-                0x00000000c0001391                k_thread_aa
-                0x00000000c00013b8                k_thread_bb
-                0x00000000c00013df                k_thread_a
-                0x00000000c0001445                k_thread_b
-                0x00000000c00014ab                u_prog_a
-                0x00000000c00014bd                u_prog_b
- .text          0x00000000c00014cf       0x37 Qiusuo/build/init.o
-                0x00000000c00014cf                init_all
- .text          0x00000000c0001506      0x44f Qiusuo/build/interrupt.o
-                0x00000000c0001844                register_handler
-                0x00000000c0001860                intr_enable
-                0x00000000c0001889                intr_disable
-                0x00000000c00018b1                intr_get_status
-                0x00000000c00018d5                intr_set_status
-                0x00000000c00018f3                idt_init
- .text          0x00000000c0001955      0x18e Qiusuo/build/timer.o
-                0x00000000c0001a83                timer_init
- *fill*         0x00000000c0001ae3        0xd 
- .text          0x00000000c0001af0      0x541 Qiusuo/build/kernel.o
-                0x00000000c0001af0                intr_exit
- *fill*         0x00000000c0002031        0xf 
- .text          0x00000000c0002040      0x172 Qiusuo/build/print.o
-                0x00000000c0002040                set_cursor
-                0x00000000c0002064                put_str
-                0x00000000c0002082                put_char
-                0x00000000c000214f                put_int
- .text          0x00000000c00021b2       0xa5 Qiusuo/build/debug.o
-                0x00000000c00021b2                panic_spin
- .text          0x00000000c0002257      0x445 Qiusuo/build/string.o
-                0x00000000c0002257                memset
-                0x00000000c00022b3                memcpy
-                0x00000000c000231f                memcmp
-                0x00000000c00023af                strcpy
-                0x00000000c0002411                strlen
-                0x00000000c0002467                strcmp
-                0x00000000c00024ea                strchr
-                0x00000000c000254f                strrchr
-                0x00000000c00025b8                strcat
-                0x00000000c000262f                strchrs
- .text          0x00000000c000269c      0x296 Qiusuo/build/bitmap.o
-                0x00000000c000269c                bitmap_init
-                0x00000000c00026c3                bitmap_scan_test
-                0x00000000c0002703                bitmap_scan
-                0x00000000c0002877                bitmap_set
- .text          0x00000000c0002932      0x82c Qiusuo/build/memory.o
-                0x00000000c0002c40                malloc_page
-                0x00000000c0002d0a                get_kernel_pages
-                0x00000000c0002d4e                get_user_pages
-                0x00000000c0002daa                get_a_page
-                0x00000000c0002f22                addr_v2p
-                0x00000000c0003112                mem_init
- .text          0x00000000c000315e      0x1f9 Qiusuo/build/list.o
-                0x00000000c000315e                list_init
-                0x00000000c000318b                list_insert_before
-                0x00000000c00031cc                list_push
-                0x00000000c00031e9                list_append
-                0x00000000c0003206                list_remove
-                0x00000000c000323c                list_pop
-                0x00000000c0003271                elem_find
-                0x00000000c00032ac                list_traversal
-                0x00000000c0003309                list_len
-                0x00000000c000333e                list_empty
- .text          0x00000000c0003357      0x5e3 Qiusuo/build/thread.o
-                0x00000000c0003357                running_thread
-                0x00000000c0003384                thread_create
-                0x00000000c00033fa                init_task
-                0x00000000c0003495                thread_start
-                0x00000000c0003610                show_schedule_message
-                0x00000000c0003658                schedule
-                0x00000000c000378b                thread_block
-                0x00000000c00037f2                thread_unblock
-                0x00000000c00038fd                thread_init
- *fill*         0x00000000c000393a        0x6 
- .text          0x00000000c0003940       0x15 Qiusuo/build/switch.o
-                0x00000000c0003940                switch_to
- .text          0x00000000c0003955       0x9a Qiusuo/build/console.o
-                0x00000000c0003955                console_init
-                0x00000000c0003969                console_acquire
-                0x00000000c000397d                console_realse
-                0x00000000c0003991                console_put_str
-                0x00000000c00039ae                console_put_char
-                0x00000000c00039d2                console_put_int
- .text          0x00000000c00039ef      0x347 Qiusuo/build/sync.o
-                0x00000000c00039ef                sema_init
-                0x00000000c0003a14                lock_init
-                0x00000000c0003a45                sema_down
-                0x00000000c0003b59                sema_up
-                0x00000000c0003c0f                lock_acquire
-                0x00000000c0003c8b                lock_release
- .text          0x00000000c0003d36      0x2b2 Qiusuo/build/keyboard.o
-                0x00000000c0003fa8                keyboard_init
- .text          0x00000000c0003fe8      0x2e1 Qiusuo/build/ioqueue.o
-                0x00000000c0003fe8                ioqueue_init
-                0x00000000c0004035                ioq_full
-                0x00000000c0004086                ioq_empty
-                0x00000000c000416d                ioq_getchar
-                0x00000000c000421a                ioq_putchar
- .text          0x00000000c00042c9      0x1b2 Qiusuo/build/tss.o
-                0x00000000c00042c9                update_tss_esp
-                0x00000000c000434d                tss_init
- .text          0x00000000c000447b      0x359 Qiusuo/build/process.o
-                0x00000000c000447b                start_process
-                0x00000000c0004583                page_dir_activate
-                0x00000000c00045b3                process_activate
-                0x00000000c0004605                create_page_dir
-                0x00000000c0004676                create_user_vaddr_bitmap
-                0x00000000c00046b8                process_execute
+                0x00000000c0001391                k_thread_a
+                0x00000000c000144d                k_thread_b
+                0x00000000c0001509                u_prog_a
+                0x00000000c0001595                u_prog_b
+ .text          0x00000000c0001621       0x3c Qiusuo/build/init.o
+                0x00000000c0001621                init_all
+ .text          0x00000000c000165d      0x47f Qiusuo/build/interrupt.o
+                0x00000000c00019cb                register_handler
+                0x00000000c00019e7                intr_enable
+                0x00000000c0001a10                intr_disable
+                0x00000000c0001a38                intr_get_status
+                0x00000000c0001a5c                intr_set_status
+                0x00000000c0001a7a                idt_init
+ .text          0x00000000c0001adc      0x191 Qiusuo/build/timer.o
+                0x00000000c0001c0d                timer_init
+ *fill*         0x00000000c0001c6d        0x3 
+ .text          0x00000000c0001c70      0x565 Qiusuo/build/kernel.o
+                0x00000000c0001c70                intr_exit
+                0x00000000c00021b1                syscall_handler
+ *fill*         0x00000000c00021d5        0xb 
+ .text          0x00000000c00021e0      0x172 Qiusuo/build/print.o
+                0x00000000c00021e0                set_cursor
+                0x00000000c0002204                put_str
+                0x00000000c0002222                put_char
+                0x00000000c00022ef                put_int
+ .text          0x00000000c0002352       0xa5 Qiusuo/build/debug.o
+                0x00000000c0002352                panic_spin
+ .text          0x00000000c00023f7      0x445 Qiusuo/build/string.o
+                0x00000000c00023f7                memset
+                0x00000000c0002453                memcpy
+                0x00000000c00024bf                memcmp
+                0x00000000c000254f                strcpy
+                0x00000000c00025b1                strlen
+                0x00000000c0002607                strcmp
+                0x00000000c000268a                strchr
+                0x00000000c00026ef                strrchr
+                0x00000000c0002758                strcat
+                0x00000000c00027cf                strchrs
+ .text          0x00000000c000283c      0x296 Qiusuo/build/bitmap.o
+                0x00000000c000283c                bitmap_init
+                0x00000000c0002863                bitmap_scan_test
+                0x00000000c00028a3                bitmap_scan
+                0x00000000c0002a17                bitmap_set
+ .text          0x00000000c0002ad2     0x111c Qiusuo/build/memory.o
+                0x00000000c0002ad2                block_descs_init
+                0x00000000c0002e5f                malloc_page
+                0x00000000c0002f29                get_kernel_pages
+                0x00000000c0002f6d                get_user_pages
+                0x00000000c0002fc9                get_a_page
+                0x00000000c0003141                addr_v2p
+                0x00000000c0003358                sys_malloc
+                0x00000000c00037b2                mfree_page
+                0x00000000c000398f                sys_free
+                0x00000000c0003b96                mem_init
+ .text          0x00000000c0003bee      0x1f9 Qiusuo/build/list.o
+                0x00000000c0003bee                list_init
+                0x00000000c0003c1b                list_insert_before
+                0x00000000c0003c5c                list_push
+                0x00000000c0003c79                list_append
+                0x00000000c0003c96                list_remove
+                0x00000000c0003ccc                list_pop
+                0x00000000c0003d01                elem_find
+                0x00000000c0003d3c                list_traversal
+                0x00000000c0003d99                list_len
+                0x00000000c0003dce                list_empty
+ .text          0x00000000c0003de7      0x635 Qiusuo/build/thread.o
+                0x00000000c0003e1e                running_thread
+                0x00000000c0003e4b                thread_create
+                0x00000000c0003ec1                init_task
+                0x00000000c0003f6b                thread_start
+                0x00000000c00040e6                show_schedule_message
+                0x00000000c000412e                schedule
+                0x00000000c0004261                thread_block
+                0x00000000c00042c8                thread_unblock
+                0x00000000c00043d3                thread_init
+ *fill*         0x00000000c000441c        0x4 
+ .text          0x00000000c0004420       0x15 Qiusuo/build/switch.o
+                0x00000000c0004420                switch_to
+ .text          0x00000000c0004435       0x9a Qiusuo/build/console.o
+                0x00000000c0004435                console_init
+                0x00000000c0004449                console_acquire
+                0x00000000c000445d                console_realse
+                0x00000000c0004471                console_put_str
+                0x00000000c000448e                console_put_char
+                0x00000000c00044b2                console_put_int
+ .text          0x00000000c00044cf      0x347 Qiusuo/build/sync.o
+                0x00000000c00044cf                sema_init
+                0x00000000c00044f4                lock_init
+                0x00000000c0004525                sema_down
+                0x00000000c0004639                sema_up
+                0x00000000c00046ef                lock_acquire
+                0x00000000c000476b                lock_release
+ .text          0x00000000c0004816      0x2b2 Qiusuo/build/keyboard.o
+                0x00000000c0004a88                keyboard_init
+ .text          0x00000000c0004ac8      0x2e1 Qiusuo/build/ioqueue.o
+                0x00000000c0004ac8                ioqueue_init
+                0x00000000c0004b15                ioq_full
+                0x00000000c0004b66                ioq_empty
+                0x00000000c0004c4d                ioq_getchar
+                0x00000000c0004cfa                ioq_putchar
+ .text          0x00000000c0004da9      0x1b2 Qiusuo/build/tss.o
+                0x00000000c0004da9                update_tss_esp
+                0x00000000c0004e2d                tss_init
+ .text          0x00000000c0004f5b      0x367 Qiusuo/build/process.o
+                0x00000000c0004f5b                start_process
+                0x00000000c0005063                page_dir_activate
+                0x00000000c0005093                process_activate
+                0x00000000c00050e5                create_page_dir
+                0x00000000c0005156                create_user_vaddr_bitmap
+                0x00000000c0005198                process_execute
+ .text          0x00000000c00052c2       0x6f Qiusuo/build/syscall.o
+                0x00000000c00052c2                getpid
+                0x00000000c00052d7                write
+                0x00000000c00052f6                malloc
+                0x00000000c0005315                free
+ .text          0x00000000c0005331       0x78 Qiusuo/build/syscall-init.o
+                0x00000000c0005331                sys_getpid
+                0x00000000c0005343                sys_write
+                0x00000000c0005361                syscall_init
+ .text          0x00000000c00053a9      0x2a0 Qiusuo/build/stdio.o
+                0x00000000c0005430                vsprintf
+                0x00000000c00055b3                sprintf
+                0x00000000c00055e7                printf
  *(.gnu.warning)
 
 .fini
@@ -267,31 +295,32 @@ LOAD Qiusuo/build/process.o
                 [!provide]                        PROVIDE (__etext = .)
                 [!provide]                        PROVIDE (_etext = .)
                 [!provide]                        PROVIDE (etext = .)
-                0x00000000c0005000                . = ALIGN (CONSTANT (MAXPAGESIZE))
-                0x00000000c0005000                . = SEGMENT_START ("rodata-segment", (ALIGN (CONSTANT (MAXPAGESIZE)) + (. & (CONSTANT (MAXPAGESIZE) - 0x1))))
+                0x00000000c0006000                . = ALIGN (CONSTANT (MAXPAGESIZE))
+                0x00000000c0006000                . = SEGMENT_START ("rodata-segment", (ALIGN (CONSTANT (MAXPAGESIZE)) + (. & (CONSTANT (MAXPAGESIZE) - 0x1))))
 
-.rodata         0x00000000c0005000      0xced
+.rodata         0x00000000c0006000      0xf7c
  *(.rodata .rodata.* .gnu.linkonce.r.*)
- .rodata        0x00000000c0005000       0x59 Qiusuo/build/main.o
- .rodata        0x00000000c0005059        0xa Qiusuo/build/init.o
- *fill*         0x00000000c0005063        0x1 
- .rodata        0x00000000c0005064      0x2c9 Qiusuo/build/interrupt.o
- *fill*         0x00000000c000532d        0x3 
- .rodata        0x00000000c0005330       0x70 Qiusuo/build/timer.o
- .rodata        0x00000000c00053a0       0x3c Qiusuo/build/debug.o
- .rodata        0x00000000c00053dc       0xc2 Qiusuo/build/string.o
- *fill*         0x00000000c000549e        0x2 
- .rodata        0x00000000c00054a0       0x74 Qiusuo/build/bitmap.o
- .rodata        0x00000000c0005514      0x1f5 Qiusuo/build/memory.o
- *fill*         0x00000000c0005709        0x3 
- .rodata        0x00000000c000570c      0x2ca Qiusuo/build/thread.o
- *fill*         0x00000000c00059d6        0x2 
- .rodata        0x00000000c00059d8      0x12f Qiusuo/build/sync.o
- .rodata        0x00000000c0005b07       0x36 Qiusuo/build/keyboard.o
- *fill*         0x00000000c0005b3d        0x3 
- .rodata        0x00000000c0005b40       0xa5 Qiusuo/build/ioqueue.o
- .rodata        0x00000000c0005be5       0x27 Qiusuo/build/tss.o
- .rodata        0x00000000c0005c0c       0xe1 Qiusuo/build/process.o
+ .rodata        0x00000000c0006000       0xd8 Qiusuo/build/main.o
+ .rodata        0x00000000c00060d8        0xa Qiusuo/build/init.o
+ *fill*         0x00000000c00060e2        0x2 
+ .rodata        0x00000000c00060e4      0x2c9 Qiusuo/build/interrupt.o
+ *fill*         0x00000000c00063ad        0x3 
+ .rodata        0x00000000c00063b0       0x70 Qiusuo/build/timer.o
+ .rodata        0x00000000c0006420       0x3c Qiusuo/build/debug.o
+ .rodata        0x00000000c000645c       0xc2 Qiusuo/build/string.o
+ *fill*         0x00000000c000651e        0x2 
+ .rodata        0x00000000c0006520       0x74 Qiusuo/build/bitmap.o
+ .rodata        0x00000000c0006594      0x3df Qiusuo/build/memory.o
+ *fill*         0x00000000c0006973        0x1 
+ .rodata        0x00000000c0006974      0x2ca Qiusuo/build/thread.o
+ *fill*         0x00000000c0006c3e        0x2 
+ .rodata        0x00000000c0006c40      0x12f Qiusuo/build/sync.o
+ .rodata        0x00000000c0006d6f       0x36 Qiusuo/build/keyboard.o
+ *fill*         0x00000000c0006da5        0x3 
+ .rodata        0x00000000c0006da8       0xa5 Qiusuo/build/ioqueue.o
+ .rodata        0x00000000c0006e4d       0x27 Qiusuo/build/tss.o
+ .rodata        0x00000000c0006e74       0xe1 Qiusuo/build/process.o
+ .rodata        0x00000000c0006f55       0x27 Qiusuo/build/syscall-init.o
 
 .rodata1
  *(.rodata1)
@@ -300,39 +329,45 @@ LOAD Qiusuo/build/process.o
  *(.eh_frame_hdr)
  *(.eh_frame_entry .eh_frame_entry.*)
 
-.eh_frame       0x00000000c0005cf0      0xd2c
+.eh_frame       0x00000000c0006f7c      0xfb4
  *(.eh_frame)
- .eh_frame      0x00000000c0005cf0       0xdc Qiusuo/build/main.o
- .eh_frame      0x00000000c0005dcc       0x20 Qiusuo/build/init.o
+ .eh_frame      0x00000000c0006f7c       0xa4 Qiusuo/build/main.o
+ .eh_frame      0x00000000c0007020       0x20 Qiusuo/build/init.o
                                          0x38 (松开之前的大小)
- .eh_frame      0x00000000c0005dec      0x188 Qiusuo/build/interrupt.o
+ .eh_frame      0x00000000c0007040      0x188 Qiusuo/build/interrupt.o
                                         0x1a0 (松开之前的大小)
- .eh_frame      0x00000000c0005f74       0x8c Qiusuo/build/timer.o
+ .eh_frame      0x00000000c00071c8       0x8c Qiusuo/build/timer.o
                                          0xa4 (松开之前的大小)
- .eh_frame      0x00000000c0006000       0x1c Qiusuo/build/debug.o
+ .eh_frame      0x00000000c0007254       0x1c Qiusuo/build/debug.o
                                          0x34 (松开之前的大小)
- .eh_frame      0x00000000c000601c      0x140 Qiusuo/build/string.o
+ .eh_frame      0x00000000c0007270      0x140 Qiusuo/build/string.o
                                         0x158 (松开之前的大小)
- .eh_frame      0x00000000c000615c       0x94 Qiusuo/build/bitmap.o
+ .eh_frame      0x00000000c00073b0       0x94 Qiusuo/build/bitmap.o
                                          0xac (松开之前的大小)
- .eh_frame      0x00000000c00061f0      0x180 Qiusuo/build/memory.o
-                                        0x198 (松开之前的大小)
- .eh_frame      0x00000000c0006370      0x140 Qiusuo/build/list.o
+ .eh_frame      0x00000000c0007444      0x2a0 Qiusuo/build/memory.o
+                                        0x2b8 (松开之前的大小)
+ .eh_frame      0x00000000c00076e4      0x140 Qiusuo/build/list.o
                                         0x158 (松开之前的大小)
- .eh_frame      0x00000000c00064b0      0x160 Qiusuo/build/thread.o
-                                        0x178 (松开之前的大小)
- .eh_frame      0x00000000c0006610       0xc0 Qiusuo/build/console.o
+ .eh_frame      0x00000000c0007824      0x180 Qiusuo/build/thread.o
+                                        0x198 (松开之前的大小)
+ .eh_frame      0x00000000c00079a4       0xc0 Qiusuo/build/console.o
                                          0xd8 (松开之前的大小)
- .eh_frame      0x00000000c00066d0       0xc8 Qiusuo/build/sync.o
+ .eh_frame      0x00000000c0007a64       0xc8 Qiusuo/build/sync.o
                                          0xe0 (松开之前的大小)
- .eh_frame      0x00000000c0006798       0x60 Qiusuo/build/keyboard.o
+ .eh_frame      0x00000000c0007b2c       0x60 Qiusuo/build/keyboard.o
                                          0x78 (松开之前的大小)
- .eh_frame      0x00000000c00067f8      0x100 Qiusuo/build/ioqueue.o
+ .eh_frame      0x00000000c0007b8c      0x100 Qiusuo/build/ioqueue.o
                                         0x118 (松开之前的大小)
- .eh_frame      0x00000000c00068f8       0x64 Qiusuo/build/tss.o
+ .eh_frame      0x00000000c0007c8c       0x64 Qiusuo/build/tss.o
                                          0x7c (松开之前的大小)
- .eh_frame      0x00000000c000695c       0xc0 Qiusuo/build/process.o
+ .eh_frame      0x00000000c0007cf0       0xc0 Qiusuo/build/process.o
                                          0xd8 (松开之前的大小)
+ .eh_frame      0x00000000c0007db0       0x8c Qiusuo/build/syscall.o
+                                         0xa4 (松开之前的大小)
+ .eh_frame      0x00000000c0007e3c       0x60 Qiusuo/build/syscall-init.o
+                                         0x78 (松开之前的大小)
+ .eh_frame      0x00000000c0007e9c       0x94 Qiusuo/build/stdio.o
+                                         0xac (松开之前的大小)
  *(.eh_frame.*)
 
 .gcc_except_table
@@ -343,7 +378,7 @@ LOAD Qiusuo/build/process.o
 
 .exception_ranges
  *(.exception_ranges*)
-                0x00000000c0008000                . = DATA_SEGMENT_ALIGN (CONSTANT (MAXPAGESIZE), CONSTANT (COMMONPAGESIZE))
+                0x00000000c0009000                . = DATA_SEGMENT_ALIGN (CONSTANT (MAXPAGESIZE), CONSTANT (COMMONPAGESIZE))
 
 .eh_frame
  *(.eh_frame)
@@ -358,7 +393,7 @@ LOAD Qiusuo/build/process.o
 .exception_ranges
  *(.exception_ranges*)
 
-.tdata          0x00000000c0008000        0x0
+.tdata          0x00000000c0009000        0x0
                 [!provide]                        PROVIDE (__tdata_start = .)
  *(.tdata .tdata.* .gnu.linkonce.td.*)
 
@@ -366,18 +401,18 @@ LOAD Qiusuo/build/process.o
  *(.tbss .tbss.* .gnu.linkonce.tb.*)
  *(.tcommon)
 
-.preinit_array  0x00000000c0008000        0x0
+.preinit_array  0x00000000c0009000        0x0
                 [!provide]                        PROVIDE (__preinit_array_start = .)
  *(.preinit_array)
                 [!provide]                        PROVIDE (__preinit_array_end = .)
 
-.init_array     0x00000000c0008000        0x0
+.init_array     0x00000000c0009000        0x0
                 [!provide]                        PROVIDE (__init_array_start = .)
  *(SORT_BY_INIT_PRIORITY(.init_array.*) SORT_BY_INIT_PRIORITY(.ctors.*))
  *(.init_array EXCLUDE_FILE(*crtend?.o *crtend.o *crtbegin?.o *crtbegin.o) .ctors)
                 [!provide]                        PROVIDE (__init_array_end = .)
 
-.fini_array     0x00000000c0008000        0x0
+.fini_array     0x00000000c0009000        0x0
                 [!provide]                        PROVIDE (__fini_array_start = .)
  *(SORT_BY_INIT_PRIORITY(.fini_array.*) SORT_BY_INIT_PRIORITY(.dtors.*))
  *(.fini_array EXCLUDE_FILE(*crtend?.o *crtend.o *crtbegin?.o *crtbegin.o) .dtors)
@@ -407,99 +442,110 @@ LOAD Qiusuo/build/process.o
 .dynamic
  *(.dynamic)
 
-.got            0x00000000c0008000        0x0
+.got            0x00000000c0009000        0x0
  *(.got)
- .got           0x00000000c0008000        0x0 Qiusuo/build/main.o
+ .got           0x00000000c0009000        0x0 Qiusuo/build/main.o
  *(.igot)
-                0x00000000c0008000                . = DATA_SEGMENT_RELRO_END (., (SIZEOF (.got.plt) >= 0xc)?0xc:0x0)
+                0x00000000c0009000                . = DATA_SEGMENT_RELRO_END (., (SIZEOF (.got.plt) >= 0xc)?0xc:0x0)
 
-.got.plt        0x00000000c0008000        0x0
+.got.plt        0x00000000c0009000        0x0
  *(.got.plt)
- .got.plt       0x00000000c0008000        0x0 Qiusuo/build/main.o
+ .got.plt       0x00000000c0009000        0x0 Qiusuo/build/main.o
  *(.igot.plt)
- .igot.plt      0x00000000c0008000        0x0 Qiusuo/build/main.o
+ .igot.plt      0x00000000c0009000        0x0 Qiusuo/build/main.o
 
-.data           0x00000000c0008000      0x15c
+.data           0x00000000c0009000      0x15c
  *(.data .data.* .gnu.linkonce.d.*)
- .data          0x00000000c0008000        0x0 Qiusuo/build/main.o
- .data          0x00000000c0008000        0x0 Qiusuo/build/init.o
- .data          0x00000000c0008000        0x0 Qiusuo/build/interrupt.o
- .data          0x00000000c0008000        0x0 Qiusuo/build/timer.o
- .data          0x00000000c0008000       0xc0 Qiusuo/build/kernel.o
-                0x00000000c0008000                intr_entry_table
- .data          0x00000000c00080c0        0x8 Qiusuo/build/print.o
- .data          0x00000000c00080c8        0x0 Qiusuo/build/debug.o
- .data          0x00000000c00080c8        0x0 Qiusuo/build/string.o
- .data          0x00000000c00080c8        0x0 Qiusuo/build/bitmap.o
- .data          0x00000000c00080c8        0x0 Qiusuo/build/memory.o
- .data          0x00000000c00080c8        0x0 Qiusuo/build/list.o
- .data          0x00000000c00080c8        0x0 Qiusuo/build/thread.o
- .data          0x00000000c00080c8        0x0 Qiusuo/build/console.o
- .data          0x00000000c00080c8        0x0 Qiusuo/build/sync.o
- *fill*         0x00000000c00080c8       0x18 
- .data          0x00000000c00080e0       0x76 Qiusuo/build/keyboard.o
- *fill*         0x00000000c0008156        0x2 
- .data          0x00000000c0008158        0x4 Qiusuo/build/ioqueue.o
-                0x00000000c0008158                magicc
- .data          0x00000000c000815c        0x0 Qiusuo/build/tss.o
- .data          0x00000000c000815c        0x0 Qiusuo/build/process.o
+ .data          0x00000000c0009000        0x0 Qiusuo/build/main.o
+ .data          0x00000000c0009000        0x0 Qiusuo/build/init.o
+ .data          0x00000000c0009000        0x0 Qiusuo/build/interrupt.o
+ .data          0x00000000c0009000        0x0 Qiusuo/build/timer.o
+ .data          0x00000000c0009000       0xc0 Qiusuo/build/kernel.o
+                0x00000000c0009000                intr_entry_table
+ .data          0x00000000c00090c0        0x8 Qiusuo/build/print.o
+ .data          0x00000000c00090c8        0x0 Qiusuo/build/debug.o
+ .data          0x00000000c00090c8        0x0 Qiusuo/build/string.o
+ .data          0x00000000c00090c8        0x0 Qiusuo/build/bitmap.o
+ .data          0x00000000c00090c8        0x0 Qiusuo/build/memory.o
+ .data          0x00000000c00090c8        0x0 Qiusuo/build/list.o
+ .data          0x00000000c00090c8        0x0 Qiusuo/build/thread.o
+ .data          0x00000000c00090c8        0x0 Qiusuo/build/console.o
+ .data          0x00000000c00090c8        0x0 Qiusuo/build/sync.o
+ *fill*         0x00000000c00090c8       0x18 
+ .data          0x00000000c00090e0       0x76 Qiusuo/build/keyboard.o
+ *fill*         0x00000000c0009156        0x2 
+ .data          0x00000000c0009158        0x4 Qiusuo/build/ioqueue.o
+                0x00000000c0009158                magicc
+ .data          0x00000000c000915c        0x0 Qiusuo/build/tss.o
+ .data          0x00000000c000915c        0x0 Qiusuo/build/process.o
+ .data          0x00000000c000915c        0x0 Qiusuo/build/syscall.o
+ .data          0x00000000c000915c        0x0 Qiusuo/build/syscall-init.o
+ .data          0x00000000c000915c        0x0 Qiusuo/build/stdio.o
 
 .data1
  *(.data1)
-                0x00000000c000815c                _edata = .
+                0x00000000c000915c                _edata = .
                 [!provide]                        PROVIDE (edata = .)
-                0x00000000c000815c                . = .
-                0x00000000c000815c                __bss_start = .
+                0x00000000c000915c                . = .
+                0x00000000c000915c                __bss_start = .
 
-.bss            0x00000000c0008160      0x52c
+.bss            0x00000000c0009160      0xbc0
  *(.dynbss)
  *(.bss .bss.* .gnu.linkonce.b.*)
- .bss           0x00000000c0008160        0x8 Qiusuo/build/main.o
-                0x00000000c0008160                ua
-                0x00000000c0008164                ub
- .bss           0x00000000c0008168        0x0 Qiusuo/build/init.o
- *fill*         0x00000000c0008168       0x18 
- .bss           0x00000000c0008180      0x180 Qiusuo/build/interrupt.o
- .bss           0x00000000c0008300        0x0 Qiusuo/build/timer.o
- .bss           0x00000000c0008300        0x0 Qiusuo/build/debug.o
- .bss           0x00000000c0008300        0x0 Qiusuo/build/string.o
- .bss           0x00000000c0008300        0x0 Qiusuo/build/bitmap.o
- .bss           0x00000000c0008300        0x0 Qiusuo/build/memory.o
- .bss           0x00000000c0008300        0x0 Qiusuo/build/list.o
- .bss           0x00000000c0008300        0x4 Qiusuo/build/thread.o
- .bss           0x00000000c0008304       0x1c Qiusuo/build/console.o
- .bss           0x00000000c0008320        0x0 Qiusuo/build/sync.o
- .bss           0x00000000c0008320       0x14 Qiusuo/build/keyboard.o
- .bss           0x00000000c0008334        0x0 Qiusuo/build/ioqueue.o
- *fill*         0x00000000c0008334        0xc 
- .bss           0x00000000c0008340       0x6c Qiusuo/build/tss.o
- .bss           0x00000000c00083ac        0x0 Qiusuo/build/process.o
+ .bss           0x00000000c0009160        0x8 Qiusuo/build/main.o
+                0x00000000c0009160                prog_a_pid
+                0x00000000c0009164                prog_b_pid
+ .bss           0x00000000c0009168        0x0 Qiusuo/build/init.o
+ *fill*         0x00000000c0009168       0x18 
+ .bss           0x00000000c0009180      0x408 Qiusuo/build/interrupt.o
+ .bss           0x00000000c0009588        0x0 Qiusuo/build/timer.o
+ .bss           0x00000000c0009588        0x0 Qiusuo/build/debug.o
+ .bss           0x00000000c0009588        0x0 Qiusuo/build/string.o
+ .bss           0x00000000c0009588        0x0 Qiusuo/build/bitmap.o
+ .bss           0x00000000c0009588        0x0 Qiusuo/build/memory.o
+ .bss           0x00000000c0009588        0x0 Qiusuo/build/list.o
+ .bss           0x00000000c0009588        0x6 Qiusuo/build/thread.o
+ *fill*         0x00000000c000958e        0x2 
+ .bss           0x00000000c0009590       0x1c Qiusuo/build/console.o
+ .bss           0x00000000c00095ac        0x0 Qiusuo/build/sync.o
+ .bss           0x00000000c00095ac       0x14 Qiusuo/build/keyboard.o
+ .bss           0x00000000c00095c0        0x0 Qiusuo/build/ioqueue.o
+ .bss           0x00000000c00095c0       0x6c Qiusuo/build/tss.o
+ .bss           0x00000000c000962c        0x0 Qiusuo/build/process.o
+ .bss           0x00000000c000962c        0x0 Qiusuo/build/syscall.o
+ .bss           0x00000000c000962c        0x0 Qiusuo/build/syscall-init.o
+ .bss           0x00000000c000962c        0x0 Qiusuo/build/stdio.o
  *(COMMON)
- *fill*         0x00000000c00083ac       0x14 
- COMMON         0x00000000c00083c0      0x180 Qiusuo/build/interrupt.o
-                0x00000000c00083c0                idt_func_table
-                0x00000000c0008480                intr_name
- COMMON         0x00000000c0008540        0x4 Qiusuo/build/timer.o
-                0x00000000c0008540                ticks
- *fill*         0x00000000c0008544       0x1c 
- COMMON         0x00000000c0008560       0x8c Qiusuo/build/memory.o
-                0x00000000c0008560                kernel_vaddr_pool
-                0x00000000c0008580                user_pool
-                0x00000000c00085c0                kernel_pool
- COMMON         0x00000000c00085ec       0x24 Qiusuo/build/thread.o
-                0x00000000c00085ec                thread_ready_list
-                0x00000000c00085fc                thread_all_list
-                0x00000000c000860c                main_thread
- *fill*         0x00000000c0008610       0x10 
- COMMON         0x00000000c0008620       0x6c Qiusuo/build/keyboard.o
-                0x00000000c0008620                kbd_buf
-                0x00000000c000868c                . = ALIGN ((. != 0x0)?0x4:0x1)
-                0x00000000c000868c                . = ALIGN (0x4)
-                0x00000000c000868c                . = SEGMENT_START ("ldata-segment", .)
-                0x00000000c000868c                . = ALIGN (0x4)
-                0x00000000c000868c                _end = .
+ *fill*         0x00000000c000962c       0x14 
+ COMMON         0x00000000c0009640      0x424 Qiusuo/build/interrupt.o
+                0x00000000c0009640                idt_func_table
+                0x00000000c0009860                intr_name
+ COMMON         0x00000000c0009a64        0x4 Qiusuo/build/timer.o
+                0x00000000c0009a64                ticks
+ *fill*         0x00000000c0009a68       0x18 
+ COMMON         0x00000000c0009a80      0x14c Qiusuo/build/memory.o
+                0x00000000c0009a80                kernel_vaddr_pool
+                0x00000000c0009aa0                user_pool
+                0x00000000c0009ae0                k_block_descs
+                0x00000000c0009ba0                kernel_pool
+ COMMON         0x00000000c0009bcc       0x40 Qiusuo/build/thread.o
+                0x00000000c0009bcc                thread_ready_list
+                0x00000000c0009bdc                thread_all_list
+                0x00000000c0009bec                main_thread
+                0x00000000c0009bf0                pid_lock
+ *fill*         0x00000000c0009c0c       0x14 
+ COMMON         0x00000000c0009c20       0x6c Qiusuo/build/keyboard.o
+                0x00000000c0009c20                kbd_buf
+ *fill*         0x00000000c0009c8c       0x14 
+ COMMON         0x00000000c0009ca0       0x80 Qiusuo/build/syscall-init.o
+                0x00000000c0009ca0                syscall_table
+                0x00000000c0009d20                . = ALIGN ((. != 0x0)?0x4:0x1)
+                0x00000000c0009d20                . = ALIGN (0x4)
+                0x00000000c0009d20                . = SEGMENT_START ("ldata-segment", .)
+                0x00000000c0009d20                . = ALIGN (0x4)
+                0x00000000c0009d20                _end = .
                 [!provide]                        PROVIDE (end = .)
-                0x00000000c000868c                . = DATA_SEGMENT_END (.)
+                0x00000000c0009d20                . = DATA_SEGMENT_END (.)
 
 .stab
  *(.stab)
@@ -538,6 +584,9 @@ LOAD Qiusuo/build/process.o
  .comment       0x0000000000000023       0x24 Qiusuo/build/ioqueue.o
  .comment       0x0000000000000023       0x24 Qiusuo/build/tss.o
  .comment       0x0000000000000023       0x24 Qiusuo/build/process.o
+ .comment       0x0000000000000023       0x24 Qiusuo/build/syscall.o
+ .comment       0x0000000000000023       0x24 Qiusuo/build/syscall-init.o
+ .comment       0x0000000000000023       0x24 Qiusuo/build/stdio.o
 
 .gnu.build.attributes
  *(.gnu.build.attributes .gnu.build.attributes.*)

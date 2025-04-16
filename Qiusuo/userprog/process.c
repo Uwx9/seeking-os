@@ -10,6 +10,7 @@
 #include "interrupt.h"
 #include "list.h"
 #include "string.h"
+#include "memory.h"
 
 extern void intr_exit(void);
 extern struct list thread_ready_list;
@@ -108,6 +109,8 @@ void process_execute(void* filename, char* name)
 	create_user_vaddr_bitmap(thread);
 	thread_create(thread, start_process, filename);
 	thread->pgdir = create_page_dir();
+	block_descs_init(thread->u_block_descs);
+
 	
 	enum intr_status old_status = intr_disable();
 	ASSERT(!elem_find(&thread_ready_list, &thread->general_tag));
