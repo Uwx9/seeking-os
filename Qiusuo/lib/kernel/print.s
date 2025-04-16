@@ -186,7 +186,7 @@ put_int:
 
 .is_A2F:
 	sub edx,10
-	add edx,'a'
+	add edx,'A'
 
 .store:
 	mov [ebx+edi],dl			;参数低位的asci码放到buffer高位，便于显示	

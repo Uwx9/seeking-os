@@ -337,7 +337,10 @@ rd_disk_m_32:
 	mov ax,di
 	mov dx,256
 	mul dx
-	mov cx,ax
+	xor ecx, ecx 
+	mov cx, dx 
+	shl ecx, 16
+	mov cx, ax 
 	;di为要读取的扇区数,每次读入一个字,一共要读di*512/2次
 	mov dx,0x1f0
 .go_on_read:
@@ -347,3 +350,5 @@ rd_disk_m_32:
 	loop .go_on_read
 	ret
 
+;!!!当我试图从磁盘读取300个扇区时发生严重bug,
+;磁盘里kernel.bin中的代码和ro数据正确的挪到了0x70000,但是偏移kernel.bin0x6000字节的可读写数据并没有被正确移动到0x76000,改为200个扇区后正常

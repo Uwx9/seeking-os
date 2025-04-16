@@ -6,14 +6,28 @@
 #include "interrupt.h"
 #include "print.h"
 #include "debug.h"
+#include "process.h"
+#include "sync.h"
 
 #define PG_SIZE 4096
 
-struct task* main_thread;				//主线程PCB
-struct list thread_ready_list;			//就绪队列 
-struct list thread_all_list;			//所有任务队列
-static struct list_elem* thread_tag;	//用于保存队列中的线程结点
+struct task* main_thread;				// 主线程PCB
+struct list thread_ready_list;			// 就绪队列 
+struct list thread_all_list;			// 所有任务队列
+static struct list_elem* thread_tag;	// 用于保存队列中的线程结点
+struct lock pid_lock;					// 分配 pid 锁
+
 extern void switch_to(struct task* cur, struct task* next);
+
+/* 分配pid */ 
+static pid_t allocate_pid(void)
+{
+	static pid_t next_pid = 0;
+	lock_acquire(&pid_lock);
+	next_pid++;
+	lock_release(&pid_lock);
+	return next_pid;
+}
 
 /* 获取当前线程pcb指针 */
 struct task* running_thread()
@@ -56,6 +70,7 @@ void thread_create(struct task* pthread, thread_func* function, void* func_arg)
 void init_task(struct task* pthread, char* name, int prio)
 {
 	memset(pthread, 0, sizeof(*pthread));
+	pthread->pid = allocate_pid();
 	strcpy(pthread->name, name);
 
 	/* 由于把main函数也封装成一个线程，并且它一直是运行的，故将其直接设为TASK_RUNNING */
@@ -144,6 +159,8 @@ void schedule()
 	struct task* next = elem2entry(struct task, general_tag, thread_tag);
 	next->status = TASK_RUNNING;
 
+	/* 激活线程或进程的页表，更新tss中的esp0为进程的特权级0的栈 */
+	process_activate(next);
 	switch_to(cur, next);
 
 }
@@ -183,6 +200,7 @@ void thread_init(void)
 	put_str("thread_init start\n");
 	list_init(&thread_ready_list);
 	list_init(&thread_all_list);
+	lock_init(&pid_lock);
 /* 将当前main函数创建为线程 */
 	make_main_thread();
 	put_str("thread_init done\n");
