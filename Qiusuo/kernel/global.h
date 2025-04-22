@@ -11,6 +11,8 @@ typedef enum {
 // NULL
 #define NULL (void*)0
 
+#define UNUSED __attribute__((unused))
+
 #define default_prio 30
 
 #define RPL0 0
@@ -100,5 +102,6 @@ struct gdt_desc {
 #define DIV_ROUND_UP(X, STEP)	((X + STEP - 1) / STEP) 
 
 #endif
+
 
 

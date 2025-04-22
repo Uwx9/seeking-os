@@ -3,7 +3,7 @@
 #include "stdint.h"
 #include "list.h"
 #include "bitmap.h"
-#include "memory.h"
+#include "../kernel/memory.h"
 
 /* 自定义通用函数类型，它将在很多线程函数中作为形参类型 */
 /* 给函数类型(返回类型+参数列表)起别名 
@@ -107,6 +107,7 @@ void show_schedule_message(struct task* cur, struct task* next);
 void schedule(void);
 void thread_block(enum task_status statu);
 void thread_unblock(struct task* pthread);
+void thread_yield(void);
 void thread_init(void);
 
 #endif
