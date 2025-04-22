@@ -4,9 +4,6 @@
 #include "global.h"
 #include "./usr/syscall.h"
 
-#define va_start(ap, v) ap = (va_list)&v	// ap拿到第一个参数的地址
-#define va_arg(ap, t) *((t*)(ap += 4))		// ap指向下一个t类型参数，并返回其值
-#define va_end(ap) ap = NULL				// 清除ap
 
 /* 将整型转换成字符（integer to ascii） */
 /* 感觉可以想象成10进制的不断拿到最后一位,实际上应该是一回事,对10进制数处理时它实际都是二进制数,但都能得到正确结果,

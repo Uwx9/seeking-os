@@ -19,7 +19,7 @@ OBJS = $(BUILD_DIR)/main.o 		$(BUILD_DIR)/init.o 	$(BUILD_DIR)/interrupt.o	\
 	   $(BUILD_DIR)/switch.o	$(BUILD_DIR)/console.o 	$(BUILD_DIR)/sync.o 		\
 	   $(BUILD_DIR)/keyboard.o	$(BUILD_DIR)/ioqueue.o 	$(BUILD_DIR)/tss.o 			\
 	   $(BUILD_DIR)/process.o	$(BUILD_DIR)/syscall.o	$(BUILD_DIR)/syscall-init.o \
-	   $(BUILD_DIR)/stdio.o
+	   $(BUILD_DIR)/stdio.o		$(BUILD_DIR)/ide.o 		$(BUILD_DIR)/stdio-kernel.o
 	   
 ########################         C代码编译        ########################
 $(BUILD_DIR)/main.o: Qiusuo/kernel/main.c Qiusuo/kernel/debug.h Qiusuo/kernel/init.h	Qiusuo/thread/thread.h	\
@@ -28,7 +28,8 @@ $(BUILD_DIR)/main.o: Qiusuo/kernel/main.c Qiusuo/kernel/debug.h Qiusuo/kernel/in
 	$(CC) $(CFLAGS) -o $@ $<
 
 $(BUILD_DIR)/init.o: Qiusuo/kernel/init.c Qiusuo/kernel/init.h Qiusuo/kernel/interrupt.h  Qiusuo/device/timer.h		\
-	Qiusuo/lib/stdint.h Qiusuo/device/console.h Qiusuo/device/keyboard.h Qiusuo/userprog/tss.h Qiusuo/kernel/init.h 
+	Qiusuo/lib/stdint.h Qiusuo/device/console.h Qiusuo/device/keyboard.h Qiusuo/userprog/tss.h Qiusuo/kernel/init.h 	\
+	Qiusuo/device/ide.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
 $(BUILD_DIR)/interrupt.o: Qiusuo/kernel/interrupt.c Qiusuo/kernel/interrupt.h Qiusuo/kernel/global.h		\
@@ -98,6 +99,15 @@ $(BUILD_DIR)/syscall-init.o: Qiusuo/lib/usr/syscall-init.c Qiusuo/lib/usr/syscal
 
 $(BUILD_DIR)/stdio.o: Qiusuo/lib/stdio.c Qiusuo/lib/stdio.h Qiusuo/lib/stdint.h Qiusuo/lib/string.h Qiusuo/kernel/global.h		\
 	Qiusuo/lib/usr/syscall.h 
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(BUILD_DIR)/ide.o: Qiusuo/device/ide.c Qiusuo/device/ide.h Qiusuo/lib/kernel/stdio-kernel.h Qiusuo/lib/stdint.h Qiusuo/kernel/debug.h	\
+	Qiusuo/kernel/global.h Qiusuo/lib/kernel/io.h Qiusuo/device/timer.h Qiusuo/kernel/interrupt.h Qiusuo/kernel/memory.h 		\
+	Qiusuo/lib/stdio.h Qiusuo/lib/string.h 
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(BUILD_DIR)/stdio-kernel.o: Qiusuo/lib/kernel/stdio-kernel.c Qiusuo/lib/kernel/stdio-kernel.h Qiusuo/kernel/global.h Qiusuo/lib/stdio.h Qiusuo/device/console.h \
+	Qiusuo/lib/stdint.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
 ########################         汇编代码编译        ########################
