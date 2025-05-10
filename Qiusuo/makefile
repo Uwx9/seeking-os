@@ -8,7 +8,7 @@ CC = gcc
 AS = nasm
 LD = ld 
 
-LIB = -I  lib -I  lib/kernel -I  lib/usr -I  device/ -I kernel/ -I thread/ -I userprog/
+LIB = -I  lib -I  lib/kernel -I  lib/usr -I  device/ -I kernel/ -I thread/ -I userprog/ -I fs/
 
 ASFLAGS = -f elf -g
 CFLAGS = -c -m32 -Wall -fno-stack-protector $(LIB) -fno-builtin -W -Wstrict-prototypes -Wmissing-prototypes -g
@@ -21,7 +21,9 @@ OBJS = $(BUILD_DIR)/main.o 		$(BUILD_DIR)/init.o 	$(BUILD_DIR)/interrupt.o	\
 	   $(BUILD_DIR)/switch.o	$(BUILD_DIR)/console.o 	$(BUILD_DIR)/sync.o 		\
 	   $(BUILD_DIR)/keyboard.o	$(BUILD_DIR)/ioqueue.o 	$(BUILD_DIR)/tss.o 			\
 	   $(BUILD_DIR)/process.o	$(BUILD_DIR)/syscall.o	$(BUILD_DIR)/syscall-init.o \
-	   $(BUILD_DIR)/stdio.o		$(BUILD_DIR)/ide.o 		$(BUILD_DIR)/stdio-kernel.o
+	   $(BUILD_DIR)/stdio.o		$(BUILD_DIR)/ide.o 		$(BUILD_DIR)/stdio-kernel.o \
+	   $(BUILD_DIR)/fs.o 		$(BUILD_DIR)/dir.o 		$(BUILD_DIR)/file.o 		\
+	   $(BUILD_DIR)/inode.o 
 	   
 ########################         C代码编译        ########################
 $(BUILD_DIR)/main.o: kernel/main.c kernel/debug.h kernel/init.h	thread/thread.h	\
@@ -31,7 +33,7 @@ $(BUILD_DIR)/main.o: kernel/main.c kernel/debug.h kernel/init.h	thread/thread.h	
 
 $(BUILD_DIR)/init.o: kernel/init.c kernel/init.h kernel/interrupt.h  device/timer.h		\
 	lib/stdint.h device/console.h device/keyboard.h userprog/tss.h kernel/init.h 	\
-	device/ide.h 
+	device/ide.h fs/fs.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
 $(BUILD_DIR)/interrupt.o: kernel/interrupt.c kernel/interrupt.h kernel/global.h		\
@@ -112,6 +114,25 @@ $(BUILD_DIR)/stdio-kernel.o: lib/kernel/stdio-kernel.c lib/kernel/stdio-kernel.h
 	lib/stdint.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
+$(BUILD_DIR)/fs.o: fs/fs.c fs/fs.h fs/dir.h fs/inode.h fs/super_block.h kernel/global.h		\
+	lib/stdint.h lib/kernel/stdio-kernel.h kernel/memory.h kernel/debug.h lib/string.h \
+	lib/kernel/list.h 	
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(BUILD_DIR)/dir.o: fs/dir.c fs/dir.h fs/inode.h fs/super_block.h kernel/global.h fs/fs.h		\
+	lib/stdint.h lib/kernel/stdio-kernel.h  kernel/debug.h lib/string.h fs/file.h device/ide.h		
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(BUILD_DIR)/file.o: fs/file.c  fs/file.h fs/inode.h fs/super_block.h kernel/global.h fs/fs.h		\
+	lib/stdint.h lib/kernel/stdio-kernel.h  kernel/debug.h lib/string.h device/ide.h	fs/dir.h		\
+	thread/thread.h lib/kernel/bitmap.h 
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(BUILD_DIR)/inode.o: fs/inode.c fs/inode.h fs/super_block.h kernel/global.h fs/fs.h	kernel/debug.h 	\
+	lib/stdint.h lib/kernel/stdio-kernel.h  kernel/debug.h lib/string.h fs/file.h device/ide.h		\
+	thread/thread.h kernel/interrupt.h 
+	$(CC) $(CFLAGS) -o $@ $<
+
 ########################         汇编代码编译        ########################
 ########        boot        #######
 $(BUILD_DIR)/mbr.bin: boot/mbr.s boot/include/boot.inc
@@ -146,7 +167,7 @@ build: mk_dir $(BUILD_DIR)/kernel.bin
 hd:
 	dd if=$(BUILD_DIR)/mbr.bin of=$(HD60M_PATH) bs=512 count=1 conv=notrunc 
 	dd if=$(BUILD_DIR)/loader.bin of=$(HD60M_PATH) bs=512 count=4 seek=2 conv=notrunc
-	dd if=$(BUILD_DIR)/kernel.bin of=$(HD60M_PATH) bs=512 count=233 seek=9 conv=notrunc
+	dd if=$(BUILD_DIR)/kernel.bin of=$(HD60M_PATH) bs=512 count=255 seek=9 conv=notrunc
 
 #生成可以被GDB理解的符号表，用于GDB调试
 gdb_symbol:

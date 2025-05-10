@@ -1,9 +1,28 @@
 {
 	"files.associations": {
-		"*.sqlbook": "sql",
-		"*.ndjson": "jsonl",
-		"*.dbclient-js": "javascript",
+		"process": "c",
+		"memory.h": "c",
 		"thread.h": "c",
-		"io.h": "c"
+		"interrupt.h": "c",
+		"stdint.h": "c",
+		"*.tcc": "c",
+		"exception": "c",
+		"fstream": "c",
+		"iosfwd": "c",
+		"new": "c",
+		"ostream": "c",
+		"sstream": "c",
+		"streambuf": "c",
+		"memory_resource": "c",
+		"syscall.h": "c",
+		"string.h": "c",
+		"console.h": "c",
+		"list.h": "c",
+		"inode.h": "c",
+		"stdio-kernel.h": "c",
+		"super_block.h": "c",
+		"global.h": "c",
+		"fs.h": "c",
+		"print.h": "c"
 	}
 }
