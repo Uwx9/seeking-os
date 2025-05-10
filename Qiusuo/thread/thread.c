@@ -97,6 +97,19 @@ void init_task(struct task* pthread, char* name, int prio)
 	pthread->ticks = prio;
 	pthread->elapsed_ticks = 0;
 	pthread->pgdir = NULL;
+
+	/* 预留标准输入输出*/
+	pthread->fd_table[0] = 0;	// 描述符0, 指fd_table下标
+	pthread->fd_table[1] = 1;	// 描述符1
+	pthread->fd_table[2] = 2;	// 描述符2
+	/* 因为不能让文件描述符都指向文件表第0个位置，所以置为-1 */
+	uint32_t fd_idx = 3;
+	while (fd_idx < MAX_FILES_OPEN_PER_PROC) {
+		pthread->fd_table[fd_idx] = -1;
+		fd_idx++;
+	}
+	
+	pthread->cwd_inode_nr = 0;	// 以根目录作为默认工作路径
 	pthread->stack_magic = 0x20050608;
 
 }

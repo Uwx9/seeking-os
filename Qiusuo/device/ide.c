@@ -272,6 +272,12 @@ static void partition_scan(struct disk* hd, uint32_t ext_lba)
 			} else {
 				// ext_lba_base 为0表示是第一次读取引导块，也就是主引导记录所在的扇区 
              	// 记录下总扩展分区的起始lba地址，后面所有的扩展分区地址都相对于此 
+				// hd->prim_parts[part_idx-1].start_lba = ext_lba + p->start_lba;
+				// hd->prim_parts[part_idx-1].sec_cnt = p->sec_cnt;
+				// hd->prim_parts[part_idx-1].mydisk = hd;
+				// list_append(&partition_list, &hd->prim_parts[part_idx-1].part_tag);
+				// sprintf(hd->prim_parts[part_idx-1].name, "%s%d", hd->name, part_idx);
+				
 				ext_lba_base = p->start_lba;
 				partition_scan(hd, p->start_lba);
 			}

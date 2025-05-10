@@ -38,6 +38,10 @@ struct ide_channel {
 	struct disk devices[2];				// 一个通道上连接两个硬盘，一主一从
 };
 
+extern uint8_t channel_cnt;				// 按硬盘数计算的通道数
+extern struct ide_channel channels[2];	// 有两个ide通道, 硬盘和分区在内存中的信息都在这里
+extern struct list partition_list;
+
 void ide_read(struct disk* hd, uint32_t lba, void* buf, uint32_t sec_cnt);
 void ide_write(struct disk* hd, uint32_t lba, void* buf, uint32_t sec_cnt);
 void intr_hd_handler(uint8_t irq_no);

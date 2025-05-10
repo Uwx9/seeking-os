@@ -6,7 +6,8 @@ CC = gcc
 AS = nasm
 LD = ld 
 
-LIB = -I  Qiusuo/lib -I  Qiusuo/lib/kernel -I  Qiusuo/lib/usr -I  Qiusuo/device/ -I Qiusuo/kernel/ -I Qiusuo/thread/ -I Qiusuo/userprog/
+LIB = -I  Qiusuo/lib -I  Qiusuo/lib/kernel -I  Qiusuo/lib/usr -I  Qiusuo/device/ -I Qiusuo/kernel/ -I Qiusuo/thread/ -I Qiusuo/userprog/	\
+	-I Qiusuo/fs 
 
 ASFLAGS = -f elf 
 CFLAGS = -c -m32 -Wall -fno-stack-protector $(LIB) -fno-builtin -W -Wstrict-prototypes -Wmissing-prototypes 
@@ -19,7 +20,9 @@ OBJS = $(BUILD_DIR)/main.o 		$(BUILD_DIR)/init.o 	$(BUILD_DIR)/interrupt.o	\
 	   $(BUILD_DIR)/switch.o	$(BUILD_DIR)/console.o 	$(BUILD_DIR)/sync.o 		\
 	   $(BUILD_DIR)/keyboard.o	$(BUILD_DIR)/ioqueue.o 	$(BUILD_DIR)/tss.o 			\
 	   $(BUILD_DIR)/process.o	$(BUILD_DIR)/syscall.o	$(BUILD_DIR)/syscall-init.o \
-	   $(BUILD_DIR)/stdio.o		$(BUILD_DIR)/ide.o 		$(BUILD_DIR)/stdio-kernel.o
+	   $(BUILD_DIR)/stdio.o		$(BUILD_DIR)/ide.o 		$(BUILD_DIR)/stdio-kernel.o \
+	   $(BUILD_DIR)/fs.o 		$(BUILD_DIR)/dir.o 		$(BUILD_DIR)/file.o 		\
+	   $(BUILD_DIR)/inode.o 
 	   
 ########################         C代码编译        ########################
 $(BUILD_DIR)/main.o: Qiusuo/kernel/main.c Qiusuo/kernel/debug.h Qiusuo/kernel/init.h	Qiusuo/thread/thread.h	\
@@ -29,7 +32,7 @@ $(BUILD_DIR)/main.o: Qiusuo/kernel/main.c Qiusuo/kernel/debug.h Qiusuo/kernel/in
 
 $(BUILD_DIR)/init.o: Qiusuo/kernel/init.c Qiusuo/kernel/init.h Qiusuo/kernel/interrupt.h  Qiusuo/device/timer.h		\
 	Qiusuo/lib/stdint.h Qiusuo/device/console.h Qiusuo/device/keyboard.h Qiusuo/userprog/tss.h Qiusuo/kernel/init.h 	\
-	Qiusuo/device/ide.h 
+	Qiusuo/device/ide.h Qiusuo/fs/fs.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
 $(BUILD_DIR)/interrupt.o: Qiusuo/kernel/interrupt.c Qiusuo/kernel/interrupt.h Qiusuo/kernel/global.h		\
@@ -110,6 +113,25 @@ $(BUILD_DIR)/stdio-kernel.o: Qiusuo/lib/kernel/stdio-kernel.c Qiusuo/lib/kernel/
 	Qiusuo/lib/stdint.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
+$(BUILD_DIR)/fs.o: Qiusuo/fs/fs.c Qiusuo/fs/fs.h Qiusuo/fs/dir.h Qiusuo/fs/inode.h Qiusuo/fs/super_block.h Qiusuo/kernel/global.h		\
+	Qiusuo/lib/stdint.h Qiusuo/lib/kernel/stdio-kernel.h Qiusuo/kernel/memory.h Qiusuo/kernel/debug.h Qiusuo/lib/string.h \
+	Qiusuo/lib/kernel/list.h Qiusuo/device/console.h
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(BUILD_DIR)/dir.o: Qiusuo/fs/dir.c Qiusuo/fs/dir.h Qiusuo/fs/inode.h Qiusuo/fs/super_block.h Qiusuo/kernel/global.h Qiusuo/fs/fs.h		\
+	Qiusuo/lib/stdint.h Qiusuo/lib/kernel/stdio-kernel.h  Qiusuo/kernel/debug.h Qiusuo/lib/string.h Qiusuo/fs/file.h Qiusuo/device/ide.h		
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(BUILD_DIR)/file.o: Qiusuo/fs/file.c  Qiusuo/fs/file.h Qiusuo/fs/inode.h Qiusuo/fs/super_block.h Qiusuo/kernel/global.h Qiusuo/fs/fs.h		\
+	Qiusuo/lib/stdint.h Qiusuo/lib/kernel/stdio-kernel.h  Qiusuo/kernel/debug.h Qiusuo/lib/string.h Qiusuo/device/ide.h	Qiusuo/fs/dir.h		\
+	Qiusuo/thread/thread.h Qiusuo/lib/kernel/bitmap.h 
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(BUILD_DIR)/inode.o: Qiusuo/fs/inode.c Qiusuo/fs/inode.h Qiusuo/fs/super_block.h Qiusuo/kernel/global.h Qiusuo/fs/fs.h	Qiusuo/kernel/debug.h 	\
+	Qiusuo/lib/stdint.h Qiusuo/lib/kernel/stdio-kernel.h  Qiusuo/kernel/debug.h Qiusuo/lib/string.h Qiusuo/fs/file.h Qiusuo/device/ide.h		\
+	Qiusuo/thread/thread.h Qiusuo/kernel/interrupt.h 
+	$(CC) $(CFLAGS) -o $@ $<
+
 ########################         汇编代码编译        ########################
 ########        boot        #######
 $(BUILD_DIR)/mbr.bin: Qiusuo/boot/mbr.s Qiusuo/boot/include/boot.inc
@@ -144,7 +166,7 @@ build: mk_dir $(BUILD_DIR)/kernel.bin
 hd:
 	dd if=$(BUILD_DIR)/mbr.bin of=$(HD60M_PATH) bs=512 count=1 conv=notrunc 
 	dd if=$(BUILD_DIR)/loader.bin of=$(HD60M_PATH) bs=512 count=4 seek=2 conv=notrunc
-	dd if=$(BUILD_DIR)/kernel.bin of=$(HD60M_PATH) bs=512 count=233 seek=9 conv=notrunc
+	dd if=$(BUILD_DIR)/kernel.bin of=$(HD60M_PATH) bs=512 count=255 seek=9 conv=notrunc
 
 clean:
 	cd $(BUILD_DIR) && rm -f ./*

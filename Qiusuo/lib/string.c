@@ -67,7 +67,7 @@ uint32_t strlen(const char* str)
 int8_t strcmp(const char* a, const char* b)
 {
     ASSERT(a != NULL && b != NULL);
-    while (a != 0 && *a == *b) {    //a!=0防止一直相等后继续循环
+    while (*a != 0 && *a == *b) {    //*a!=0防止一直相等后继续循环
         a++;
         b++;
     }
