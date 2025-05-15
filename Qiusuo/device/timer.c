@@ -70,10 +70,10 @@ void mtime_sleep(uint32_t m_seconds)
 /* 初始化PIT8253 */ 
 void timer_init()
 {
-    put_str("time_init start\n");
+    put_str("time_init start\n", 0x07);
     /* 设置 8253的定时周期，也就是发中断的周期 */ 
     frequency_set(COUNTER0_PORT, COUNTER0_NO, READ_WRITE_LATCH, COUNTER0_MODE, COUNTER0_VAULE);                     
 	register_handler(0x20, intr_timer_handler);
-    put_str("time_init done\n");
+    put_str("time_init done\n", 0x07);
 }
 

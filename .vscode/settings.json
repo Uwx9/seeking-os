@@ -23,6 +23,12 @@
 		"super_block.h": "c",
 		"global.h": "c",
 		"fs.h": "c",
-		"print.h": "c"
+		"print.h": "c",
+		"cstdio": "c",
+		"syscall-init.h": "c",
+		"process.h": "c",
+		"file.h": "c",
+		"ioqueue.h": "c",
+		"keyboard.h": "c"
 	}
 }

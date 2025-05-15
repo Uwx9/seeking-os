@@ -10,7 +10,7 @@ section .text
 global set_cursor
 set_cursor:
 	pushad
-	mov bx, [esp + 36]			;c语言调用，这里跳过pushad的寄存器和返回地址拿到参数
+	mov bx, [esp + 36]			;c语言调用，这里跳过pushad的寄存器和返回地址拿到参数(ebx)
 ;先设置高8位	
 	mov dx,0x03d4				;索引寄存器
 	mov al,0x0e					;光标高八位
@@ -38,18 +38,22 @@ global put_str
 put_str:
 	push ebx
 	push ecx
+	push edx
 	xor ecx,ecx
-	mov ebx,[esp+12]		;ebx为传入的参数，字符串首地址
+	mov ebx,[esp+16]		;ebx为传入的参数，字符串首地址
+	mov edx, [esp + 20]		; 字符属性
 .goon:	
 	mov cl,[ebx]
 	cmp cl,0
 	jz .str_over
+	push edx
 	push ecx
 	call put_char
-	add esp,4
+	add esp,8
 	inc ebx
 	jmp .goon
 .str_over:
+	pop edx
 	pop	ecx
 	pop ebx
 	ret
@@ -103,12 +107,15 @@ put_char:
 	shl bx,1					;光标的位置*2得到字符位置
 	mov byte [gs:bx],cl			;写入字符asc码
 	inc bx
-	mov byte [gs:bx],0x7
+	push eax
+	mov eax, [esp + 44]			; 拿到颜色属性, 注意此时栈里面还多了个eax
+	mov byte [gs:bx],al
+	pop eax
 	shr bx,1
 	inc bx						;下一个光标值
 
 	cmp bx,2000
-	jl .set_cursor_asm				;光标值小于2000表示未写到显存的最后，若超出屏幕字符数大小则换行处理 														
+	jl .set_cursor_asm			;光标值小于2000表示未写到显存的最后，若超出屏幕字符数大小则换行处理 														
 
 .is_line_feed:					;是换行符LF(\n)
 .is_carriage_return:			;是回车符CR(\r)
@@ -214,9 +221,11 @@ put_int:
 	mov cl,'0'
 
 .put_each_number:
+	mov esi, 0x07	; 属性，putchar要用
+	push esi
 	push ecx					 	
 	call put_char
-	add esp,4
+	add esp,8
 	inc edi
 	mov cl,[put_int_buffer+edi]
 	cmp edi,7
@@ -225,6 +234,42 @@ put_int:
 	ret
 
 
+global cls_screen
+cls_screen:
+	pushad
+
+	; 在用户进程gs=0， 在这里进入内核了需要每次都将gs置为选择子
+	mov ax, SELECTOR_VIDEO
+	mov gs, ax 
+	mov ebx, 0
+	mov ecx, 80*25
+
+.cls:
+	mov word [gs:ebx],0x0720	;0x0720是黑底白字的空格键
+	add ebx,2
+	loop .cls
+	mov ebx, 0	; set_corsor的参数
+
+.set_cursor:
+	;先设置高8位	
+	mov dx,0x03d4				;索引寄存器
+	mov al,0x0e					;光标高八位
+	out dx,al
+
+	mov dx,0x3d5				;读写端口,来获得或设置光标位置
+	mov al,bh
+	out dx,al
+
+	;设置低8位
+	mov dx,0x03d4
+	mov al,0x0f
+	out dx,al
+
+	mov dx,0x3d5
+	mov al,bl
+	out dx,al
+	popad
+	ret
 
 
 

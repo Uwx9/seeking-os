@@ -8,6 +8,9 @@
 #include "debug.h"
 #include "process.h"
 #include "sync.h"
+#include "stdio.h"
+#include "file.h"
+#include "list.h"
 
 #define PG_SIZE 4096
 
@@ -19,6 +22,8 @@ static struct list_elem* thread_tag;	// 用于保存队列中的线程结点
 struct lock pid_lock;					// 分配 pid 锁
 
 extern void switch_to(struct task* cur, struct task* next);
+
+extern void init(void);
 
 /* 系统空闲时运行的线程 */
 static void idle(void* arg UNUSED)
@@ -38,6 +43,11 @@ static pid_t allocate_pid(void)
 	next_pid++;
 	lock_release(&pid_lock);
 	return next_pid;
+}
+
+pid_t fork_pid(void) 
+{
+	return allocate_pid();
 }
 
 /* 获取当前线程pcb指针 */
@@ -110,6 +120,7 @@ void init_task(struct task* pthread, char* name, int prio)
 	}
 	
 	pthread->cwd_inode_nr = 0;	// 以根目录作为默认工作路径
+	pthread->parent_pid = -1;	// 任务的父进程默认为−1, 表示没有父进程
 	pthread->stack_magic = 0x20050608;
 
 }
@@ -144,7 +155,7 @@ static void make_main_thread(void)
  * 不需要通过get_kernel_page另分配一页
  */ 
 	main_thread = running_thread();
-	init_task(main_thread, "main", 1);
+	init_task(main_thread, "main", 30);
 
 /* main 函数是当前线程，当前线程不在thread_ready_list中,所以只将其加在thread_all_list中 */ 
 	ASSERT(!elem_find(&thread_all_list, &main_thread->all_list_tag));
@@ -153,11 +164,11 @@ static void make_main_thread(void)
 
 void show_schedule_message(struct task* cur, struct task* next)
 {
-	put_str("Scheduling from ");
-	put_str(cur->name);
-	put_str(" to ");
-	put_str(next->name);
-	put_str("\n");	
+	put_str("Scheduling from ", 0x07);
+	put_str(cur->name, 0x07);
+	put_str(" to ", 0x07);
+	put_str(next->name, 0x07);
+	put_str("\n", 0x07);	
 }
 
 /* 实现任务调度 */
@@ -231,17 +242,101 @@ void thread_yield(void) {
 	intr_set_status(old_status);
 }
 
+/* 以填充空格的方式输出buf, 对齐 */
+static void pad_print(char* buf, int32_t buf_len, void* ptr, char format)
+{
+	memset(buf, 0, buf_len);
+	uint8_t out_pad_0idx = 0;
+	switch (format) {
+		case 's':
+			out_pad_0idx = sprintf(buf, "%s", ptr);
+			break;
+		case 'd':
+			out_pad_0idx = sprintf(buf, "%d", *(int16_t*)ptr);
+			break;
+		case 'x':
+			out_pad_0idx = sprintf(buf, "%x", *(uint32_t*)ptr);
+	}
+	while (out_pad_0idx < buf_len) {
+		buf[out_pad_0idx] = ' ';
+		out_pad_0idx++;
+	}
+	sys_write(stdout_no, buf, buf_len - 1);	// 为啥要-1啊, 实际是15个字节对齐
+}
+
+/* 用于在list_traversal函数中的回调函数，用于针对线程队列的处理 */
+static bool elem2thread_info(struct list_elem* pelem, int arg UNUSED)
+{
+	// 都是对齐输出
+	// 先打印自己的pid，
+	struct task* pthread = elem2entry(struct task, all_list_tag, pelem);
+	char out_pad[16] = {0};
+	pad_print(out_pad, 16, &pthread->pid, 'd');	// 对齐pid, 将pid放进来，后面的字节补空格
+	
+	// 父进程的pid
+	if (pthread->parent_pid == -1) {
+		pad_print(out_pad, 16, "NULL", 's');
+	} else {
+		pad_print(out_pad, 16, &pthread->parent_pid, 'd');
+	}
+
+	// 自己的status
+	switch (pthread->status) {
+		case 0:
+			pad_print(out_pad, 16, "RUNNING", 's');
+			break;
+		case 1:
+			pad_print(out_pad, 16, "READY", 's');
+			break;
+		case 2:
+			pad_print(out_pad, 16, "BLOCKED", 's');
+			break;
+		case 3:
+			pad_print(out_pad, 16, "WAITING", 's');
+			break;
+		case 4:
+			pad_print(out_pad, 16, "HANGING", 's');
+			break;
+		case 5:
+			pad_print(out_pad, 16, "OVER", 's');
+	}
+
+	// 任务总运行ticks
+	pad_print(out_pad, 16, &pthread->elapsed_ticks, 'x');
+
+	// 打印任务名称
+	memset(out_pad, 0, 16);
+	ASSERT(strlen(pthread->name) < 16);	// name最多15字节吧，这样\n才能放在out_pad里面
+	memcpy(out_pad, pthread->name, strlen(pthread->name));
+	strcat(out_pad, "\n");
+	sys_write(stdout_no, out_pad, strlen(out_pad));
+	return false;	 // 此处返回false是为了迎合主调函数list_traversal, 只有回调函数返回false时才会继续调用此函数 
+}
+
+/* 打印任务列表 */
+void sys_ps(void)
+{
+	char* ps_title = "PID            PPID           STAT           TICKS          COMMAND\n";
+	sys_write(stdout_no, ps_title, strlen(ps_title));
+	list_traversal(&thread_all_list, elem2thread_info, 0);
+}
+
 /* 初始化线程环境 */
 void thread_init(void)
 {
-	put_str("thread_init start\n");
+	put_str("thread_init start\n", 0x07);
 	list_init(&thread_ready_list);
 	list_init(&thread_all_list);
 	lock_init(&pid_lock);
-/* 将当前main函数创建为线程 */
+
+	/* 先创建第一个用户进程:init */
+	// 放在第一个初始化，这是第一个进程，init进程的pid为1
+	process_execute(init, "init");
+
+	/* 将当前main函数创建为线程 */
 	make_main_thread();
-/* 创建 idle线程 */
+	/* 创建 idle线程 */
 	idle_thread = thread_start("idle", 10, idle, NULL);
-	put_str("thread_init done\n");
+	put_str("thread_init done\n", 0x07);
 }
 

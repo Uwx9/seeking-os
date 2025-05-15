@@ -14,101 +14,33 @@
 #include "fs.h"
 #include "string.h"
 #include "dir.h"
+#include "shell.h"
+#include "debug.h"
 
-void k_thread_a(void*);
-void k_thread_b(void*);
-void k_thread_aa(void*);
-void k_thread_bb(void*);
-void u_prog_a(void);
-void u_prog_b(void);
-
-int prog_a_pid = 0, prog_b_pid =0;
+void init(void);
 
 int main(void)
 {
-	put_str("I'm kernel!\n");
+	put_str("I'm kernel!\n", 0x07);
 	init_all();
+	cls_screen();
+	str_color = 12;
+	console_put_str("[unique9@localhost /]$", 11);
+	str_color = 7;
+	intr_enable();
 	
-/********  测试代码  ********/ 
-    struct stat obj_stat; 
-    sys_stat("/", &obj_stat); 
- 	printf("/`s info\n   i_no:%d\n   size:%d\n   filetype:%s\n", obj_stat.st_ino, obj_stat.st_size, obj_stat.st_filetype == 2 ? "directory" : "regular"); 
-  
-	sys_stat("/dir1", &obj_stat); 
-    printf("/dir1`s info\n   i_no:%d\n   size:%d\n   filetype:%s\n", obj_stat.st_ino, obj_stat.st_size, obj_stat.st_filetype == 2 ? "directory" : "regular"); 
-/********  测试代码  ********/ 
+
 	while(1);
 	return 0;
 }
 
-
-void k_thread_a(void* arg)
+void init(void)
 {
-
-	void* addr1 = sys_malloc(256); 
-    void* addr2 = sys_malloc(255); 
-    void* addr3 = sys_malloc(254); 
-    console_put_str(" thread_a malloc addr:0x"); 
-    console_put_int((int)addr1); 
-    console_put_char(',');
-	console_put_int((int)addr2); 
-    console_put_char(','); 
-    console_put_int((int)addr3); 
-    console_put_char('\n'); 
-    int cpu_delay = 1000000; 
-    while(cpu_delay-- > 0); 
-    sys_free(addr1); 
-    sys_free(addr2); 
-    sys_free(addr3); 
-    while(1); 
-
-}
-
-void k_thread_b(void* arg)
-{
-
-	void* addr1 = sys_malloc(256); 
-    void* addr2 = sys_malloc(255); 
-    void* addr3 = sys_malloc(254); 
-    console_put_str(" thread_b malloc addr:0x"); 
-    console_put_int((int)addr1); 
-    console_put_char(',');
-	console_put_int((int)addr2); 
-    console_put_char(','); 
-    console_put_int((int)addr3); 
-    console_put_char('\n'); 
-    int cpu_delay = 100000; 
-    while(cpu_delay-- > 0); 
-    sys_free(addr1); 
-    sys_free(addr2); 
-    sys_free(addr3); 
-    while(1); 
-
-}
-
-void u_prog_a(void){
-	void* addr1 = malloc(256); 
-    void* addr2 = malloc(255); 
-    void* addr3 = malloc(254); 
-	printf(" prog_a malloc addr:0x%x,0x%x,0x%x\n", (int)addr1, (int)addr2, (int)addr3); 
-    int cpu_delay = 100000; 
-    while(cpu_delay-- > 0); 
-    free(addr1); 
-    free(addr2); 
-    free(addr3); 
-    while(1);
-}
-
-void u_prog_b(void){
-	void* addr1 = malloc(256); 
-    void* addr2 = malloc(255); 
-    void* addr3 = malloc(254); 
-	printf(" prog_b malloc addr:0x%x,0x%x,0x%x\n", (int)addr1, (int)addr2, (int)addr3); 
-    int cpu_delay = 100000; 
-    while(cpu_delay-- > 0); 
-    free(addr1); 
-    free(addr2); 
-    free(addr3); 
-    while(1);
-
+	int16_t ret_pid = fork();
+	if (ret_pid) {
+		while (1);
+	} else {
+		my_shell();
+	}
+	PANIC("init: should not be here");
 }

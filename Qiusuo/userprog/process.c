@@ -76,7 +76,7 @@ uint32_t* create_page_dir(void)
 {
 	uint32_t* page_dir_vaddr = get_kernel_pages(1);
 	if (page_dir_vaddr == NULL) {
-		put_str("failed to get_kernel_pages for page_dir");
+		put_str("failed to get_kernel_pages for page_dir", 0x07);
 		return NULL;
 	}
 

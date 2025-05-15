@@ -24,19 +24,24 @@ void console_realse()
 	lock_release(&console_lock);
 }
 
+uint32_t str_color = 0x07;
+uint32_t char_color = 0x07;
+
 /* 终端中输出字符串 */
-void console_put_str(char* str)
+void console_put_str(char* str, uint32_t char_attr)	// 第二个参数看来有点多余了,之前没想到用全局变量, 需要修改一下
 {
 	console_acquire();
-	put_str(str);
+	char_attr = str_color;
+	put_str(str, char_attr);
 	console_realse();
 }
 
 /* 终端中输出字符 */
-void console_put_char(uint8_t char_asci)
+void console_put_char(uint8_t char_asci, uint32_t char_attr)
 {
 	console_acquire();
-	put_char(char_asci);
+	char_attr = char_color;
+	put_char(char_asci, char_attr);
 	console_realse();
 }
 

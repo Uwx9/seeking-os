@@ -340,7 +340,7 @@ struct dir_entry* dir_read(struct dir* dir)
 {
 	struct dir_entry* dir_e = (struct dir_entry*)dir->dir_buf;
 	struct inode* dir_inode = dir->inode;
-	uint32_t all_blocks[140] = {0}, block_cnt = 12;	// 这里的block_cnt没有用上,暂时不知道为啥要它
+	uint32_t all_blocks[140] = {0}; //, block_cnt = 12;	// 这里的block_cnt没有用上,暂时不知道为啥要它
 	uint32_t block_idx = 0, dir_entry_idx = 0;
 
 	// 将目录文件的块地址读入all_blocks
@@ -350,7 +350,7 @@ struct dir_entry* dir_read(struct dir* dir)
 	}
 	if (dir_inode->i_sectors[12] != 0) {
 		ide_read(cur_part->mydisk, dir_inode->i_sectors[12], all_blocks + 12, 1);
-		block_cnt = 140;
+		// block_cnt = 140;
 	}
 	block_idx = 0;
 

@@ -183,6 +183,12 @@ static void intr_keyboard_handler(void)
 
 			//在数组中找到对应的字符
 			char cur_char = keymap[index][shift];		
+
+			// ctrl+l和ctrl+u分别为清屏和删除输入的快捷键，让它们变为不可见字符再处理，当然不能让其值等于'\b''\n'等有用的字符
+			if ((ctrl_down_last && cur_char == 'l') || (ctrl_down_last && cur_char == 'u')) {
+				cur_char -= 'a';
+			}
+
 			/* 只处理 ASCII码不为0的键 */
 			if (cur_char) {
 			/* 若 kbd_buf 中未满并且待加入的cur_char不为0，则将其加入到缓冲区kbd_buf中 */ 
@@ -204,15 +210,15 @@ static void intr_keyboard_handler(void)
 				caps_lock_status = !caps_lock_status;
 			}
 	} else {	//没有定义的通码
-		put_str("unknown key\n");
+		put_str("unknown key\n", 0x07);
 	}
 }
 
 /* 键盘初始化 */
 void keyboard_init(void) 
 {
-	put_str("keyboard_init start\n");
+	put_str("keyboard_init start\n", 0x07);
 	ioqueue_init(&kbd_buf);
 	register_handler(0x21, intr_keyboard_handler);
-	put_str("keyboard_init done\n");
+	put_str("keyboard_init done\n", 0x07);
 }

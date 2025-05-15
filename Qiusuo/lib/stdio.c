@@ -25,6 +25,7 @@ static void itoa(uint32_t value, char** buf_ptr_addr, uint8_t base)
 /* 将参数ap按照格式format输出到字符串str，并返回替换后str长度 */
 uint32_t vsprintf(char* str, const char* format, va_list ap)
 {
+	// 注意！字符串是去栈中拿到地址，int和char等直接去栈中拿到值，不需要再通过指针访问，所以printf传参时非字符串直接传值不用&取地址
 	char* buf_ptr = str;
 	const char* index_ptr = format;
 	char index_char = *index_ptr;

@@ -14,7 +14,7 @@
 /* 初始化所有模块 */
 void init_all()
 {
-    put_str("init_all\n");
+    put_str("init_all\n", 0x07);
     idt_init();
     timer_init();
     mem_init();

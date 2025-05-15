@@ -13,6 +13,12 @@ uint32_t printk(const char* format, ...)
 	char buf[1024] = {0};
 	vsprintf(buf, format, args);
 	va_end(args);
-	console_put_str(buf);
+	console_put_str(buf, 0x07);
 	return strlen(buf);
+}
+
+/* 输出一个字符 */
+void sys_putchar(const char chr)
+{
+	console_put_char(chr, 0x07);
 }

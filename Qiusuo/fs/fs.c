@@ -12,6 +12,8 @@
 #include "list.h"
 #include "file.h"
 #include "console.h"
+#include "keyboard.h"
+#include "ioqueue.h"
 
 struct partition* cur_part;		 // 默认情况下操作的是哪个分区
 
@@ -56,7 +58,7 @@ static bool mount_partition(struct list_elem* pelem, int arg)
 		
 		list_init(&cur_part->open_inodes);
 		printk("mount %s done\n", part->name);
-		printk("%s info:\n", part->name); 
+		/*printk("%s info:\n", part->name); 
   		printk("    magic:0x%x\n    part_lba_base:0x%x\n    all_sectors:0x%x\n\
     inode_cnt:0x%x\n    block_bitmap_lba:0x%x\n\
     block_bitmap_sectors:0x%x\n    inode_bitmap_lba:0x%x\n\
@@ -65,7 +67,7 @@ static bool mount_partition(struct list_elem* pelem, int arg)
  		cur_part->sb->magic, cur_part->sb->part_lba_base, cur_part->sb->sec_cnt, cur_part->sb->inode_cnt, 	\
 		cur_part->sb->block_bitmap_lba, cur_part->sb->block_bitmap_sects, cur_part->sb->inode_bitmap_lba,	\
 		cur_part->sb->inode_bitmap_sects, cur_part->sb->inode_table_lba, 									\
-		cur_part->sb->inode_table_sects, cur_part->sb->data_start_lba); 
+		cur_part->sb->inode_table_sects, cur_part->sb->data_start_lba); */
 		return true;	// 返回true时list_traversal停止遍历
 	}
 	return false;		// 使list_traversal继续遍历 	
@@ -194,7 +196,7 @@ static void partition_format(struct disk* hd, struct partition* part) {
 }
 
 /* 将最上层路径名称解析出来 */
-static char* path_parse(char* path_name, char* name_store)
+char* path_parse(char* path_name, char* name_store)
 {
 	if (path_name[0] == '/') {	// 根目录不需要单独解析 
 		// 路径中出现1个或多个连续的字符'/'，将这些'/'跳过，如"///a/b"
@@ -392,7 +394,7 @@ int32_t sys_write(int32_t fd, const void* buf, uint32_t count)
 	if (fd == stdout_no) {
 		char tmp_buf[1024] = {0};
 		memcpy(tmp_buf, buf, count);
-		console_put_str(tmp_buf);
+		console_put_str(tmp_buf, 0x07);
 		return count;
 	}
 
@@ -404,21 +406,33 @@ int32_t sys_write(int32_t fd, const void* buf, uint32_t count)
 		printk("write done %dbytes\n", bytes_written);
 		return bytes_written;
 	} else {
-		console_put_str("in sys_write: not allowed to write file without flag O_RDWR or O_WRONLY why\n");
+		console_put_str("in sys_write: not allowed to write file without flag O_RDWR or O_WRONLY why\n", 0x07);
 		return -1;
 	}
 }
 
 /* 从文件描述符fd指向的文件中读取count个字节到buf，若成功则返回读出的字节数，到文件尾则返回-1 */ 
 int32_t sys_read(int32_t fd, void* buf, uint32_t count)
-{
-	if (fd < 0) {
+{	
+	ASSERT(buf != NULL);
+	int32_t ret = -1;
+	if (fd < 0 || fd == stdout_no || fd == stderr_no) {
 		printk("sys_read: fd error\n");
 		return -1;
+	} else if (fd == stdin_no) {
+		char* buffer = buf;
+		uint32_t bytes_read = 0;
+		while (bytes_read < count) {	// 从键盘缓冲区拿count个字节
+			*buffer = ioq_getchar(&kbd_buf);
+			bytes_read++;
+			buffer++;
+		}
+		ret = bytes_read == 0 ? -1 : (int32_t)bytes_read;
+		return ret;
+	} else {
+		uint32_t _fd = fd_local2global(fd);
+		return file_read(&file_table[_fd], buf, count);
 	}
-	ASSERT(buf != NULL);
-	uint32_t _fd = fd_local2global(fd);
-	return file_read(&file_table[_fd], buf, count);
 }
 
 /* 重置用于文件读写操作的偏移指针, 成功时返回新的偏移量，出错时返回-1 */ 

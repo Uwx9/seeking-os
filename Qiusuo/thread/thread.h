@@ -7,6 +7,9 @@
 
 #define MAX_FILES_OPEN_PER_PROC 8
 
+extern struct list thread_ready_list;		// 就绪队列 
+extern struct list thread_all_list;			// 所有任务队列
+
 /* 自定义通用函数类型，它将在很多线程函数中作为形参类型 */
 /* 给函数类型(返回类型+参数列表)起别名 
  * 这里是给返回void,参数为void*的函数类型起别名为thrad_func
@@ -100,9 +103,11 @@ struct task {
 	struct mem_block_desc u_block_descs[DESC_CNT];	// 用户进程的内存块描述符
 	
 	uint32_t cwd_inode_nr;			// 进程所在的工作目录的inode编号
+	int16_t parent_pid;				// 父进程的pid
 	uint32_t stack_magic;
 };
 
+pid_t fork_pid(void);
 struct task* running_thread(void);
 void thread_create(struct task* pthread, thread_func* function, void* func_arg);
 void init_task(struct task* pthread, char* name, int prio);
@@ -112,6 +117,7 @@ void schedule(void);
 void thread_block(enum task_status statu);
 void thread_unblock(struct task* pthread);
 void thread_yield(void);
+void sys_ps(void);
 void thread_init(void);
 
 #endif

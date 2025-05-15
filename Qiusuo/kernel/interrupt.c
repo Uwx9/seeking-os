@@ -60,7 +60,7 @@ static void pic_init(void)
 	/* 打开从片上的IRQ14，此引脚接收硬盘控制器的中断 */
 	outb(PIC_S_DATA, 0xbf);	
 
-	put_str("	pic_init done\n");
+	put_str("	pic_init done\n", 0x07);
 }
 
 /* 创建中断门描述符,function为中断入口地址 */
@@ -82,7 +82,7 @@ static void idt_desc_init(void)
 	} 
 	// 初始化系统调用所用中断的中断描述符
 	make_idt_desc(&idt[lastidx], IDT_DESC_ATTR_DPL3, syscall_handler);
-	put_str("idt_desc_init done\n");
+	put_str("idt_desc_init done\n", 0x07);
 }
 
 /* 通用的中断处理函数，一般用在异常出现时的处理 */
@@ -98,24 +98,24 @@ static void general_intr_handler(uint8_t vec_nr)
 	set_cursor(0);
 	int cursor_pos = 0;
 	while (cursor_pos < 320) {	
-		put_char(' ');
+		put_char(' ', 0x07);
 		cursor_pos++;
 	}
 
 	set_cursor(0);		//重置光标为屏幕左上角
-	put_str("!!!!!!!!    excetion message begin     !!!!!!!!\n");
+	put_str("!!!!!!!!    excetion message begin     !!!!!!!!\n", 0x07);
 	set_cursor(88);		//从第 2 行第 8 个字符开始打印
-	put_str(intr_name[vec_nr]);
+	put_str(intr_name[vec_nr], 0x07);
 
 /* 若为 Pagefault，将缺失的地址打印出来并悬停 */
 	if (vec_nr == 14) {
 		uint32_t page_fault_vaddr = 0;
 		asm ("movl %%cr2, %0;" : "=r"(page_fault_vaddr));	// cr2 是存放造成page_fault的地址
-		put_str("\npage fault addr is:");
+		put_str("\npage fault addr is:", 0x07);
 		put_int(page_fault_vaddr);
 
 	}
-	put_str("\n!!!!!!!!    excetion message end     !!!!!!!!\n");
+	put_str("\n!!!!!!!!    excetion message end     !!!!!!!!\n", 0x07);
 
 // 能进入中断处理程序就表示已经处在关中断情况下 
 // 不会出现调度进程的情况。故下面的死循环不会再被中断
@@ -208,7 +208,7 @@ enum intr_status intr_set_status(enum intr_status status)
 /* 完成有关中断的所有初始化工作*/
 void idt_init()
 {
-	put_str("idt_init start\n");
+	put_str("idt_init start\n", 0x07);
 	idt_desc_init();	// 初始化中断描述符表
 	exception_init();	// 异常名初始化并注册通常的中断处理函数
 	pic_init();			// 初始化8259A 
@@ -224,5 +224,5 @@ void idt_init()
 
 	/* ATT风格这里%0就是内存地址寻址，而不是立即数或idt_operand的值*/
 	asm volatile ("lidt %0" : : "m"(idt_operand));
-	put_str("idt_init done\n");
+	put_str("idt_init done\n", 0x07);
 }

@@ -237,6 +237,22 @@ void* get_a_page(enum pool_flags pf, uint32_t vaddr)
 	return (void*)vaddr;
 }
 
+/* 安装1页大小的vaddr，专门针对fork时虚拟地址位图无需操作的情况 */
+void* get_a_page_without_opvaddrbitmap(enum pool_flags pf, uint32_t vaddr)
+{
+	struct pool* mem_pool = pf & PF_KERNEL ? &kernel_pool : &user_pool;
+	lock_acquire(&mem_pool->lock);
+	void* page_phyaddr = palloc(mem_pool);
+	if (page_phyaddr == NULL) {
+		lock_release(&mem_pool->lock);
+		return NULL;
+	}
+	page_table_add((void*)vaddr, page_phyaddr);
+	lock_release(&mem_pool->lock);
+	return (void*)vaddr;
+}
+
+
 /* 得到虚拟地址映射到的物理地址 */ 
 uint32_t addr_v2p(uint32_t vaddr)
 {
@@ -248,7 +264,7 @@ uint32_t addr_v2p(uint32_t vaddr)
 /* 初始化内存池 */
 static void mem_pool_init(uint32_t all_mem)
 {
-    put_str("    mem_pool_init start\n");
+    put_str("    mem_pool_init start\n", 0x07);
 
 /* 页表大小 = 1页的页目录表 + 第0和第768个页目录项指向同一个页表 + 
  * 第 769～1022个页目录项共指向254个页表，共256个页框 */
@@ -292,17 +308,17 @@ static void mem_pool_init(uint32_t all_mem)
     user_pool.pool_bitmap.bits = (void*)(MEM_BITMAP_BASE + kbm_lenth);
     
 /********************输出内存池信息**********************/
-    put_str("    kernel_pool_bitmap_start:");
+    put_str("    kernel_pool_bitmap_start:", 0x07);
     put_int((int)kernel_pool.pool_bitmap.bits);
-    put_str("    kernel_pool_phy_addr_start:");
+    put_str("    kernel_pool_phy_addr_start:", 0x07);
     put_int((int)kernel_pool.phy_addr_start);
-    put_char('\n');
+    put_char('\n', 0x07);
 
-    put_str("    user_pool_bitmap_start:");
+    put_str("    user_pool_bitmap_start:", 0x07);
     put_int((int)user_pool.pool_bitmap.bits);
-    put_str("    user_pool_phy_addr_start:");
+    put_str("    user_pool_phy_addr_start:", 0x07);
     put_int((int)user_pool.phy_addr_start);
-    put_char('\n');
+    put_char('\n', 0x07);
 
     /* 将位图置0 */
     bitmap_init(&kernel_pool.pool_bitmap);
@@ -319,7 +335,7 @@ static void mem_pool_init(uint32_t all_mem)
     bitmap_init(&kernel_vaddr_pool.vaddr_bitmap);
 	lock_init(&kernel_pool.lock);
 	lock_init(&user_pool.lock);
-    put_str("    mem_pool_init: done\n");
+    put_str("    mem_pool_init: done\n", 0x07);
 }
 
 
@@ -563,13 +579,13 @@ void sys_free(void* ptr)
 /* 内存管理部分初始化入口 */
 void mem_init()
 {
-    put_str("    mem_init start...\n");
+    put_str("    mem_init start...\n", 0x07);
     uint32_t mem_bytes_total = *((uint32_t*)0xb00); 
-    put_str("all mem is:");
+    put_str("all mem is:", 0x07);
     put_int(mem_bytes_total);
     mem_pool_init(mem_bytes_total);
 	// 初始化内存块描述符
 	block_descs_init(k_block_descs);
-    put_str("mem_init done\n");
+    put_str("mem_init done\n", 0x07);
 }
 

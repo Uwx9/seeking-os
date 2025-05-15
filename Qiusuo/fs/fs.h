@@ -47,6 +47,7 @@ struct stat {
 
 extern struct partition* cur_part;
 
+char* path_parse(char* path_name, char* name_store);
 int32_t path_depth_cnt(char* path_name);
 int32_t sys_open(const char* path_name, uint8_t flags);
 int32_t sys_close(int32_t fd);

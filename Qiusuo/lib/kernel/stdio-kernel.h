@@ -3,4 +3,5 @@
 #include "stdint.h"
 
 uint32_t printk(const char* format, ...);
+void sys_putchar(const char chr);
 #endif

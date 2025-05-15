@@ -149,7 +149,7 @@ p_mode_start:
 ; -------------------------   加载 kernel  ---------------------- 
 	mov eax, KERNEL_START_SECTOR  		;kernel.bin 所在的扇区号 
     mov ebx, KERNEL_BIN_BASE_ADDR 		;从磁盘读出后，写入到 ebx 指定的地址 
-    mov ecx, 255                   		;读入的扇区数
+    mov ecx, 350                   		;读入的扇区数
 	call rd_disk_m_32
 
 ;---------------------- 启动分页 ---------------------
@@ -281,74 +281,101 @@ setup_page:
 	ret
 
 
-;加载 kernel
 rd_disk_m_32:
-;eax=LBA扇区号
-;ebx=将数据写入的内存地址
-;ecx=读入的扇区数
-	mov esi,eax		;备份eax
-	mov di,cx		;备份cx
+;-----------------------------------------------------------
+; 功能：从硬盘读取多个扇区（支持 >255 扇区）
+; 输入：
+;   - eax = LBA 起始扇区号
+;   - ebx = 数据存储的内存地址
+;   - ecx = 要读取的扇区数（支持 >255）
+; 说明：
+;   - 使用栈保存进度（LBA/内存地址/剩余扇区数）
+;   - 用 esi 临时保存本次读取的扇区数
+;-----------------------------------------------------------
+    push eax            ; 原始LBA [esp+8]
+    push ebx            ; 内存地址 [esp+4]
+    push ecx            ; 剩余扇区数 [esp]
 
-;读写硬盘
-;第一步:设置要读取的扇区数
-	mov dx,0x1f2
-	mov al,cl
-	out dx,al		;读取的扇区数
+.read_block:
+    ; 检查是否完成
+    mov ecx, [esp]      ; 剩余扇区数
+    cmp ecx, 0
+    jle .done
 
-	mov eax,esi		;恢复ax
+    ; 计算本次读取量（≤255扇区）
+    cmp ecx, 255
+    jbe .set_count
+    mov ecx, 255
+.set_count:
+    mov esi, ecx        ; esi = 本次读取扇区数
 
-;第二步:将LBA地址存入0x1f3-0x1f6
-	;LBA地址7-0位写入端口0x1f3
-	mov dx,0x1f3
-	out dx,al
+    ; 设置读取扇区数（0x1f2）
+    mov dx, 0x1f2
+    mov al, cl
+    out dx, al
 
-	;LBA地址15-8位写入端口0x1f4
-	mov cl,8
-	shr eax,cl
-	mov dx,0x1f4
-	out dx,al
+    ; 设置LBA地址（从栈获取当前LBA）
+    mov eax, [esp+8]    ; 获取当前LBA
 
-	;LBA地址23-16位写入端口0x1f5
-	shr eax,cl
-	mov dx,0x1f5
-	out dx,al
-	
-	shr eax,cl
-	and al,0x0f		;LBA第24-27位
-	or al,0xe0		;设置7-4位为1110,表示LBA模式
-	mov dx,0x1f6
-	out dx,al
+    ; LBA 0-7 → 0x1f3
+    mov dx, 0x1f3
+    out dx, al
 
-;第三步:向0x1f7端口写入读命令,0x20
-	mov dx,0x1f7
-	mov al,0x20
-	out dx,al
+    ; LBA 8-15 → 0x1f4
+    shr eax, 8
+    mov dx, 0x1f4
+    out dx, al
 
-;第四步:检查硬盘状态
-.not_ready:
-	;同一端口写时表示写入命令字,读时表示读入硬盘状态
-	nop
-	in al,dx
-	and al,0x88
-	cmp al,0x08		;第四位为1表示硬盘控制器已经准备好传输数据,第七位为1表示硬盘忙
-	jnz .not_ready
+    ; LBA 16-23 → 0x1f5
+    shr eax, 8
+    mov dx, 0x1f5
+    out dx, al
 
-;第五步:从0x1f0端口读数据
-	mov ax,di
-	mov dx,256
-	mul dx
-	xor ecx, ecx 
-	mov cx, dx 
-	shl ecx, 16
-	mov cx, ax 
-	;di为要读取的扇区数,每次读入一个字,一共要读di*512/2次
-	mov dx,0x1f0
-.go_on_read:
-	in ax,dx
-	mov [ebx],ax
-	add ebx,2
-	loop .go_on_read
-	ret
+    ; LBA 24-27 → 0x1f6（主盘 + LBA模式）
+    shr eax, 8
+    and al, 0x0F
+    or al, 0xE0
+    mov dx, 0x1f6
+    out dx, al
 
-;!!!当我试图从磁盘读取300个扇区时发生严重bug,
-;磁盘里kernel.bin中的代码和ro数据正确的挪到了0x70000,但是偏移kernel.bin0x6000字节的可读写数据并没有被正确移动到0x76000,改为200个扇区后正常
+    ; 发送读命令（0x20）
+    mov dx, 0x1f7
+    mov al, 0x20
+    out dx, al
+
+    ; 等待硬盘就绪
+.wait_ready:
+    in al, dx
+    and al, 0x88
+    cmp al, 0x08
+    jnz .wait_ready
+
+    ; 读取数据（esi*256 words）
+    mov ecx, esi        ; 本次读取扇区数
+    shl ecx, 8          ; 每扇区256 words
+    mov dx, 0x1f0
+    mov edi, [esp+4]    ; 目标内存地址
+.read_loop:
+    in ax, dx
+    mov [edi], ax
+    add edi, 2
+    loop .read_loop
+
+    ; 更新状态：
+    ; 1. 内存地址 += 扇区数*512
+    mov eax, esi        ; 本次读取扇区数
+    shl eax, 9          ; *512
+    add [esp+4], eax    ; 更新内存地址
+
+    ; 2. LBA += 扇区数
+    mov eax, esi        ; 本次读取扇区数
+    add [esp+8], eax    ; 更新LBA
+
+    ; 3. 剩余扇区数 -= 本次读取量
+    sub [esp], eax      ; 更新剩余扇区数
+
+    jmp .read_block
+
+.done:
+    add esp, 12         ; 清理栈
+    ret
