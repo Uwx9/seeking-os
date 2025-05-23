@@ -42,7 +42,7 @@ struct path_search_record {
 struct stat {
 	uint32_t st_ino;				// inode 编号
 	uint32_t st_size;				// 尺寸
-	enum file_type st_filetype;	// 文件类型
+	enum file_type st_filetype;		// 文件类型
 };
 
 extern struct partition* cur_part;
@@ -50,6 +50,7 @@ extern struct partition* cur_part;
 char* path_parse(char* path_name, char* name_store);
 int32_t path_depth_cnt(char* path_name);
 int32_t sys_open(const char* path_name, uint8_t flags);
+uint32_t fd_local2global(uint32_t local_fd);
 int32_t sys_close(int32_t fd);
 int32_t sys_write(int32_t fd, const void* buf, uint32_t count);
 int32_t sys_read(int32_t fd, void* buf, uint32_t count);
@@ -64,5 +65,6 @@ int32_t sys_rmdir(const char* path_name);
 char* sys_getcwd(char* buf, uint32_t size);
 int32_t sys_chdir(const char* path);
 int32_t sys_stat(const char* path, struct stat* buf);
+void sys_help(void);
 void filesys_init(void);
 #endif

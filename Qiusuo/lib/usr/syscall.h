@@ -26,7 +26,13 @@ enum SYS_NR{
 	SYS_READDIR,
 	SYS_REWINDDIR,
 	SYS_STAT,
-	SYS_PS
+	SYS_PS,
+	SYS_EXECV,
+	SYS_EXIT,
+	SYS_WAIT,
+	SYS_PIPE,
+	SYS_FD_REDIRECT,
+	SYS_HELP
 };
 
 uint32_t getpid(void);
@@ -51,4 +57,10 @@ struct dir_entry* readdir(struct dir* dir);
 void rewinddir(struct dir* dir);
 int32_t stat(const char* path, struct stat* buf);
 void ps(void);
+int32_t execv(const char* path, char** argv);
+void exit(int32_t status);
+int16_t wait(int32_t* status);
+int32_t pipe(int32_t pipefd[2]);
+void fd_redirect(uint32_t old_local_fd, uint32_t new_local_fd);
+void help(void);
 #endif 

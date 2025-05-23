@@ -23,7 +23,8 @@ OBJS = $(BUILD_DIR)/main.o 			$(BUILD_DIR)/init.o 		$(BUILD_DIR)/interrupt.o	\
 	   $(BUILD_DIR)/stdio.o			$(BUILD_DIR)/ide.o 			$(BUILD_DIR)/stdio-kernel.o \
 	   $(BUILD_DIR)/fs.o 			$(BUILD_DIR)/dir.o 			$(BUILD_DIR)/file.o 		\
 	   $(BUILD_DIR)/inode.o 		$(BUILD_DIR)/fork.o 		$(BUILD_DIR)/shell.o		\
-	   $(BUILD_DIR)/buildin_cmd.o
+	   $(BUILD_DIR)/buildin_cmd.o	$(BUILD_DIR)/exec.o 		$(BUILD_DIR)/assert.o		\
+	   $(BUILD_DIR)/wait_exit.o 	$(BUILD_DIR)/pipe.o
 	   
 ########################         C代码编译        ########################
 $(BUILD_DIR)/main.o: Qiusuo/kernel/main.c Qiusuo/kernel/debug.h Qiusuo/kernel/init.h	Qiusuo/thread/thread.h	\
@@ -145,6 +146,21 @@ $(BUILD_DIR)/buildin_cmd.o: Qiusuo/shell/buildin_cmd.c Qiusuo/shell/buildin_cmd.
 	Qiusuo/lib/usr/syscall.h Qiusuo/fs/fs.h
 	$(CC) $(CFLAGS) -o $@ $<
 
+$(BUILD_DIR)/exec.o: Qiusuo/userprog/exec.c Qiusuo/userprog/exec.h Qiusuo/lib/stdint.h Qiusuo/kernel/memory.h Qiusuo/kernel/global.h	\
+	Qiusuo/lib/string.h Qiusuo/fs/fs.h Qiusuo/thread/thread.h 
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(BUILD_DIR)/assert.o: Qiusuo/lib/usr/assert.c Qiusuo/lib/usr/assert.h Qiusuo/lib/stdio.h Qiusuo/kernel/global.h
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(BUILD_DIR)/wait_exit.o: Qiusuo/userprog/wait_exit.c Qiusuo/userprog/wait_exit.h Qiusuo/thread/thread.h Qiusuo/fs/fs.h	\
+	Qiusuo/lib/usr/assert.h 
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(BUILD_DIR)/pipe.o: Qiusuo/shell/pipe.c Qiusuo/shell/pipe.h Qiusuo/kernel/global.h Qiusuo/fs/fs.h Qiusuo/fs/file.h Qiusuo/device/ioqueue.h	\
+	Qiusuo/lib/string.h 
+	$(CC) $(CFLAGS) -o $@ $<
+	
 ########################         汇编代码编译        ########################
 ########        boot        #######
 $(BUILD_DIR)/mbr.bin: Qiusuo/boot/mbr.s Qiusuo/boot/include/boot.inc
@@ -179,7 +195,7 @@ build: mk_dir $(BUILD_DIR)/kernel.bin
 hd:
 	dd if=$(BUILD_DIR)/mbr.bin of=$(HD60M_PATH) bs=512 count=1 conv=notrunc 
 	dd if=$(BUILD_DIR)/loader.bin of=$(HD60M_PATH) bs=512 count=4 seek=2 conv=notrunc
-	dd if=$(BUILD_DIR)/kernel.bin of=$(HD60M_PATH) bs=512 count=350 seek=9 conv=notrunc
+	dd if=$(BUILD_DIR)/kernel.bin of=$(HD60M_PATH) bs=512 count=370 seek=9 conv=notrunc
 
 clean:
 	cd $(BUILD_DIR) && rm -f ./*

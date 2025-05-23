@@ -8,6 +8,7 @@
 #include "inode.h"
 #include "interrupt.h"
 #include "list.h"
+#include "pipe.h"
 
 extern void intr_exit(void);
 
@@ -110,7 +111,11 @@ static void update_inode_open_cnts(struct task* thread)
 		global_idx = thread->fd_table[local_idx];
 		ASSERT(global_idx < MAX_FILES_OPEN);
 		if (global_idx != -1) {
-			file_table[global_idx].fd_inode->i_open_cnts++;
+			if (is_pipe(local_idx)) {
+				file_table[global_idx].fd_pos++;	// 管道的打开次数
+			} else {
+				file_table[global_idx].fd_inode->i_open_cnts++;
+			}
 		}
 		local_idx++;
 	}

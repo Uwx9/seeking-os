@@ -14,17 +14,18 @@ ASFLAGS = -f elf -g
 CFLAGS = -c -m32 -Wall -fno-stack-protector $(LIB) -fno-builtin -W -Wstrict-prototypes -Wmissing-prototypes -g
 LDFLAGS = -m elf_i386 -Ttext $(ENTRY_POINT) -e main -Map $(BUILD_DIR)/kernel.map 
 
-OBJS = $(BUILD_DIR)/main.o 		$(BUILD_DIR)/init.o 	$(BUILD_DIR)/interrupt.o	\
-	   $(BUILD_DIR)/timer.o		$(BUILD_DIR)/kernel.o	$(BUILD_DIR)/print.o 	 	\
-	   $(BUILD_DIR)/debug.o		$(BUILD_DIR)/string.o 	$(BUILD_DIR)/bitmap.o 		\
-	   $(BUILD_DIR)/memory.o 	$(BUILD_DIR)/list.o		$(BUILD_DIR)/thread.o 		\
-	   $(BUILD_DIR)/switch.o	$(BUILD_DIR)/console.o 	$(BUILD_DIR)/sync.o 		\
-	   $(BUILD_DIR)/keyboard.o	$(BUILD_DIR)/ioqueue.o 	$(BUILD_DIR)/tss.o 			\
-	   $(BUILD_DIR)/process.o	$(BUILD_DIR)/syscall.o	$(BUILD_DIR)/syscall-init.o \
-	   $(BUILD_DIR)/stdio.o		$(BUILD_DIR)/ide.o 		$(BUILD_DIR)/stdio-kernel.o \
-	   $(BUILD_DIR)/fs.o 		$(BUILD_DIR)/dir.o 		$(BUILD_DIR)/file.o 		\
-	   $(BUILD_DIR)/inode.o 	$(BUILD_DIR)/fork.o 	$(BUILD_DIR)/shell.o		\
-	   $(BUILD_DIR)/buildin_cmd.o
+OBJS = $(BUILD_DIR)/main.o 			$(BUILD_DIR)/init.o 		$(BUILD_DIR)/interrupt.o	\
+	   $(BUILD_DIR)/timer.o			$(BUILD_DIR)/kernel.o		$(BUILD_DIR)/print.o 	 	\
+	   $(BUILD_DIR)/debug.o			$(BUILD_DIR)/string.o 		$(BUILD_DIR)/bitmap.o 		\
+	   $(BUILD_DIR)/memory.o 		$(BUILD_DIR)/list.o			$(BUILD_DIR)/thread.o 		\
+	   $(BUILD_DIR)/switch.o		$(BUILD_DIR)/console.o 		$(BUILD_DIR)/sync.o 		\
+	   $(BUILD_DIR)/keyboard.o		$(BUILD_DIR)/ioqueue.o 		$(BUILD_DIR)/tss.o 			\
+	   $(BUILD_DIR)/process.o		$(BUILD_DIR)/syscall.o		$(BUILD_DIR)/syscall-init.o \
+	   $(BUILD_DIR)/stdio.o			$(BUILD_DIR)/ide.o 			$(BUILD_DIR)/stdio-kernel.o \
+	   $(BUILD_DIR)/fs.o 			$(BUILD_DIR)/dir.o 			$(BUILD_DIR)/file.o 		\
+	   $(BUILD_DIR)/inode.o 		$(BUILD_DIR)/fork.o 		$(BUILD_DIR)/shell.o		\
+	   $(BUILD_DIR)/buildin_cmd.o	$(BUILD_DIR)/exec.o 		$(BUILD_DIR)/assert.o		\
+	   $(BUILD_DIR)/wait_exit.o 	$(BUILD_DIR)/pipe.o
 	   
 ########################         C代码编译        ########################
 $(BUILD_DIR)/main.o: kernel/main.c kernel/debug.h kernel/init.h	thread/thread.h	\
@@ -146,6 +147,21 @@ $(BUILD_DIR)/buildin_cmd.o: shell/buildin_cmd.c shell/buildin_cmd.h lib/string.h
 	lib/usr/syscall.h fs/fs.h
 	$(CC) $(CFLAGS) -o $@ $<
 
+$(BUILD_DIR)/exec.o: userprog/exec.c userprog/exec.h lib/stdint.h kernel/memory.h kernel/global.h	\
+	lib/string.h fs/fs.h thread/thread.h 
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(BUILD_DIR)/assert.o: lib/usr/assert.c lib/usr/assert.h lib/stdio.h kernel/global.h
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(BUILD_DIR)/wait_exit.o: userprog/wait_exit.c userprog/wait_exit.h thread/thread.h fs/fs.h	\
+	lib/usr/assert.h 
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(BUILD_DIR)/pipe.o: shell/pipe.c shell/pipe.h kernel/global.h fs/fs.h fs/file.h device/ioqueue.h	\
+	lib/string.h 
+	$(CC) $(CFLAGS) -o $@ $<
+
 ########################         汇编代码编译        ########################
 ########        boot        #######
 $(BUILD_DIR)/mbr.bin: boot/mbr.s boot/include/boot.inc
@@ -180,7 +196,7 @@ build: mk_dir $(BUILD_DIR)/kernel.bin
 hd:
 	dd if=$(BUILD_DIR)/mbr.bin of=$(HD60M_PATH) bs=512 count=1 conv=notrunc 
 	dd if=$(BUILD_DIR)/loader.bin of=$(HD60M_PATH) bs=512 count=4 seek=2 conv=notrunc
-	dd if=$(BUILD_DIR)/kernel.bin of=$(HD60M_PATH) bs=512 count=350 seek=9 conv=notrunc
+	dd if=$(BUILD_DIR)/kernel.bin of=$(HD60M_PATH) bs=512 count=370 seek=9 conv=notrunc
 
 #生成可以被GDB理解的符号表，用于GDB调试
 gdb_symbol:

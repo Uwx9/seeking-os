@@ -5,7 +5,7 @@
 #include "sync.h"
 #include "global.h"
 
-#define bufsize 64
+#define bufsize 2048
 
 struct ioqueue {
 	struct lock lock;
@@ -24,4 +24,5 @@ bool ioq_full(struct ioqueue* ioq);
 bool ioq_empty(struct ioqueue* ioq);
 char ioq_getchar(struct ioqueue* ioq);
 void ioq_putchar(struct ioqueue* ioq, char byte);
+uint32_t ioq_lenth(struct ioqueue* ioq);
 #endif

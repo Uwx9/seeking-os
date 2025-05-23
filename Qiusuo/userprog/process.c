@@ -92,12 +92,12 @@ uint32_t* create_page_dir(void)
 /* 创建用户进程虚拟地址位图 */
 void create_user_vaddr_bitmap(struct task* user_prog)
 {
-		user_prog->userprog_vaddr.vaddr_start = USER_VADDR_START;
-		// 当位图大小为4K时只用一页，大小为4K-1时要用多一页，由DIV来保证。它可以使除法有余数时向上取整
-		uint32_t bitmap_pg_cnt = DIV_ROUND_UP((0xc0000000 - USER_VADDR_START) / PG_SIZE / 8, PG_SIZE);
-		user_prog->userprog_vaddr.vaddr_bitmap.bits = get_kernel_pages(bitmap_pg_cnt);
-		user_prog->userprog_vaddr.vaddr_bitmap.btmp_bytes_len = (0xc0000000 - USER_VADDR_START) / PG_SIZE / 8;
-		bitmap_init(&user_prog->userprog_vaddr.vaddr_bitmap);
+	user_prog->userprog_vaddr.vaddr_start = USER_VADDR_START;
+	// 当位图大小为4K时只用一页，大小为4K-1时要用多一页，由DIV来保证。它可以使除法有余数时向上取整
+	uint32_t bitmap_pg_cnt = DIV_ROUND_UP((0xc0000000 - USER_VADDR_START) / PG_SIZE / 8, PG_SIZE);
+	user_prog->userprog_vaddr.vaddr_bitmap.bits = get_kernel_pages(bitmap_pg_cnt);
+	user_prog->userprog_vaddr.vaddr_bitmap.btmp_bytes_len = (0xc0000000 - USER_VADDR_START) / PG_SIZE / 8;
+	bitmap_init(&user_prog->userprog_vaddr.vaddr_bitmap);
 }
 
 /* 创建用户进程 */

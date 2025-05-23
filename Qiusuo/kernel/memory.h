@@ -39,6 +39,8 @@ struct mem_block_desc {
 
 extern struct pool kernel_pool, user_pool;
 void mem_init(void);
+uint32_t* pte_ptr(uint32_t vaddr);
+uint32_t* pde_ptr(uint32_t vaddr);
 void* malloc_page(enum pool_flags pf, uint32_t pg_cnt);
 void* get_kernel_pages(uint32_t pg_cnt);
 void* get_user_pages(uint32_t pg_cnt);
@@ -48,5 +50,6 @@ uint32_t addr_v2p(uint32_t vaddr);
 void block_descs_init(struct mem_block_desc* desc_arrary);
 void* sys_malloc(uint32_t size);
 void mfree_page(enum pool_flags pf, void* _vaddr, uint32_t pg_cnt);
+void free_a_phy_addr(uint32_t pg_phyaddr);
 void sys_free(void* ptr);
 #endif

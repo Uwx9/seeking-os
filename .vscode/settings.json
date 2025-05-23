@@ -29,6 +29,18 @@
 		"process.h": "c",
 		"file.h": "c",
 		"ioqueue.h": "c",
-		"keyboard.h": "c"
+		"keyboard.h": "c",
+		"assert.h": "c",
+		"buildin_cmd.h": "c",
+		"stdio.h": "c",
+		"array": "c",
+		"initializer_list": "c",
+		"string_view": "c",
+		"utility": "c",
+		"wait_exit.h": "c",
+		"tss.h": "c",
+		"pipe.h": "c",
+		"sync.h": "c",
+		"random": "c"
 	}
 }

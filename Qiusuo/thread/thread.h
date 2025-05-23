@@ -6,6 +6,7 @@
 #include "../kernel/memory.h"
 
 #define MAX_FILES_OPEN_PER_PROC 8
+#define TASK_NAME_LEN 16
 
 extern struct list thread_ready_list;		// 就绪队列 
 extern struct list thread_all_list;			// 所有任务队列
@@ -89,7 +90,7 @@ struct task {
 	pid_t pid;
 	enum task_status status;
 	uint8_t priority;
-	char name[16];
+	char name[TASK_NAME_LEN];
 	uint8_t ticks;				//每次在处理器上执行的时间嘀嗒数
 
 
@@ -104,9 +105,11 @@ struct task {
 	
 	uint32_t cwd_inode_nr;			// 进程所在的工作目录的inode编号
 	int16_t parent_pid;				// 父进程的pid
+	int8_t exit_status;				// 进程结束时自己调用exit传入pcb的参数
 	uint32_t stack_magic;
 };
 
+void release_pid(pid_t pid);
 pid_t fork_pid(void);
 struct task* running_thread(void);
 void thread_create(struct task* pthread, thread_func* function, void* func_arg);
@@ -118,6 +121,8 @@ void thread_block(enum task_status statu);
 void thread_unblock(struct task* pthread);
 void thread_yield(void);
 void sys_ps(void);
+void thread_exit(struct task* thread_over, bool need_schedule);
+struct task* pid2thread(int32_t pid);
 void thread_init(void);
 
 #endif

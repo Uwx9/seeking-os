@@ -163,3 +163,38 @@ void ps(void)
 {
 	_syscall0(SYS_PS);
 }
+
+/* 加载硬盘上的用户进程 */
+int32_t execv(const char* path, char** argv)
+{
+	return _syscall2(SYS_EXECV, path, argv);
+}
+
+/* 子进程用来结束自己时调用 */
+void exit(int32_t status)
+{
+	_syscall1(SYS_EXIT, status);
+}
+
+/* 等待子进程调用exit，将子进程的退出状态保存到status指向的变量,成功则返回子进程的pid，失败则返回−1 */
+int16_t wait(int32_t* status)
+{
+	return _syscall1(SYS_WAIT, status);
+}
+
+/* 创建管道，成功返回0，失败返回−1 */
+int32_t pipe(int32_t pipefd[2])
+{
+	return _syscall1(SYS_PIPE, pipefd);
+}
+
+/* 文件描述符重定向 */
+void fd_redirect(uint32_t old_local_fd, uint32_t new_local_fd)
+{
+	_syscall2(SYS_FD_REDIRECT, old_local_fd, new_local_fd);
+}
+
+void help(void)
+{
+	_syscall0(SYS_HELP);
+}

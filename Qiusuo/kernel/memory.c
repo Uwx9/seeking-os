@@ -90,7 +90,7 @@ static void* vaddr_get(enum pool_flags pf, uint32_t pg_cnt)
 }    
 
 /* 得到虚拟地址vaddr对应的pte指针(也是虚拟地址) */
-static uint32_t* pte_ptr(uint32_t vaddr) 
+uint32_t* pte_ptr(uint32_t vaddr) 
 {
     /* 先用高10位访问页目录，再用vaddr的高10位(页目录项的下标)在页目录中找到对应的页表
      * 再用vaddr的中间10位（页表项的下标）在页表中找到vaddr对应的页表项（在页表的4K里找到对应页表项，要用页表项下标*4）*/
@@ -99,7 +99,7 @@ static uint32_t* pte_ptr(uint32_t vaddr)
 }
 
 /* 得到虚拟地址vaddr对应的pde的指针(也是虚拟地址) */
-static uint32_t* pde_ptr(uint32_t vaddr)
+uint32_t* pde_ptr(uint32_t vaddr)
 {
     /* 虚拟地址的高10位是页目录项的下标 */
     uint32_t* pde = (uint32_t*)(0xfffff000 + PDE_IDX(vaddr) * 4);   
@@ -218,7 +218,7 @@ void* get_a_page(enum pool_flags pf, uint32_t vaddr)
 /* 若当前是用户进程申请用户内存，就修改用户进程自己的虚拟地址位图 */
 	if (cur->pgdir != NULL && pf == PF_USER) {
 		bit_idx = (vaddr - cur->userprog_vaddr.vaddr_start) / PG_SIZE;
-		ASSERT(bit_idx > 0);
+		ASSERT(bit_idx >= 0);
 		bitmap_set(&cur->userprog_vaddr.vaddr_bitmap, bit_idx, 1);
 	} else if (cur->pgdir == NULL && pf == PF_KERNEL) {
 /* 如果是内核线程申请内核内存，就修改kernel_vaddr */
@@ -228,8 +228,10 @@ void* get_a_page(enum pool_flags pf, uint32_t vaddr)
 	} else {
 		PANIC("get_a_page: not allow kernel alloc userspace or user alloc kernelspace by get_a_page ");
 	}
+	
 	void* page_phyaddr = palloc(mem_pool);
-	if (!page_phyaddr) {
+	if (page_phyaddr == NULL) {
+		lock_release(&mem_pool->lock);
 		return NULL;
 	}
 	page_table_add((void*)vaddr, page_phyaddr);
@@ -448,6 +450,7 @@ void* sys_malloc(uint32_t size)
 /*                          实现sys_free                                         */ 
 /* 总结起来就3步, 1:释放物理页框, 2:修改vaddr对物理页的映射, 3:释放虚拟内存页           */
 /* *************************************************************************** */ 
+
 /* 将物理地址pg_phy_addr回收到物理内存池 */
 static void pfree(uint32_t pg_phyaddr)
 {
@@ -533,6 +536,21 @@ void mfree_page(enum pool_flags pf, void* _vaddr, uint32_t pg_cnt)
 		// 一次性释放pg_cnt个虚拟页
 		vaddr_remove(pf, _vaddr, pg_cnt);
 	}
+}
+
+/* 根据物理页框地址pg_phy_addr在相应的内存池的位图清0，不改动页表*/
+void free_a_phy_addr(uint32_t pg_phyaddr)	// 这个函数和前面的pfree一样的
+{
+	struct pool* mem_pool;
+	uint32_t bit_idx = 0;
+	if (pg_phyaddr >= user_pool.phy_addr_start) {
+		mem_pool = &user_pool;
+		bit_idx = (pg_phyaddr - user_pool.phy_addr_start) / PG_SIZE;
+	} else {
+		mem_pool = &kernel_pool;
+		bit_idx = (pg_phyaddr - kernel_pool.phy_addr_start) / PG_SIZE;
+	}
+	bitmap_set(&mem_pool->pool_bitmap, bit_idx, 0);
 }
 
 /* 回收内存ptr */

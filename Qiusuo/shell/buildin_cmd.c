@@ -1,19 +1,20 @@
 #include "buildin_cmd.h"
 #include "string.h"
-#include "debug.h"
+#include "assert.h"
 #include "fs.h"
 #include "syscall.h"
 #include "global.h"
 #include "stdio.h"
 #include "syscall.h"
 #include "dir.h"
+#include "console.h"
 
 extern char final_path[MAX_PATH_LEN];
 
 /* 将路径old_abs_path中的..和.转换为实际路径后存入new_abs_path */
 static void wash_path(char* old_abs_path, char* new_abs_path)
 {
-	ASSERT(old_abs_path[0] == '/');
+	assert(old_abs_path[0] == '/');
 	char name[MAX_PATH_LEN] = {0};
 	char* sub_path = old_abs_path;
 	sub_path = path_parse(sub_path, name);
@@ -53,7 +54,7 @@ static void wash_path(char* old_abs_path, char* new_abs_path)
 	}
 }
 
-/* 将 path 处理成不含..和.的绝对路径，存储在final_path */
+/* 将 path 先补全为绝对路径再处理成不含..和.的绝对路径，存储在final_path */
 void make_clear_abs_path(char* path, char* final_path)
 {
 	char abs_path[MAX_PATH_LEN] = {0};
@@ -186,11 +187,21 @@ void buildin_ls(uint32_t argc, char** argv)
 					printf("ls: cannot access %s: No such file or directory\n", dir_e->filename);
 					return;
 				}
-				printf("%c  %d  %d  %s\n", ftype, dir_e->i_no, file_stat.st_size, dir_e->filename);
+				
+				// 给目录换个颜色 
+				if (dir_e->f_type == FT_DIRECTORY) {
+					str_color = 14;
+				}
+				printf("%c  i_no[%d]  %d  %s\n", ftype, dir_e->i_no, file_stat.st_size, dir_e->filename);
+				str_color = 7;
 			}
 		} else {
 			while ((dir_e = readdir(dir))) {
+				if (dir_e->f_type == FT_DIRECTORY) {
+					str_color = 14;
+				}
 				printf("%s ", dir_e->filename);
+				str_color = 7;
 			}
 			printf("\n");
 		}
@@ -287,4 +298,12 @@ int32_t buildin_rm(uint32_t argc, char** argv)
 		}
 	}
 	return ret;
+}
+
+void buildin_help(uint32_t argc, char** argv UNUSED)
+{
+	if (argc != 1) {
+		printf("sorry, only support 1 argument\n");
+	}
+	help();
 }
