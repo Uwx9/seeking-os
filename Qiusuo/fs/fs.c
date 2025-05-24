@@ -59,7 +59,7 @@ static bool mount_partition(struct list_elem* pelem, int arg)
 		
 		list_init(&cur_part->open_inodes);
 		printk("mount %s done\n", part->name);
-		/*printk("%s info:\n", part->name); 
+		printk("%s info:\n", part->name); 
   		printk("    magic:0x%x\n    part_lba_base:0x%x\n    all_sectors:0x%x\n\
     inode_cnt:0x%x\n    block_bitmap_lba:0x%x\n\
     block_bitmap_sectors:0x%x\n    inode_bitmap_lba:0x%x\n\
@@ -68,7 +68,7 @@ static bool mount_partition(struct list_elem* pelem, int arg)
  		cur_part->sb->magic, cur_part->sb->part_lba_base, cur_part->sb->sec_cnt, cur_part->sb->inode_cnt, 	\
 		cur_part->sb->block_bitmap_lba, cur_part->sb->block_bitmap_sects, cur_part->sb->inode_bitmap_lba,	\
 		cur_part->sb->inode_bitmap_sects, cur_part->sb->inode_table_lba, 									\
-		cur_part->sb->inode_table_sects, cur_part->sb->data_start_lba); */
+		cur_part->sb->inode_table_sects, cur_part->sb->data_start_lba); 
 		return true;	// 返回true时list_traversal停止遍历
 	}
 	return false;		// 使list_traversal继续遍历 	

@@ -300,6 +300,7 @@ int32_t buildin_rm(uint32_t argc, char** argv)
 	return ret;
 }
 
+// 查看现有命令
 void buildin_help(uint32_t argc, char** argv UNUSED)
 {
 	if (argc != 1) {

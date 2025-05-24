@@ -204,7 +204,7 @@ LOAD Qiusuo/build/pipe.o
 .plt.sec
  *(.plt.sec)
 
-.text           0x00000000c0001300     0xce2d
+.text           0x00000000c0001300     0xcf15
  *(.text.unlikely .text.*_unlikely .text.unlikely.*)
  *(.text.exit .text.exit.*)
  *(.text.startup .text.startup.*)
@@ -377,84 +377,84 @@ LOAD Qiusuo/build/pipe.o
  .text          0x00000000c0007113       0x9d Qiusuo/build/stdio-kernel.o
                 0x00000000c0007113                printk
                 0x00000000c000718b                sys_putchar
- .text          0x00000000c00071b0     0x234c Qiusuo/build/fs.o
-                0x00000000c00078aa                path_parse
-                0x00000000c0007908                path_depth_cnt
-                0x00000000c0007c32                sys_open
-                0x00000000c0007eaa                fd_local2global
-                0x00000000c0007eff                sys_close
-                0x00000000c0007ff6                sys_write
-                0x00000000c000816c                sys_read
-                0x00000000c00082b1                sys_lseek
-                0x00000000c000839e                sys_unlink
-                0x00000000c00085c0                sys_mkdir
-                0x00000000c00089ec                sys_opendir
-                0x00000000c0008b07                sys_closedir
-                0x00000000c0008b31                sys_readdir
-                0x00000000c0008b6e                sys_rewinddir
-                0x00000000c0008b7d                sys_rmdir
-                0x00000000c0008f32                sys_getcwd
-                0x00000000c000912b                sys_chdir
-                0x00000000c00091ae                sys_stat
-                0x00000000c00092d5                sys_help
-                0x00000000c00092e9                filesys_init
- .text          0x00000000c00094fc      0xfd0 Qiusuo/build/dir.o
-                0x00000000c00094fc                open_root_dir
-                0x00000000c000952b                dir_open
-                0x00000000c0009566                search_dir_entry
-                0x00000000c0009748                dir_close
-                0x00000000c0009773                create_dir_entry
-                0x00000000c00097e9                sync_dir_entry
-                0x00000000c0009c74                delete_dir_entry
-                0x00000000c000a1ca                dir_read
-                0x00000000c000a3d8                dir_is_empty
-                0x00000000c000a403                dir_remove
- .text          0x00000000c000a4cc     0x1308 Qiusuo/build/file.o
-                0x00000000c000a4cc                get_free_slot_in_global
-                0x00000000c000a51d                pcb_fd_install
-                0x00000000c000a586                inode_bitmap_alloc
-                0x00000000c000a5d4                block_bitmap_alloc
-                0x00000000c000a62d                bitmap_sync
-                0x00000000c000a6c1                file_create
-                0x00000000c000a9a4                file_open
-                0x00000000c000aaaf                file_close
-                0x00000000c000aaee                file_write
-                0x00000000c000b3a4                file_read
- .text          0x00000000c000b7d4      0x81e Qiusuo/build/inode.o
-                0x00000000c000b872                inode_sync
-                0x00000000c000b9e5                inode_open
-                0x00000000c000bb40                inode_close
-                0x00000000c000bbb1                inode_delete
-                0x00000000c000bd16                inode_realse
-                0x00000000c000bf9d                inode_init
- .text          0x00000000c000bff2      0x529 Qiusuo/build/fork.o
-                0x00000000c000c3e3                sys_fork
- .text          0x00000000c000c51b      0x88a Qiusuo/build/shell.o
-                0x00000000c000caf2                my_shell
- .text          0x00000000c000cda5      0x95f Qiusuo/build/buildin_cmd.o
-                0x00000000c000cf48                make_clear_abs_path
-                0x00000000c000d00b                buildin_pwd
-                0x00000000c000d061                buildin_cd
-                0x00000000c000d0e1                buildin_ls
-                0x00000000c000d4e1                buildin_ps
-                0x00000000c000d502                buildin_clear
-                0x00000000c000d523                buildin_mkdir
-                0x00000000c000d5aa                buildin_rmdir
-                0x00000000c000d65e                buildin_rm
-                0x00000000c000d6e5                buildin_help
- .text          0x00000000c000d704      0x387 Qiusuo/build/exec.o
-                0x00000000c000d9dd                sys_execv
- .text          0x00000000c000da8b       0x30 Qiusuo/build/assert.o
-                0x00000000c000da8b                user_spin
- .text          0x00000000c000dabb      0x430 Qiusuo/build/wait_exit.o
-                0x00000000c000dd7d                sys_wait
-                0x00000000c000de36                sys_exit
- .text          0x00000000c000deeb      0x242 Qiusuo/build/pipe.o
-                0x00000000c000deeb                is_pipe
-                0x00000000c000df1d                sys_pipe
-                0x00000000c000dfe2                pipe_read
-                0x00000000c000e05b                pipe_write
-                0x00000000c000e0e5                sys_fd_redirect
+ .text          0x00000000c00071b0     0x2434 Qiusuo/build/fs.o
+                0x00000000c0007992                path_parse
+                0x00000000c00079f0                path_depth_cnt
+                0x00000000c0007d1a                sys_open
+                0x00000000c0007f92                fd_local2global
+                0x00000000c0007fe7                sys_close
+                0x00000000c00080de                sys_write
+                0x00000000c0008254                sys_read
+                0x00000000c0008399                sys_lseek
+                0x00000000c0008486                sys_unlink
+                0x00000000c00086a8                sys_mkdir
+                0x00000000c0008ad4                sys_opendir
+                0x00000000c0008bef                sys_closedir
+                0x00000000c0008c19                sys_readdir
+                0x00000000c0008c56                sys_rewinddir
+                0x00000000c0008c65                sys_rmdir
+                0x00000000c000901a                sys_getcwd
+                0x00000000c0009213                sys_chdir
+                0x00000000c0009296                sys_stat
+                0x00000000c00093bd                sys_help
+                0x00000000c00093d1                filesys_init
+ .text          0x00000000c00095e4      0xfd0 Qiusuo/build/dir.o
+                0x00000000c00095e4                open_root_dir
+                0x00000000c0009613                dir_open
+                0x00000000c000964e                search_dir_entry
+                0x00000000c0009830                dir_close
+                0x00000000c000985b                create_dir_entry
+                0x00000000c00098d1                sync_dir_entry
+                0x00000000c0009d5c                delete_dir_entry
+                0x00000000c000a2b2                dir_read
+                0x00000000c000a4c0                dir_is_empty
+                0x00000000c000a4eb                dir_remove
+ .text          0x00000000c000a5b4     0x1308 Qiusuo/build/file.o
+                0x00000000c000a5b4                get_free_slot_in_global
+                0x00000000c000a605                pcb_fd_install
+                0x00000000c000a66e                inode_bitmap_alloc
+                0x00000000c000a6bc                block_bitmap_alloc
+                0x00000000c000a715                bitmap_sync
+                0x00000000c000a7a9                file_create
+                0x00000000c000aa8c                file_open
+                0x00000000c000ab97                file_close
+                0x00000000c000abd6                file_write
+                0x00000000c000b48c                file_read
+ .text          0x00000000c000b8bc      0x81e Qiusuo/build/inode.o
+                0x00000000c000b95a                inode_sync
+                0x00000000c000bacd                inode_open
+                0x00000000c000bc28                inode_close
+                0x00000000c000bc99                inode_delete
+                0x00000000c000bdfe                inode_realse
+                0x00000000c000c085                inode_init
+ .text          0x00000000c000c0da      0x529 Qiusuo/build/fork.o
+                0x00000000c000c4cb                sys_fork
+ .text          0x00000000c000c603      0x88a Qiusuo/build/shell.o
+                0x00000000c000cbda                my_shell
+ .text          0x00000000c000ce8d      0x95f Qiusuo/build/buildin_cmd.o
+                0x00000000c000d030                make_clear_abs_path
+                0x00000000c000d0f3                buildin_pwd
+                0x00000000c000d149                buildin_cd
+                0x00000000c000d1c9                buildin_ls
+                0x00000000c000d5c9                buildin_ps
+                0x00000000c000d5ea                buildin_clear
+                0x00000000c000d60b                buildin_mkdir
+                0x00000000c000d692                buildin_rmdir
+                0x00000000c000d746                buildin_rm
+                0x00000000c000d7cd                buildin_help
+ .text          0x00000000c000d7ec      0x387 Qiusuo/build/exec.o
+                0x00000000c000dac5                sys_execv
+ .text          0x00000000c000db73       0x30 Qiusuo/build/assert.o
+                0x00000000c000db73                user_spin
+ .text          0x00000000c000dba3      0x430 Qiusuo/build/wait_exit.o
+                0x00000000c000de65                sys_wait
+                0x00000000c000df1e                sys_exit
+ .text          0x00000000c000dfd3      0x242 Qiusuo/build/pipe.o
+                0x00000000c000dfd3                is_pipe
+                0x00000000c000e005                sys_pipe
+                0x00000000c000e0ca                pipe_read
+                0x00000000c000e143                pipe_write
+                0x00000000c000e1cd                sys_fd_redirect
  *(.gnu.warning)
 
 .fini
@@ -465,7 +465,7 @@ LOAD Qiusuo/build/pipe.o
                 0x00000000c000f000                . = ALIGN (CONSTANT (MAXPAGESIZE))
                 0x00000000c000f000                . = SEGMENT_START ("rodata-segment", (ALIGN (CONSTANT (MAXPAGESIZE)) + (. & (CONSTANT (MAXPAGESIZE) - 0x1))))
 
-.rodata         0x00000000c000f000     0x2b69
+.rodata         0x00000000c000f000     0x2c79
  *(.rodata .rodata.* .gnu.linkonce.r.*)
  .rodata        0x00000000c000f000       0x9e Qiusuo/build/main.o
  .rodata        0x00000000c000f09e        0xa Qiusuo/build/init.o
@@ -489,24 +489,24 @@ LOAD Qiusuo/build/pipe.o
  .rodata        0x00000000c001006d       0x27 Qiusuo/build/syscall-init.o
  .rodata        0x00000000c0010094      0x1f7 Qiusuo/build/ide.o
  *fill*         0x00000000c001028b        0x1 
- .rodata        0x00000000c001028c      0xa8e Qiusuo/build/fs.o
- *fill*         0x00000000c0010d1a        0x2 
- .rodata        0x00000000c0010d1c      0x222 Qiusuo/build/dir.o
- *fill*         0x00000000c0010f3e        0x2 
- .rodata        0x00000000c0010f40      0x45b Qiusuo/build/file.o
- *fill*         0x00000000c001139b        0x1 
- .rodata        0x00000000c001139c       0xbe Qiusuo/build/inode.o
- *fill*         0x00000000c001145a        0x2 
- .rodata        0x00000000c001145c      0x14e Qiusuo/build/fork.o
- *fill*         0x00000000c00115aa        0x2 
- .rodata        0x00000000c00115ac      0x1cd Qiusuo/build/shell.o
- *fill*         0x00000000c0011779        0x3 
- .rodata        0x00000000c001177c      0x35e Qiusuo/build/buildin_cmd.o
- .rodata        0x00000000c0011ada        0x8 Qiusuo/build/exec.o
- *fill*         0x00000000c0011ae2        0x2 
- .rodata        0x00000000c0011ae4       0x32 Qiusuo/build/assert.o
- *fill*         0x00000000c0011b16        0x2 
- .rodata        0x00000000c0011b18       0x51 Qiusuo/build/wait_exit.o
+ .rodata        0x00000000c001028c      0xb9e Qiusuo/build/fs.o
+ *fill*         0x00000000c0010e2a        0x2 
+ .rodata        0x00000000c0010e2c      0x222 Qiusuo/build/dir.o
+ *fill*         0x00000000c001104e        0x2 
+ .rodata        0x00000000c0011050      0x45b Qiusuo/build/file.o
+ *fill*         0x00000000c00114ab        0x1 
+ .rodata        0x00000000c00114ac       0xbe Qiusuo/build/inode.o
+ *fill*         0x00000000c001156a        0x2 
+ .rodata        0x00000000c001156c      0x14e Qiusuo/build/fork.o
+ *fill*         0x00000000c00116ba        0x2 
+ .rodata        0x00000000c00116bc      0x1cd Qiusuo/build/shell.o
+ *fill*         0x00000000c0011889        0x3 
+ .rodata        0x00000000c001188c      0x35e Qiusuo/build/buildin_cmd.o
+ .rodata        0x00000000c0011bea        0x8 Qiusuo/build/exec.o
+ *fill*         0x00000000c0011bf2        0x2 
+ .rodata        0x00000000c0011bf4       0x32 Qiusuo/build/assert.o
+ *fill*         0x00000000c0011c26        0x2 
+ .rodata        0x00000000c0011c28       0x51 Qiusuo/build/wait_exit.o
 
 .rodata1
  *(.rodata1)
@@ -515,70 +515,70 @@ LOAD Qiusuo/build/pipe.o
  *(.eh_frame_hdr)
  *(.eh_frame_entry .eh_frame_entry.*)
 
-.eh_frame       0x00000000c0011b6c     0x22e4
+.eh_frame       0x00000000c0011c7c     0x22ec
  *(.eh_frame)
- .eh_frame      0x00000000c0011b6c       0x58 Qiusuo/build/main.o
- .eh_frame      0x00000000c0011bc4       0x20 Qiusuo/build/init.o
+ .eh_frame      0x00000000c0011c7c       0x58 Qiusuo/build/main.o
+ .eh_frame      0x00000000c0011cd4       0x20 Qiusuo/build/init.o
                                          0x38 (松开之前的大小)
- .eh_frame      0x00000000c0011be4      0x188 Qiusuo/build/interrupt.o
+ .eh_frame      0x00000000c0011cf4      0x188 Qiusuo/build/interrupt.o
                                         0x1a0 (松开之前的大小)
- .eh_frame      0x00000000c0011d6c       0xcc Qiusuo/build/timer.o
+ .eh_frame      0x00000000c0011e7c       0xcc Qiusuo/build/timer.o
                                          0xe4 (松开之前的大小)
- .eh_frame      0x00000000c0011e38       0x1c Qiusuo/build/debug.o
+ .eh_frame      0x00000000c0011f48       0x1c Qiusuo/build/debug.o
                                          0x34 (松开之前的大小)
- .eh_frame      0x00000000c0011e54      0x140 Qiusuo/build/string.o
+ .eh_frame      0x00000000c0011f64      0x140 Qiusuo/build/string.o
                                         0x158 (松开之前的大小)
- .eh_frame      0x00000000c0011f94       0x94 Qiusuo/build/bitmap.o
+ .eh_frame      0x00000000c00120a4       0x94 Qiusuo/build/bitmap.o
                                          0xac (松开之前的大小)
- .eh_frame      0x00000000c0012028      0x2e0 Qiusuo/build/memory.o
+ .eh_frame      0x00000000c0012138      0x2e0 Qiusuo/build/memory.o
                                         0x2f8 (松开之前的大小)
- .eh_frame      0x00000000c0012308      0x140 Qiusuo/build/list.o
+ .eh_frame      0x00000000c0012418      0x140 Qiusuo/build/list.o
                                         0x158 (松开之前的大小)
- .eh_frame      0x00000000c0012448      0x2dc Qiusuo/build/thread.o
+ .eh_frame      0x00000000c0012558      0x2dc Qiusuo/build/thread.o
                                         0x2f4 (松开之前的大小)
- .eh_frame      0x00000000c0012724       0xc0 Qiusuo/build/console.o
+ .eh_frame      0x00000000c0012834       0xc0 Qiusuo/build/console.o
                                          0xd8 (松开之前的大小)
- .eh_frame      0x00000000c00127e4       0xc8 Qiusuo/build/sync.o
+ .eh_frame      0x00000000c00128f4       0xc8 Qiusuo/build/sync.o
                                          0xe0 (松开之前的大小)
- .eh_frame      0x00000000c00128ac       0x60 Qiusuo/build/keyboard.o
+ .eh_frame      0x00000000c00129bc       0x60 Qiusuo/build/keyboard.o
                                          0x78 (松开之前的大小)
- .eh_frame      0x00000000c001290c      0x120 Qiusuo/build/ioqueue.o
+ .eh_frame      0x00000000c0012a1c      0x120 Qiusuo/build/ioqueue.o
                                         0x138 (松开之前的大小)
- .eh_frame      0x00000000c0012a2c       0x64 Qiusuo/build/tss.o
+ .eh_frame      0x00000000c0012b3c       0x64 Qiusuo/build/tss.o
                                          0x7c (松开之前的大小)
- .eh_frame      0x00000000c0012a90       0xc0 Qiusuo/build/process.o
+ .eh_frame      0x00000000c0012ba0       0xc0 Qiusuo/build/process.o
                                          0xd8 (松开之前的大小)
- .eh_frame      0x00000000c0012b50      0x3dc Qiusuo/build/syscall.o
+ .eh_frame      0x00000000c0012c60      0x3dc Qiusuo/build/syscall.o
                                         0x3f4 (松开之前的大小)
- .eh_frame      0x00000000c0012f2c       0x40 Qiusuo/build/syscall-init.o
+ .eh_frame      0x00000000c001303c       0x40 Qiusuo/build/syscall-init.o
                                          0x58 (松开之前的大小)
- .eh_frame      0x00000000c0012f6c       0x94 Qiusuo/build/stdio.o
+ .eh_frame      0x00000000c001307c       0x94 Qiusuo/build/stdio.o
                                          0xac (松开之前的大小)
- .eh_frame      0x00000000c0013000      0x258 Qiusuo/build/ide.o
+ .eh_frame      0x00000000c0013110      0x258 Qiusuo/build/ide.o
                                         0x270 (松开之前的大小)
- .eh_frame      0x00000000c0013258       0x48 Qiusuo/build/stdio-kernel.o
+ .eh_frame      0x00000000c0013368       0x48 Qiusuo/build/stdio-kernel.o
                                          0x60 (松开之前的大小)
- .eh_frame      0x00000000c00132a0      0x364 Qiusuo/build/fs.o
-                                        0x37c (松开之前的大小)
- .eh_frame      0x00000000c0013604      0x164 Qiusuo/build/dir.o
+ .eh_frame      0x00000000c00133b0      0x36c Qiusuo/build/fs.o
+                                        0x384 (松开之前的大小)
+ .eh_frame      0x00000000c001371c      0x164 Qiusuo/build/dir.o
                                         0x17c (松开之前的大小)
- .eh_frame      0x00000000c0013768      0x140 Qiusuo/build/file.o
+ .eh_frame      0x00000000c0013880      0x140 Qiusuo/build/file.o
                                         0x158 (松开之前的大小)
- .eh_frame      0x00000000c00138a8       0xec Qiusuo/build/inode.o
+ .eh_frame      0x00000000c00139c0       0xec Qiusuo/build/inode.o
                                         0x104 (松开之前的大小)
- .eh_frame      0x00000000c0013994       0xc0 Qiusuo/build/fork.o
+ .eh_frame      0x00000000c0013aac       0xc0 Qiusuo/build/fork.o
                                          0xd8 (松开之前的大小)
- .eh_frame      0x00000000c0013a54       0x9c Qiusuo/build/shell.o
+ .eh_frame      0x00000000c0013b6c       0x9c Qiusuo/build/shell.o
                                          0xb4 (松开之前的大小)
- .eh_frame      0x00000000c0013af0      0x180 Qiusuo/build/buildin_cmd.o
+ .eh_frame      0x00000000c0013c08      0x180 Qiusuo/build/buildin_cmd.o
                                         0x198 (松开之前的大小)
- .eh_frame      0x00000000c0013c70       0x60 Qiusuo/build/exec.o
+ .eh_frame      0x00000000c0013d88       0x60 Qiusuo/build/exec.o
                                          0x78 (松开之前的大小)
- .eh_frame      0x00000000c0013cd0       0x1c Qiusuo/build/assert.o
+ .eh_frame      0x00000000c0013de8       0x1c Qiusuo/build/assert.o
                                          0x34 (松开之前的大小)
- .eh_frame      0x00000000c0013cec       0xc0 Qiusuo/build/wait_exit.o
+ .eh_frame      0x00000000c0013e04       0xc0 Qiusuo/build/wait_exit.o
                                          0xd8 (松开之前的大小)
- .eh_frame      0x00000000c0013dac       0xa4 Qiusuo/build/pipe.o
+ .eh_frame      0x00000000c0013ec4       0xa4 Qiusuo/build/pipe.o
                                          0xbc (松开之前的大小)
  *(.eh_frame.*)
 

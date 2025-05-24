@@ -204,7 +204,7 @@ LOAD build_gdb/pipe.o
 .plt.sec
  *(.plt.sec)
 
-.text           0x00000000c0001300     0xce2d
+.text           0x00000000c0001300     0xcf15
  *(.text.unlikely .text.*_unlikely .text.unlikely.*)
  *(.text.exit .text.exit.*)
  *(.text.startup .text.startup.*)
@@ -377,84 +377,84 @@ LOAD build_gdb/pipe.o
  .text          0x00000000c0007113       0x9d build_gdb/stdio-kernel.o
                 0x00000000c0007113                printk
                 0x00000000c000718b                sys_putchar
- .text          0x00000000c00071b0     0x234c build_gdb/fs.o
-                0x00000000c00078aa                path_parse
-                0x00000000c0007908                path_depth_cnt
-                0x00000000c0007c32                sys_open
-                0x00000000c0007eaa                fd_local2global
-                0x00000000c0007eff                sys_close
-                0x00000000c0007ff6                sys_write
-                0x00000000c000816c                sys_read
-                0x00000000c00082b1                sys_lseek
-                0x00000000c000839e                sys_unlink
-                0x00000000c00085c0                sys_mkdir
-                0x00000000c00089ec                sys_opendir
-                0x00000000c0008b07                sys_closedir
-                0x00000000c0008b31                sys_readdir
-                0x00000000c0008b6e                sys_rewinddir
-                0x00000000c0008b7d                sys_rmdir
-                0x00000000c0008f32                sys_getcwd
-                0x00000000c000912b                sys_chdir
-                0x00000000c00091ae                sys_stat
-                0x00000000c00092d5                sys_help
-                0x00000000c00092e9                filesys_init
- .text          0x00000000c00094fc      0xfd0 build_gdb/dir.o
-                0x00000000c00094fc                open_root_dir
-                0x00000000c000952b                dir_open
-                0x00000000c0009566                search_dir_entry
-                0x00000000c0009748                dir_close
-                0x00000000c0009773                create_dir_entry
-                0x00000000c00097e9                sync_dir_entry
-                0x00000000c0009c74                delete_dir_entry
-                0x00000000c000a1ca                dir_read
-                0x00000000c000a3d8                dir_is_empty
-                0x00000000c000a403                dir_remove
- .text          0x00000000c000a4cc     0x1308 build_gdb/file.o
-                0x00000000c000a4cc                get_free_slot_in_global
-                0x00000000c000a51d                pcb_fd_install
-                0x00000000c000a586                inode_bitmap_alloc
-                0x00000000c000a5d4                block_bitmap_alloc
-                0x00000000c000a62d                bitmap_sync
-                0x00000000c000a6c1                file_create
-                0x00000000c000a9a4                file_open
-                0x00000000c000aaaf                file_close
-                0x00000000c000aaee                file_write
-                0x00000000c000b3a4                file_read
- .text          0x00000000c000b7d4      0x81e build_gdb/inode.o
-                0x00000000c000b872                inode_sync
-                0x00000000c000b9e5                inode_open
-                0x00000000c000bb40                inode_close
-                0x00000000c000bbb1                inode_delete
-                0x00000000c000bd16                inode_realse
-                0x00000000c000bf9d                inode_init
- .text          0x00000000c000bff2      0x529 build_gdb/fork.o
-                0x00000000c000c3e3                sys_fork
- .text          0x00000000c000c51b      0x88a build_gdb/shell.o
-                0x00000000c000caf2                my_shell
- .text          0x00000000c000cda5      0x95f build_gdb/buildin_cmd.o
-                0x00000000c000cf48                make_clear_abs_path
-                0x00000000c000d00b                buildin_pwd
-                0x00000000c000d061                buildin_cd
-                0x00000000c000d0e1                buildin_ls
-                0x00000000c000d4e1                buildin_ps
-                0x00000000c000d502                buildin_clear
-                0x00000000c000d523                buildin_mkdir
-                0x00000000c000d5aa                buildin_rmdir
-                0x00000000c000d65e                buildin_rm
-                0x00000000c000d6e5                buildin_help
- .text          0x00000000c000d704      0x387 build_gdb/exec.o
-                0x00000000c000d9dd                sys_execv
- .text          0x00000000c000da8b       0x30 build_gdb/assert.o
-                0x00000000c000da8b                user_spin
- .text          0x00000000c000dabb      0x430 build_gdb/wait_exit.o
-                0x00000000c000dd7d                sys_wait
-                0x00000000c000de36                sys_exit
- .text          0x00000000c000deeb      0x242 build_gdb/pipe.o
-                0x00000000c000deeb                is_pipe
-                0x00000000c000df1d                sys_pipe
-                0x00000000c000dfe2                pipe_read
-                0x00000000c000e05b                pipe_write
-                0x00000000c000e0e5                sys_fd_redirect
+ .text          0x00000000c00071b0     0x2434 build_gdb/fs.o
+                0x00000000c0007992                path_parse
+                0x00000000c00079f0                path_depth_cnt
+                0x00000000c0007d1a                sys_open
+                0x00000000c0007f92                fd_local2global
+                0x00000000c0007fe7                sys_close
+                0x00000000c00080de                sys_write
+                0x00000000c0008254                sys_read
+                0x00000000c0008399                sys_lseek
+                0x00000000c0008486                sys_unlink
+                0x00000000c00086a8                sys_mkdir
+                0x00000000c0008ad4                sys_opendir
+                0x00000000c0008bef                sys_closedir
+                0x00000000c0008c19                sys_readdir
+                0x00000000c0008c56                sys_rewinddir
+                0x00000000c0008c65                sys_rmdir
+                0x00000000c000901a                sys_getcwd
+                0x00000000c0009213                sys_chdir
+                0x00000000c0009296                sys_stat
+                0x00000000c00093bd                sys_help
+                0x00000000c00093d1                filesys_init
+ .text          0x00000000c00095e4      0xfd0 build_gdb/dir.o
+                0x00000000c00095e4                open_root_dir
+                0x00000000c0009613                dir_open
+                0x00000000c000964e                search_dir_entry
+                0x00000000c0009830                dir_close
+                0x00000000c000985b                create_dir_entry
+                0x00000000c00098d1                sync_dir_entry
+                0x00000000c0009d5c                delete_dir_entry
+                0x00000000c000a2b2                dir_read
+                0x00000000c000a4c0                dir_is_empty
+                0x00000000c000a4eb                dir_remove
+ .text          0x00000000c000a5b4     0x1308 build_gdb/file.o
+                0x00000000c000a5b4                get_free_slot_in_global
+                0x00000000c000a605                pcb_fd_install
+                0x00000000c000a66e                inode_bitmap_alloc
+                0x00000000c000a6bc                block_bitmap_alloc
+                0x00000000c000a715                bitmap_sync
+                0x00000000c000a7a9                file_create
+                0x00000000c000aa8c                file_open
+                0x00000000c000ab97                file_close
+                0x00000000c000abd6                file_write
+                0x00000000c000b48c                file_read
+ .text          0x00000000c000b8bc      0x81e build_gdb/inode.o
+                0x00000000c000b95a                inode_sync
+                0x00000000c000bacd                inode_open
+                0x00000000c000bc28                inode_close
+                0x00000000c000bc99                inode_delete
+                0x00000000c000bdfe                inode_realse
+                0x00000000c000c085                inode_init
+ .text          0x00000000c000c0da      0x529 build_gdb/fork.o
+                0x00000000c000c4cb                sys_fork
+ .text          0x00000000c000c603      0x88a build_gdb/shell.o
+                0x00000000c000cbda                my_shell
+ .text          0x00000000c000ce8d      0x95f build_gdb/buildin_cmd.o
+                0x00000000c000d030                make_clear_abs_path
+                0x00000000c000d0f3                buildin_pwd
+                0x00000000c000d149                buildin_cd
+                0x00000000c000d1c9                buildin_ls
+                0x00000000c000d5c9                buildin_ps
+                0x00000000c000d5ea                buildin_clear
+                0x00000000c000d60b                buildin_mkdir
+                0x00000000c000d692                buildin_rmdir
+                0x00000000c000d746                buildin_rm
+                0x00000000c000d7cd                buildin_help
+ .text          0x00000000c000d7ec      0x387 build_gdb/exec.o
+                0x00000000c000dac5                sys_execv
+ .text          0x00000000c000db73       0x30 build_gdb/assert.o
+                0x00000000c000db73                user_spin
+ .text          0x00000000c000dba3      0x430 build_gdb/wait_exit.o
+                0x00000000c000de65                sys_wait
+                0x00000000c000df1e                sys_exit
+ .text          0x00000000c000dfd3      0x242 build_gdb/pipe.o
+                0x00000000c000dfd3                is_pipe
+                0x00000000c000e005                sys_pipe
+                0x00000000c000e0ca                pipe_read
+                0x00000000c000e143                pipe_write
+                0x00000000c000e1cd                sys_fd_redirect
  *(.gnu.warning)
 
 .fini
@@ -465,7 +465,7 @@ LOAD build_gdb/pipe.o
                 0x00000000c000f000                . = ALIGN (CONSTANT (MAXPAGESIZE))
                 0x00000000c000f000                . = SEGMENT_START ("rodata-segment", (ALIGN (CONSTANT (MAXPAGESIZE)) + (. & (CONSTANT (MAXPAGESIZE) - 0x1))))
 
-.rodata         0x00000000c000f000     0x2ae6
+.rodata         0x00000000c000f000     0x2bf6
  *(.rodata .rodata.* .gnu.linkonce.r.*)
  .rodata        0x00000000c000f000       0x97 build_gdb/main.o
  .rodata        0x00000000c000f097        0xa build_gdb/init.o
@@ -489,24 +489,24 @@ LOAD build_gdb/pipe.o
  .rodata        0x00000000c0010031       0x27 build_gdb/syscall-init.o
  .rodata        0x00000000c0010058      0x1ef build_gdb/ide.o
  *fill*         0x00000000c0010247        0x1 
- .rodata        0x00000000c0010248      0xa86 build_gdb/fs.o
- *fill*         0x00000000c0010cce        0x2 
- .rodata        0x00000000c0010cd0      0x21a build_gdb/dir.o
- *fill*         0x00000000c0010eea        0x2 
- .rodata        0x00000000c0010eec      0x453 build_gdb/file.o
- *fill*         0x00000000c001133f        0x1 
- .rodata        0x00000000c0011340       0xb6 build_gdb/inode.o
- *fill*         0x00000000c00113f6        0x2 
- .rodata        0x00000000c00113f8      0x146 build_gdb/fork.o
- *fill*         0x00000000c001153e        0x2 
- .rodata        0x00000000c0011540      0x1c5 build_gdb/shell.o
- *fill*         0x00000000c0011705        0x3 
- .rodata        0x00000000c0011708      0x356 build_gdb/buildin_cmd.o
- .rodata        0x00000000c0011a5e        0x8 build_gdb/exec.o
- *fill*         0x00000000c0011a66        0x2 
- .rodata        0x00000000c0011a68       0x32 build_gdb/assert.o
- *fill*         0x00000000c0011a9a        0x2 
- .rodata        0x00000000c0011a9c       0x4a build_gdb/wait_exit.o
+ .rodata        0x00000000c0010248      0xb96 build_gdb/fs.o
+ *fill*         0x00000000c0010dde        0x2 
+ .rodata        0x00000000c0010de0      0x21a build_gdb/dir.o
+ *fill*         0x00000000c0010ffa        0x2 
+ .rodata        0x00000000c0010ffc      0x453 build_gdb/file.o
+ *fill*         0x00000000c001144f        0x1 
+ .rodata        0x00000000c0011450       0xb6 build_gdb/inode.o
+ *fill*         0x00000000c0011506        0x2 
+ .rodata        0x00000000c0011508      0x146 build_gdb/fork.o
+ *fill*         0x00000000c001164e        0x2 
+ .rodata        0x00000000c0011650      0x1c5 build_gdb/shell.o
+ *fill*         0x00000000c0011815        0x3 
+ .rodata        0x00000000c0011818      0x356 build_gdb/buildin_cmd.o
+ .rodata        0x00000000c0011b6e        0x8 build_gdb/exec.o
+ *fill*         0x00000000c0011b76        0x2 
+ .rodata        0x00000000c0011b78       0x32 build_gdb/assert.o
+ *fill*         0x00000000c0011baa        0x2 
+ .rodata        0x00000000c0011bac       0x4a build_gdb/wait_exit.o
 
 .rodata1
  *(.rodata1)
@@ -515,70 +515,70 @@ LOAD build_gdb/pipe.o
  *(.eh_frame_hdr)
  *(.eh_frame_entry .eh_frame_entry.*)
 
-.eh_frame       0x00000000c0011ae8     0x22e4
+.eh_frame       0x00000000c0011bf8     0x22ec
  *(.eh_frame)
- .eh_frame      0x00000000c0011ae8       0x58 build_gdb/main.o
- .eh_frame      0x00000000c0011b40       0x20 build_gdb/init.o
+ .eh_frame      0x00000000c0011bf8       0x58 build_gdb/main.o
+ .eh_frame      0x00000000c0011c50       0x20 build_gdb/init.o
                                          0x38 (松开之前的大小)
- .eh_frame      0x00000000c0011b60      0x188 build_gdb/interrupt.o
+ .eh_frame      0x00000000c0011c70      0x188 build_gdb/interrupt.o
                                         0x1a0 (松开之前的大小)
- .eh_frame      0x00000000c0011ce8       0xcc build_gdb/timer.o
+ .eh_frame      0x00000000c0011df8       0xcc build_gdb/timer.o
                                          0xe4 (松开之前的大小)
- .eh_frame      0x00000000c0011db4       0x1c build_gdb/debug.o
+ .eh_frame      0x00000000c0011ec4       0x1c build_gdb/debug.o
                                          0x34 (松开之前的大小)
- .eh_frame      0x00000000c0011dd0      0x140 build_gdb/string.o
+ .eh_frame      0x00000000c0011ee0      0x140 build_gdb/string.o
                                         0x158 (松开之前的大小)
- .eh_frame      0x00000000c0011f10       0x94 build_gdb/bitmap.o
+ .eh_frame      0x00000000c0012020       0x94 build_gdb/bitmap.o
                                          0xac (松开之前的大小)
- .eh_frame      0x00000000c0011fa4      0x2e0 build_gdb/memory.o
+ .eh_frame      0x00000000c00120b4      0x2e0 build_gdb/memory.o
                                         0x2f8 (松开之前的大小)
- .eh_frame      0x00000000c0012284      0x140 build_gdb/list.o
+ .eh_frame      0x00000000c0012394      0x140 build_gdb/list.o
                                         0x158 (松开之前的大小)
- .eh_frame      0x00000000c00123c4      0x2dc build_gdb/thread.o
+ .eh_frame      0x00000000c00124d4      0x2dc build_gdb/thread.o
                                         0x2f4 (松开之前的大小)
- .eh_frame      0x00000000c00126a0       0xc0 build_gdb/console.o
+ .eh_frame      0x00000000c00127b0       0xc0 build_gdb/console.o
                                          0xd8 (松开之前的大小)
- .eh_frame      0x00000000c0012760       0xc8 build_gdb/sync.o
+ .eh_frame      0x00000000c0012870       0xc8 build_gdb/sync.o
                                          0xe0 (松开之前的大小)
- .eh_frame      0x00000000c0012828       0x60 build_gdb/keyboard.o
+ .eh_frame      0x00000000c0012938       0x60 build_gdb/keyboard.o
                                          0x78 (松开之前的大小)
- .eh_frame      0x00000000c0012888      0x120 build_gdb/ioqueue.o
+ .eh_frame      0x00000000c0012998      0x120 build_gdb/ioqueue.o
                                         0x138 (松开之前的大小)
- .eh_frame      0x00000000c00129a8       0x64 build_gdb/tss.o
+ .eh_frame      0x00000000c0012ab8       0x64 build_gdb/tss.o
                                          0x7c (松开之前的大小)
- .eh_frame      0x00000000c0012a0c       0xc0 build_gdb/process.o
+ .eh_frame      0x00000000c0012b1c       0xc0 build_gdb/process.o
                                          0xd8 (松开之前的大小)
- .eh_frame      0x00000000c0012acc      0x3dc build_gdb/syscall.o
+ .eh_frame      0x00000000c0012bdc      0x3dc build_gdb/syscall.o
                                         0x3f4 (松开之前的大小)
- .eh_frame      0x00000000c0012ea8       0x40 build_gdb/syscall-init.o
+ .eh_frame      0x00000000c0012fb8       0x40 build_gdb/syscall-init.o
                                          0x58 (松开之前的大小)
- .eh_frame      0x00000000c0012ee8       0x94 build_gdb/stdio.o
+ .eh_frame      0x00000000c0012ff8       0x94 build_gdb/stdio.o
                                          0xac (松开之前的大小)
- .eh_frame      0x00000000c0012f7c      0x258 build_gdb/ide.o
+ .eh_frame      0x00000000c001308c      0x258 build_gdb/ide.o
                                         0x270 (松开之前的大小)
- .eh_frame      0x00000000c00131d4       0x48 build_gdb/stdio-kernel.o
+ .eh_frame      0x00000000c00132e4       0x48 build_gdb/stdio-kernel.o
                                          0x60 (松开之前的大小)
- .eh_frame      0x00000000c001321c      0x364 build_gdb/fs.o
-                                        0x37c (松开之前的大小)
- .eh_frame      0x00000000c0013580      0x164 build_gdb/dir.o
+ .eh_frame      0x00000000c001332c      0x36c build_gdb/fs.o
+                                        0x384 (松开之前的大小)
+ .eh_frame      0x00000000c0013698      0x164 build_gdb/dir.o
                                         0x17c (松开之前的大小)
- .eh_frame      0x00000000c00136e4      0x140 build_gdb/file.o
+ .eh_frame      0x00000000c00137fc      0x140 build_gdb/file.o
                                         0x158 (松开之前的大小)
- .eh_frame      0x00000000c0013824       0xec build_gdb/inode.o
+ .eh_frame      0x00000000c001393c       0xec build_gdb/inode.o
                                         0x104 (松开之前的大小)
- .eh_frame      0x00000000c0013910       0xc0 build_gdb/fork.o
+ .eh_frame      0x00000000c0013a28       0xc0 build_gdb/fork.o
                                          0xd8 (松开之前的大小)
- .eh_frame      0x00000000c00139d0       0x9c build_gdb/shell.o
+ .eh_frame      0x00000000c0013ae8       0x9c build_gdb/shell.o
                                          0xb4 (松开之前的大小)
- .eh_frame      0x00000000c0013a6c      0x180 build_gdb/buildin_cmd.o
+ .eh_frame      0x00000000c0013b84      0x180 build_gdb/buildin_cmd.o
                                         0x198 (松开之前的大小)
- .eh_frame      0x00000000c0013bec       0x60 build_gdb/exec.o
+ .eh_frame      0x00000000c0013d04       0x60 build_gdb/exec.o
                                          0x78 (松开之前的大小)
- .eh_frame      0x00000000c0013c4c       0x1c build_gdb/assert.o
+ .eh_frame      0x00000000c0013d64       0x1c build_gdb/assert.o
                                          0x34 (松开之前的大小)
- .eh_frame      0x00000000c0013c68       0xc0 build_gdb/wait_exit.o
+ .eh_frame      0x00000000c0013d80       0xc0 build_gdb/wait_exit.o
                                          0xd8 (松开之前的大小)
- .eh_frame      0x00000000c0013d28       0xa4 build_gdb/pipe.o
+ .eh_frame      0x00000000c0013e40       0xa4 build_gdb/pipe.o
                                          0xbc (松开之前的大小)
  *(.eh_frame.*)
 
@@ -1022,7 +1022,7 @@ LOAD build_gdb/pipe.o
  .debug_abbrev  0x0000000000002939      0x19d build_gdb/wait_exit.o
  .debug_abbrev  0x0000000000002ad6      0x167 build_gdb/pipe.o
 
-.debug_line     0x0000000000000000     0x3068
+.debug_line     0x0000000000000000     0x3092
  *(.debug_line .debug_line.* .debug_line_end)
  .debug_line    0x0000000000000000       0x7e build_gdb/main.o
  .debug_line    0x000000000000007e       0x4a build_gdb/init.o
@@ -1045,17 +1045,17 @@ LOAD build_gdb/pipe.o
  .debug_line    0x0000000000001530       0xa1 build_gdb/stdio.o
  .debug_line    0x00000000000015d1      0x2b6 build_gdb/ide.o
  .debug_line    0x0000000000001887       0x80 build_gdb/stdio-kernel.o
- .debug_line    0x0000000000001907      0x5bf build_gdb/fs.o
- .debug_line    0x0000000000001ec6      0x336 build_gdb/dir.o
- .debug_line    0x00000000000021fc      0x383 build_gdb/file.o
- .debug_line    0x000000000000257f      0x219 build_gdb/inode.o
- .debug_line    0x0000000000002798      0x196 build_gdb/fork.o
- .debug_line    0x000000000000292e      0x18e build_gdb/shell.o
- .debug_line    0x0000000000002abc      0x1ae build_gdb/buildin_cmd.o
- .debug_line    0x0000000000002c6a      0x148 build_gdb/exec.o
- .debug_line    0x0000000000002db2       0x46 build_gdb/assert.o
- .debug_line    0x0000000000002df8      0x14f build_gdb/wait_exit.o
- .debug_line    0x0000000000002f47      0x121 build_gdb/pipe.o
+ .debug_line    0x0000000000001907      0x5e9 build_gdb/fs.o
+ .debug_line    0x0000000000001ef0      0x336 build_gdb/dir.o
+ .debug_line    0x0000000000002226      0x383 build_gdb/file.o
+ .debug_line    0x00000000000025a9      0x219 build_gdb/inode.o
+ .debug_line    0x00000000000027c2      0x196 build_gdb/fork.o
+ .debug_line    0x0000000000002958      0x18e build_gdb/shell.o
+ .debug_line    0x0000000000002ae6      0x1ae build_gdb/buildin_cmd.o
+ .debug_line    0x0000000000002c94      0x148 build_gdb/exec.o
+ .debug_line    0x0000000000002ddc       0x46 build_gdb/assert.o
+ .debug_line    0x0000000000002e22      0x14f build_gdb/wait_exit.o
+ .debug_line    0x0000000000002f71      0x121 build_gdb/pipe.o
 
 .debug_frame
  *(.debug_frame)
