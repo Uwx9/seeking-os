@@ -1,25 +1,30 @@
 # Qiusuo_os
 #### ——————操作系统真象还原 - 代码复现
 
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Build Status](https://travis-ci.org/yourusername/yourrepo.svg?branch=master)](https://travis-ci.org/yourusername/yourrepo)
-
 ## 项目背景
-仅个人学习，希望能提升自己，与大家共勉。
-本项目是基于郑钢所著《操作系统真象还原》一书中的内容开发的操作系统实验代码复现。本书深入浅出地讲解了操作系统的核心机制，从零开始自制操作系统全流程，并提供了详尽的代码实现与运行环境[ty-reference](3)。
 
-## 安装指南
+仅个人学习，希望能提升自己，与大家共勉。  
+本项目是基于郑钢所著《操作系统真象还原》一书中的内容开发的操作系统实验代码复现。本书深入浅出地讲解了操作系统的核心机制，从零开始自制操作系统全流程，并提供了详尽的代码实现与运行环境。
 
-### 前置条件
-- 安装Bochs虚拟机（Windows/Linux/macOS）。
-- 安装GCC编译器（Linux推荐使用`sudo apt-get install build-essential`安装）。
-- 安装Make工具（Linux推荐使用`sudo apt-get install make`安装）。
+## 环境
 
-### 安装步骤
+- bochs版本：2.6.8  
+- 编译器：gcc version 4.8.5 (Ubuntu 4.8.5-4ubuntu2)  
+- 汇编器：NASM version 2.14.02  
+- 链接器：GNU ld (GNU Binutils for Ubuntu) 2.34  
+- make：GNU Make 4.2.1  
 
-1. 克隆本仓库到本地：
-   ```bash
-   git clone https://github.com/yourusername/yourrepo.git
-   cd yourrepo
-   ```
-yuwanxin
+## 仓库链接
+
+更详细 commit 的仓库在 Gitee：  
+[https://gitee.com/yustarxin/Qiusuo_os](https://gitee.com/yustarxin/Qiusuo_os)  
+很抱歉 commit 不规范且混乱。
+
+将 bochs 和源码放在一起的仓库：  
+[https://gitee.com/yustarxin/qiusuo_os--packed](https://gitee.com/yustarxin/qiusuo_os--packed)
+
+## 一些感悟
+
+首先要感谢这本书的作者郑钢先生，这是一本极好的好书，可谓是手把手教学。  
+用了近大半个学期的时间从 0 开始写完了一个操作系统，真的是收获良多。开始时困难重重，后面慢慢还是适应了。尤其是 debug 时不要太灰心，虽然 debug 可能有点折磨。  
+同时我意识到自己此前的学习并不足够认真深入，此后要学习的还有许多。很开心的是这个项目激发了我的热情让我渴望做出漂亮且有用的东西 ^^。
