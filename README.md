@@ -17,11 +17,11 @@
 ## 仓库链接
 
 更详细 commit 的仓库在 Gitee：  
-[https://gitee.com/yustarxin/Qiusuo_os](https://gitee.com/yustarxin/Qiusuo_os)  
+<a href="https://gitee.com/yustarxin/Qiusuo_os" target="_blank">https://gitee.com/yustarxin/Qiusuo_os</a>  
 很抱歉 commit 不规范且混乱。
 
 将 bochs 和源码放在一起的仓库：  
-[https://gitee.com/yustarxin/qiusuo_os--packed](https://gitee.com/yustarxin/qiusuo_os--packed)
+<a href="https://gitee.com/yustarxin/qiusuo_os--packed" target="_blank">https://gitee.com/yustarxin/qiusuo_os--packed</a>
 
 ## 一些感悟
 
