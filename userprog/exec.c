@@ -121,7 +121,6 @@ static int32_t load(const char* path_name)
 	Elf32_off prog_header_off = elf_header.e_phoff;			// 程序头的起址
 	Elf32_Half prog_header_size = elf_header.e_phentsize;	// 程序头的大小
 
-	struct task* cur = running_thread();
 	/* 遍历所有程序头 */
 	uint32_t prog_idx = 0;
 	while (prog_idx < elf_header.e_phnum) {
@@ -139,7 +138,6 @@ static int32_t load(const char* path_name)
 				ret = -1;
 				goto done;
 			}
-			block_descs_init(cur->u_block_descs);
 		}
 
 		/* 更新下一个程序头的偏移 */

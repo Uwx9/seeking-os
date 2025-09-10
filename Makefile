@@ -1,4 +1,4 @@
-BUILD_DIR = ./Qiusuo/build
+BUILD_DIR = ./build
 ENTRY_POINT = 0xc0001300
 HD60M_PATH = /home/yu/Desktop/bochs/hd60M.img
 
@@ -6,8 +6,8 @@ CC = gcc
 AS = nasm
 LD = ld 
 
-LIB = -I  Qiusuo/lib -I  Qiusuo/lib/kernel -I  Qiusuo/lib/usr -I  Qiusuo/device/ -I Qiusuo/kernel/ -I Qiusuo/thread/ -I Qiusuo/userprog/	\
-	-I Qiusuo/fs -I Qiusuo/shell
+LIB = -I  lib -I  lib/kernel -I  lib/usr -I  device/ -I kernel/ -I thread/ -I userprog/	\
+	-I fs -I shell
 
 ASFLAGS = -f elf 
 CFLAGS = -c -m32 -Wall -fno-stack-protector $(LIB) -fno-builtin -W -Wstrict-prototypes -Wmissing-prototypes 
@@ -27,156 +27,156 @@ OBJS = $(BUILD_DIR)/main.o 			$(BUILD_DIR)/init.o 		$(BUILD_DIR)/interrupt.o	\
 	   $(BUILD_DIR)/wait_exit.o 	$(BUILD_DIR)/pipe.o
 	   
 ########################         C代码编译        ########################
-$(BUILD_DIR)/main.o: Qiusuo/kernel/main.c Qiusuo/kernel/debug.h Qiusuo/kernel/init.h	Qiusuo/thread/thread.h	\
-	Qiusuo/lib/stdint.h  Qiusuo/lib/kernel/print.h Qiusuo/lib/kernel/list.h Qiusuo/device/console.h Qiusuo/device/keyboard.h 	\
-	Qiusuo/device/ioqueue.h Qiusuo/userprog/userprog.h Qiusuo/lib/stdio.h Qiusuo/shell/shell.h 
+$(BUILD_DIR)/main.o: kernel/main.c kernel/debug.h kernel/init.h	thread/thread.h	\
+	lib/stdint.h  lib/kernel/print.h lib/kernel/list.h device/console.h device/keyboard.h 	\
+	device/ioqueue.h userprog/userprog.h lib/stdio.h shell/shell.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(BUILD_DIR)/init.o: Qiusuo/kernel/init.c Qiusuo/kernel/init.h Qiusuo/kernel/interrupt.h  Qiusuo/device/timer.h		\
-	Qiusuo/lib/stdint.h Qiusuo/device/console.h Qiusuo/device/keyboard.h Qiusuo/userprog/tss.h Qiusuo/kernel/init.h 	\
-	Qiusuo/device/ide.h Qiusuo/fs/fs.h 
+$(BUILD_DIR)/init.o: kernel/init.c kernel/init.h kernel/interrupt.h  device/timer.h		\
+	lib/stdint.h device/console.h device/keyboard.h userprog/tss.h kernel/init.h 	\
+	device/ide.h fs/fs.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(BUILD_DIR)/interrupt.o: Qiusuo/kernel/interrupt.c Qiusuo/kernel/interrupt.h Qiusuo/kernel/global.h		\
-	Qiusuo/lib/stdint.h  Qiusuo/lib/kernel/io.h  Qiusuo/lib/kernel/print.h
+$(BUILD_DIR)/interrupt.o: kernel/interrupt.c kernel/interrupt.h kernel/global.h		\
+	lib/stdint.h  lib/kernel/io.h  lib/kernel/print.h
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(BUILD_DIR)/timer.o:  Qiusuo/device/timer.c  Qiusuo/device/timer.h Qiusuo/kernel/debug.h Qiusuo/kernel/interrupt.h		\
-	Qiusuo/lib/kernel/print.h  Qiusuo/lib/kernel/io.h  Qiusuo/lib/stdint.h
+$(BUILD_DIR)/timer.o:  device/timer.c  device/timer.h kernel/debug.h kernel/interrupt.h		\
+	lib/kernel/print.h  lib/kernel/io.h  lib/stdint.h
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(BUILD_DIR)/debug.o: Qiusuo/kernel/debug.c Qiusuo/kernel/debug.h Qiusuo/kernel/interrupt.h		\
-	Qiusuo/lib/kernel/print.h  Qiusuo/lib/stdint.h
+$(BUILD_DIR)/debug.o: kernel/debug.c kernel/debug.h kernel/interrupt.h		\
+	lib/kernel/print.h  lib/stdint.h
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(BUILD_DIR)/string.o:  Qiusuo/lib/string.c  Qiusuo/lib/string.h Qiusuo/kernel/debug.h Qiusuo/kernel/global.h		\
-	Qiusuo/lib/stdint.h 
+$(BUILD_DIR)/string.o:  lib/string.c  lib/string.h kernel/debug.h kernel/global.h		\
+	lib/stdint.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(BUILD_DIR)/bitmap.o:  Qiusuo/lib/kernel/bitmap.c  Qiusuo/lib/kernel/bitmap.h  Qiusuo/lib/stdint.h  Qiusuo/lib/string.h 	\
-	Qiusuo/kernel/interrupt.h Qiusuo/kernel/debug.h Qiusuo/kernel/global.h 
+$(BUILD_DIR)/bitmap.o:  lib/kernel/bitmap.c  lib/kernel/bitmap.h  lib/stdint.h  lib/string.h 	\
+	kernel/interrupt.h kernel/debug.h kernel/global.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(BUILD_DIR)/memory.o: Qiusuo/kernel/memory.c Qiusuo/kernel/memory.h Qiusuo/kernel/debug.h Qiusuo/kernel/global.h	\
-	Qiusuo/lib/stdint.h  Qiusuo/lib/kernel/print.h  Qiusuo/lib/kernel/bitmap.h  Qiusuo/lib/string.h Qiusuo/thread/sync.h 	\
-	Qiusuo/lib/kernel/list.h Qiusuo/kernel/interrupt.h Qiusuo/kernel/debug.h 
+$(BUILD_DIR)/memory.o: kernel/memory.c kernel/memory.h kernel/debug.h kernel/global.h	\
+	lib/stdint.h  lib/kernel/print.h  lib/kernel/bitmap.h  lib/string.h thread/sync.h 	\
+	lib/kernel/list.h kernel/interrupt.h kernel/debug.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(BUILD_DIR)/list.o: Qiusuo/lib/kernel/list.c Qiusuo/lib/kernel/list.h Qiusuo/kernel/interrupt.h Qiusuo/kernel/debug.h	\
-	Qiusuo/lib/kernel/print.h
+$(BUILD_DIR)/list.o: lib/kernel/list.c lib/kernel/list.h kernel/interrupt.h kernel/debug.h	\
+	lib/kernel/print.h
 	$(CC) $(CFLAGS) -o $@ $<
 	
-$(BUILD_DIR)/thread.o: Qiusuo/thread/thread.c Qiusuo/thread/thread.h Qiusuo/lib/string.h Qiusuo/kernel/global.h 	\
-	Qiusuo/lib/stdint.h Qiusuo/kernel/memory.h Qiusuo/kernel/interrupt.h Qiusuo/lib/kernel/print.h Qiusuo/kernel/debug.h	\
-	Qiusuo/thread/sync.h 	
+$(BUILD_DIR)/thread.o: thread/thread.c thread/thread.h lib/string.h kernel/global.h 	\
+	lib/stdint.h kernel/memory.h kernel/interrupt.h lib/kernel/print.h kernel/debug.h	\
+	thread/sync.h 	
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(BUILD_DIR)/console.o: Qiusuo/device/console.c Qiusuo/device/console.h Qiusuo/lib/kernel/print.h Qiusuo/thread/thread.h Qiusuo/lib/stdint.h	\
-	Qiusuo/thread/sync.h 
+$(BUILD_DIR)/console.o: device/console.c device/console.h lib/kernel/print.h thread/thread.h lib/stdint.h	\
+	thread/sync.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(BUILD_DIR)/sync.o: Qiusuo/thread/sync.c Qiusuo/thread/sync.h Qiusuo/kernel/interrupt.h Qiusuo/kernel/debug.h Qiusuo/thread/thread.h  
+$(BUILD_DIR)/sync.o: thread/sync.c thread/sync.h kernel/interrupt.h kernel/debug.h thread/thread.h  
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(BUILD_DIR)/keyboard.o: Qiusuo/device/keyboard.c Qiusuo/device/keyboard.h Qiusuo/kernel/interrupt.h Qiusuo/lib/kernel/io.h 	\
-	Qiusuo/lib/kernel/print.h Qiusuo/kernel/global.h Qiusuo/device/ioqueue.h 
+$(BUILD_DIR)/keyboard.o: device/keyboard.c device/keyboard.h kernel/interrupt.h lib/kernel/io.h 	\
+	lib/kernel/print.h kernel/global.h device/ioqueue.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(BUILD_DIR)/ioqueue.o: Qiusuo/device/ioqueue.c Qiusuo/device/ioqueue.h Qiusuo/kernel/interrupt.h Qiusuo/kernel/global.h		\
-	Qiusuo/kernel/debug.h 
+$(BUILD_DIR)/ioqueue.o: device/ioqueue.c device/ioqueue.h kernel/interrupt.h kernel/global.h		\
+	kernel/debug.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(BUILD_DIR)/tss.o: Qiusuo/userprog/tss.c Qiusuo/userprog/tss.h Qiusuo/lib/kernel/print.h Qiusuo/lib/string.h Qiusuo/kernel/global.h \
-	Qiusuo/thread/thread.h 
+$(BUILD_DIR)/tss.o: userprog/tss.c userprog/tss.h lib/kernel/print.h lib/string.h kernel/global.h \
+	thread/thread.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(BUILD_DIR)/process.o: Qiusuo/userprog/process.c Qiusuo/userprog/process.h Qiusuo/userprog/userprog.h Qiusuo/thread/thread.h 	\
-	Qiusuo/lib/stdint.h Qiusuo/kernel/global.h Qiusuo/kernel/debug.h Qiusuo/userprog/tss.h Qiusuo/kernel/interrupt.h 		\
-	Qiusuo/lib/kernel/print.h Qiusuo/lib/kernel/list.h Qiusuo/lib/string.h Qiusuo/kernel/memory.h 
+$(BUILD_DIR)/process.o: userprog/process.c userprog/process.h userprog/userprog.h thread/thread.h 	\
+	lib/stdint.h kernel/global.h kernel/debug.h userprog/tss.h kernel/interrupt.h 		\
+	lib/kernel/print.h lib/kernel/list.h lib/string.h kernel/memory.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(BUILD_DIR)/syscall.o: Qiusuo/lib/usr/syscall.c Qiusuo/lib/usr/syscall.h Qiusuo/lib/usr/syscall-init.h Qiusuo/lib/stdint.h 
+$(BUILD_DIR)/syscall.o: lib/usr/syscall.c lib/usr/syscall.h lib/usr/syscall-init.h lib/stdint.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(BUILD_DIR)/syscall-init.o: Qiusuo/lib/usr/syscall-init.c Qiusuo/lib/usr/syscall-init.h Qiusuo/lib/stdint.h Qiusuo/lib/kernel/print.h	\
-	Qiusuo/thread/thread.h Qiusuo/lib/usr/syscall.h Qiusuo/device/console.h Qiusuo/lib/string.h 
+$(BUILD_DIR)/syscall-init.o: lib/usr/syscall-init.c lib/usr/syscall-init.h lib/stdint.h lib/kernel/print.h	\
+	thread/thread.h lib/usr/syscall.h device/console.h lib/string.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(BUILD_DIR)/stdio.o: Qiusuo/lib/stdio.c Qiusuo/lib/stdio.h Qiusuo/lib/stdint.h Qiusuo/lib/string.h Qiusuo/kernel/global.h		\
-	Qiusuo/lib/usr/syscall.h 
+$(BUILD_DIR)/stdio.o: lib/stdio.c lib/stdio.h lib/stdint.h lib/string.h kernel/global.h		\
+	lib/usr/syscall.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(BUILD_DIR)/ide.o: Qiusuo/device/ide.c Qiusuo/device/ide.h Qiusuo/lib/kernel/stdio-kernel.h Qiusuo/lib/stdint.h Qiusuo/kernel/debug.h	\
-	Qiusuo/kernel/global.h Qiusuo/lib/kernel/io.h Qiusuo/device/timer.h Qiusuo/kernel/interrupt.h Qiusuo/kernel/memory.h 		\
-	Qiusuo/lib/stdio.h Qiusuo/lib/string.h 
+$(BUILD_DIR)/ide.o: device/ide.c device/ide.h lib/kernel/stdio-kernel.h lib/stdint.h kernel/debug.h	\
+	kernel/global.h lib/kernel/io.h device/timer.h kernel/interrupt.h kernel/memory.h 		\
+	lib/stdio.h lib/string.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(BUILD_DIR)/stdio-kernel.o: Qiusuo/lib/kernel/stdio-kernel.c Qiusuo/lib/kernel/stdio-kernel.h Qiusuo/kernel/global.h Qiusuo/lib/stdio.h Qiusuo/device/console.h \
-	Qiusuo/lib/stdint.h 
+$(BUILD_DIR)/stdio-kernel.o: lib/kernel/stdio-kernel.c lib/kernel/stdio-kernel.h kernel/global.h lib/stdio.h device/console.h \
+	lib/stdint.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(BUILD_DIR)/fs.o: Qiusuo/fs/fs.c Qiusuo/fs/fs.h Qiusuo/fs/dir.h Qiusuo/fs/inode.h Qiusuo/fs/super_block.h Qiusuo/kernel/global.h		\
-	Qiusuo/lib/stdint.h Qiusuo/lib/kernel/stdio-kernel.h Qiusuo/kernel/memory.h Qiusuo/kernel/debug.h Qiusuo/lib/string.h \
-	Qiusuo/lib/kernel/list.h Qiusuo/device/console.h
+$(BUILD_DIR)/fs.o: fs/fs.c fs/fs.h fs/dir.h fs/inode.h fs/super_block.h kernel/global.h		\
+	lib/stdint.h lib/kernel/stdio-kernel.h kernel/memory.h kernel/debug.h lib/string.h \
+	lib/kernel/list.h device/console.h
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(BUILD_DIR)/dir.o: Qiusuo/fs/dir.c Qiusuo/fs/dir.h Qiusuo/fs/inode.h Qiusuo/fs/super_block.h Qiusuo/kernel/global.h Qiusuo/fs/fs.h		\
-	Qiusuo/lib/stdint.h Qiusuo/lib/kernel/stdio-kernel.h  Qiusuo/kernel/debug.h Qiusuo/lib/string.h Qiusuo/fs/file.h Qiusuo/device/ide.h		
+$(BUILD_DIR)/dir.o: fs/dir.c fs/dir.h fs/inode.h fs/super_block.h kernel/global.h fs/fs.h		\
+	lib/stdint.h lib/kernel/stdio-kernel.h  kernel/debug.h lib/string.h fs/file.h device/ide.h		
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(BUILD_DIR)/file.o: Qiusuo/fs/file.c  Qiusuo/fs/file.h Qiusuo/fs/inode.h Qiusuo/fs/super_block.h Qiusuo/kernel/global.h Qiusuo/fs/fs.h		\
-	Qiusuo/lib/stdint.h Qiusuo/lib/kernel/stdio-kernel.h  Qiusuo/kernel/debug.h Qiusuo/lib/string.h Qiusuo/device/ide.h	Qiusuo/fs/dir.h		\
-	Qiusuo/thread/thread.h Qiusuo/lib/kernel/bitmap.h 
+$(BUILD_DIR)/file.o: fs/file.c  fs/file.h fs/inode.h fs/super_block.h kernel/global.h fs/fs.h		\
+	lib/stdint.h lib/kernel/stdio-kernel.h  kernel/debug.h lib/string.h device/ide.h	fs/dir.h		\
+	thread/thread.h lib/kernel/bitmap.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(BUILD_DIR)/inode.o: Qiusuo/fs/inode.c Qiusuo/fs/inode.h Qiusuo/fs/super_block.h Qiusuo/kernel/global.h Qiusuo/fs/fs.h	Qiusuo/kernel/debug.h 	\
-	Qiusuo/lib/stdint.h Qiusuo/lib/kernel/stdio-kernel.h  Qiusuo/kernel/debug.h Qiusuo/lib/string.h Qiusuo/fs/file.h Qiusuo/device/ide.h		\
-	Qiusuo/thread/thread.h Qiusuo/kernel/interrupt.h 
+$(BUILD_DIR)/inode.o: fs/inode.c fs/inode.h fs/super_block.h kernel/global.h fs/fs.h	kernel/debug.h 	\
+	lib/stdint.h lib/kernel/stdio-kernel.h  kernel/debug.h lib/string.h fs/file.h device/ide.h		\
+	thread/thread.h kernel/interrupt.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(BUILD_DIR)/fork.o: Qiusuo/userprog/fork.c Qiusuo/userprog/fork.h Qiusuo/lib/string.h Qiusuo/kernel/global.h Qiusuo/thread/thread.h \
-	Qiusuo/userprog/process.h Qiusuo/kernel/debug.h Qiusuo/fs/file.h Qiusuo/fs/inode.h Qiusuo/kernel/interrupt.h Qiusuo/lib/kernel/list.h
+$(BUILD_DIR)/fork.o: userprog/fork.c userprog/fork.h lib/string.h kernel/global.h thread/thread.h \
+	userprog/process.h kernel/debug.h fs/file.h fs/inode.h kernel/interrupt.h lib/kernel/list.h
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(BUILD_DIR)/shell.o: Qiusuo/shell/shell.c Qiusuo/shell/shell.h Qiusuo/kernel/debug.h Qiusuo/kernel/global.h Qiusuo/lib/usr/syscall.h \
-	Qiusuo/fs/file.h Qiusuo/lib/string.h 
+$(BUILD_DIR)/shell.o: shell/shell.c shell/shell.h kernel/debug.h kernel/global.h lib/usr/syscall.h \
+	fs/file.h lib/string.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(BUILD_DIR)/buildin_cmd.o: Qiusuo/shell/buildin_cmd.c Qiusuo/shell/buildin_cmd.h Qiusuo/lib/string.h Qiusuo/kernel/debug.h \
-	Qiusuo/lib/usr/syscall.h Qiusuo/fs/fs.h
+$(BUILD_DIR)/buildin_cmd.o: shell/buildin_cmd.c shell/buildin_cmd.h lib/string.h kernel/debug.h \
+	lib/usr/syscall.h fs/fs.h
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(BUILD_DIR)/exec.o: Qiusuo/userprog/exec.c Qiusuo/userprog/exec.h Qiusuo/lib/stdint.h Qiusuo/kernel/memory.h Qiusuo/kernel/global.h	\
-	Qiusuo/lib/string.h Qiusuo/fs/fs.h Qiusuo/thread/thread.h 
+$(BUILD_DIR)/exec.o: userprog/exec.c userprog/exec.h lib/stdint.h kernel/memory.h kernel/global.h	\
+	lib/string.h fs/fs.h thread/thread.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(BUILD_DIR)/assert.o: Qiusuo/lib/usr/assert.c Qiusuo/lib/usr/assert.h Qiusuo/lib/stdio.h Qiusuo/kernel/global.h
+$(BUILD_DIR)/assert.o: lib/usr/assert.c lib/usr/assert.h lib/stdio.h kernel/global.h
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(BUILD_DIR)/wait_exit.o: Qiusuo/userprog/wait_exit.c Qiusuo/userprog/wait_exit.h Qiusuo/thread/thread.h Qiusuo/fs/fs.h	\
-	Qiusuo/lib/usr/assert.h 
+$(BUILD_DIR)/wait_exit.o: userprog/wait_exit.c userprog/wait_exit.h thread/thread.h fs/fs.h	\
+	lib/usr/assert.h 
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(BUILD_DIR)/pipe.o: Qiusuo/shell/pipe.c Qiusuo/shell/pipe.h Qiusuo/kernel/global.h Qiusuo/fs/fs.h Qiusuo/fs/file.h Qiusuo/device/ioqueue.h	\
-	Qiusuo/lib/string.h 
+$(BUILD_DIR)/pipe.o: shell/pipe.c shell/pipe.h kernel/global.h fs/fs.h fs/file.h device/ioqueue.h	\
+	lib/string.h 
 	$(CC) $(CFLAGS) -o $@ $<
 	
 ########################         汇编代码编译        ########################
 ########        boot        #######
-$(BUILD_DIR)/mbr.bin: Qiusuo/boot/mbr.s Qiusuo/boot/include/boot.inc
-	nasm -I  Qiusuo/boot/include/ -o $@ $<
+$(BUILD_DIR)/mbr.bin: boot/mbr.s boot/include/boot.inc
+	nasm -I  boot/include/ -o $@ $<
   
-$(BUILD_DIR)/loader.bin: Qiusuo/boot/loader.s Qiusuo/boot/include/boot.inc
-	nasm -I  Qiusuo/boot/include/ -o $@ $<
+$(BUILD_DIR)/loader.bin: boot/loader.s boot/include/boot.inc
+	nasm -I  boot/include/ -o $@ $<
 
 ########        other asm        ########
-$(BUILD_DIR)/kernel.o: Qiusuo/kernel/kernel.s
+$(BUILD_DIR)/kernel.o: kernel/kernel.s
 	$(AS) $(ASFLAGS) -o $@ $<
 
-$(BUILD_DIR)/print.o: Qiusuo/lib/kernel/print.s 
+$(BUILD_DIR)/print.o: lib/kernel/print.s 
 	$(AS) $(ASFLAGS) -o $@ $<
 
-$(BUILD_DIR)/switch.o: Qiusuo/thread/switch.s 
+$(BUILD_DIR)/switch.o: thread/switch.s 
 	$(AS) $(ASFLAGS) -o $@ $<
 
 ########################         链接所有目标文件        ########################

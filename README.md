@@ -1,38 +1,81 @@
-# Qiusuo_os
-#### ——————操作系统真象还原 - 代码复现
+### 这里是源码，有bochs的仓库请看https://gitee.com/yustarxin/qiusuo_os--packed
 
-## 项目背景
+## 环境:
+```
+bochs版本 2.6.8
+编译器: gcc version 4.8.5 (Ubuntu 4.8.5-4ubuntu2)
+汇编器: NASM version 2.14.02
+链接器: GNU ld (GNU Binutils for Ubuntu) 2.34
+make:   GNU Make 4.2.1
+``` 
 
-仅个人学习，希望能提升自己，与大家共勉。  
-本项目是基于郑钢所著《操作系统真象还原》一书中的内容开发的操作系统实验代码复现。本书深入浅出地讲解了操作系统的核心机制，从零开始自制操作系统全流程，并提供了详尽的代码实现与运行环境。
+## 关于文件:
+可以在command目录中创建文件并利用shell脚本编译链接生成二进制文件, 该脚本会将二进制文件写入裸盘hd60M.img(跨过kernel.bin在裸盘中的位置)  
+然后在kernel/main的main函数中使用sys_opne()创建文件, 参数可以用 '|' 组合, 再使用ide_read将裸盘里的文件读到申请的内存中  
+最后将内存中的文件使用sys_write写入到磁盘上的文件并回收内存
 
-## 环境
+---
 
-- bochs版本：2.6.8  
-- 编译器：gcc version 4.8.5 (Ubuntu 4.8.5-4ubuntu2)  
-- 汇编器：NASM version 2.14.02  
-- 链接器：GNU ld (GNU Binutils for Ubuntu) 2.34  
-- make：GNU Make 4.2.1  
+## 一些介绍：
 
-## 仓库链接
+**Bochs软件**：是一款开源的 x86/x86-64 模拟器 (Emulator)，主要用于模拟完整的 PC 硬件环境。    
+**两个硬盘**：  
+- `hd60M.img` 没有文件系统  
+- `hd80M.img` 已分区并建立了文件系统  
+---
 
-更详细 commit 的仓库在 Gitee：  
-<a href="https://gitee.com/yustarxin/Qiusuo_os" target="_blank">https://gitee.com/yustarxin/Qiusuo_os</a>  
-很抱歉 commit 不规范且混乱。
+## Qiusuo 目录结构
 
-将 bochs 和源码放在一起的仓库：  
-<a href="https://gitee.com/yustarxin/qiusuo_os--packed" target="_blank">https://gitee.com/yustarxin/qiusuo_os--packed</a>
+```
+Qiusuo/
+├── boot/         # 引导程序
+├── build/        # 所有编译和链接后的文件，由外部的Makefile生成，内核kernel.bin在此
+├── build_gdb/    # 所有编译和链接后的文件, 用于bochs-gdb，由Qiusuo/makefile的规则生成，内核kernel.bin在此
+├── command/      # 外部程序放在这里
+├── device/       # 外部设备驱动，终端输出和环形队列缓冲区
+├── fs/           # 文件系统
+├── kernel/       # kernel，内存管理、初始化、中断等核心代码
+├── lib/          # 一些库函数，系统调用
+│   ├── kernel/
+│   ├── usr/
+│   └── ...
+├── shell/        # shell，系统交互
+├── thread/       # 线程
+├── userprog/     # 用户进程
+└── makefile      # 内部的makefile，用于gdb调试
+```
 
-## 一些感悟
+---
 
-首先要感谢这本书的作者郑钢先生，这是一本极好的好书，可谓是手把手教学。  
-用了近大半个学期的时间从 0 开始写完了一个操作系统，真的是收获良多。开始时困难重重，后面慢慢还是适应了。尤其是 debug 时不要太灰心，虽然 debug 可能有点折磨。  
-同时我意识到自己此前的学习并不足够认真深入，此后要学习的还有很多，要多读很多书。很开心的是这个项目激发了我的热情让我渴望做出漂亮且有用的东西 ^^。  
+## 编译说明
 
-## TODO
-我希望能让这个mini操作系统更完善一点，后续想做的是实现网络，在物理机启动等功能，这也是一个很好的学习的机会。
+### 若想为bochs生成kernel.bin，请在 `Qiusuo_os--packed` 目录下输入：
 
-### 关于第15章的bug
-exec.c文件的load函数刚写完是有bug的，没有自己debug看的网上前辈们的解决方法，但始终也没有找到具体错误原因，修改后会因为回收不了旧的arena导致内存泄漏。
-过了快两个月，本想再来debug一下这个诡异的bug，于是注释了修改的那一句代码，重新编译后居然能够正常加载进程，哎真有点哭笑不得，本来已经准备大干一场了。
-哈哈，就当它解决了吧。
+```bash
+make reall（清空build里的文件并重新编译链接后放在build中，**为什么不用 `make all`**？因为依赖关系太多没写全）
+```
+
+### 若想为bochs-gdb(您的或许是别的名字) 生成kernel.bin，请在 `Qiusuo` 目录下输入：
+
+```bash
+make reall（清空build里的文件并重新编译链接后放在build中）
+
+```
+
+---
+## 用户名
+虽然并没有用户系统, 但是终端上的名字更改在Qiusuo/shell/shell.c中的print_promat函数中,颜色的话请看表格
+
+## RGB颜色与亮度对应表(第一行是表示颜色的一字节的前4位,后4位是背景色和控制闪烁)
+##R, G, B, I 分别为第 2, 1, 0, 3位
+| R | G | B | 颜色 (I=0) | 颜色 (I=1) |
+|:-:|:-:|:-:|:-----------:|:-----------:|
+| 0 | 0 | 0 | 黑         | 灰         |
+| 0 | 0 | 1 | 蓝         | 浅蓝       |
+| 0 | 1 | 0 | 绿         | 浅绿       |
+| 0 | 1 | 1 | 青         | 浅青       |
+| 1 | 0 | 0 | 红         | 浅红       |
+| 1 | 0 | 1 | 品红       | 浅品红     |
+| 1 | 1 | 0 | 棕         | 黄         |
+| 1 | 1 | 1 | 白         | 亮白       |
+

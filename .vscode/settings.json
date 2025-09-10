@@ -41,6 +41,9 @@
 		"tss.h": "c",
 		"pipe.h": "c",
 		"sync.h": "c",
-		"random": "c"
+		"random": "c",
+		"debug.h": "c",
+		"dir.h": "c",
+		"ide.h": "c"
 	}
 }

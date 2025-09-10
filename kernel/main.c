@@ -73,6 +73,20 @@ int main(void)
 	// sys_free(prog_buf);
 	// 写入应用程序ok			
 
+	// 写入应用程序
+	uint32_t file_size = 11700;
+	uint32_t sec_cnt = DIV_ROUND_UP(file_size, SECTOR_SIZE);
+	struct disk* sda = &channels[0].devices[0];
+	void* prog_buf = sys_malloc(file_size);
+	ide_read(sda, 500, prog_buf, sec_cnt);
+	int32_t fd = sys_open("/prog_no_arg", O_CREATE | O_RDWR);
+	if (fd != -1) {
+		if (sys_write(fd, prog_buf, file_size) == -1) {
+			printk("file write error\n");
+			while (1);
+		}
+	}
+	// 写入应用程序ok
 
 	cls_screen();
 	console_put_str("[unique9@localhost /]$", 11);
